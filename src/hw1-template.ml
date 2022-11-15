@@ -81,9 +81,24 @@ module Reader : READER = struct
     let nt1 = caten nt_skip_star (caten nt nt_skip_star) in
     let nt1 = pack nt1 (fun (_, (e, _)) -> e) in
     nt1
-  and nt_digit str = raise X_not_yet_implemented
-  and nt_hex_digit str = raise X_not_yet_implemented
-  and nt_nat str = raise X_not_yet_implemented
+  and nt_digit str =
+    let nt1 = range '0' '9' in
+    let nt1 = pack nt1 int_of_char in
+    nt1 str
+  and nt_hex_digit str = (* check if case sensitive *)
+    let nt1 = range 'a' 'f' in
+    let nt1 = disj nt1 nt_digit in
+    nt1 str
+  and nt_nat str =
+    let nt1 = plus nt_digit in
+    let nt1 = pack nt1
+                (fun digits ->
+                  List.fold_left
+                    (fun num digit ->
+                      10 * num + digit)
+                    0
+                    digits) in
+    nt1 str
   and nt_hex_nat str = 
     let nt1 = plus nt_hex_digit in
     let nt1 = pack nt1
