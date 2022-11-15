@@ -87,6 +87,10 @@ module Reader : READER = struct
     nt1 str
   and nt_hex_digit str = (* check if case sensitive *)
     let nt1 = range 'a' 'f' in
+    let nt1 = pack nt1
+                (fun hex_char ->
+                  ((int_of_char hex_char) - 87)
+                ) in
     let nt1 = disj nt1 nt_digit in
     nt1 str
   and nt_nat str =
@@ -109,7 +113,31 @@ module Reader : READER = struct
                     0
                     digits) in
     nt1 str
-  and nt_optional_sign str = raise X_not_yet_implemented
+  (* and maybeify nt none_value = *)
+    (* pack nt (function *)
+      (* | None -> none_value *)
+      (* | Some x -> x) *)
+  and nt_optional_sign str =
+  (* let nt_plus = char '+' in
+  let nt_minus = char '-' in
+  let nt1 = disj nt_plus nt_minus in
+  (* let nt1 = star nt1 in *)
+  (* let nt1 = power nt1 1 *)
+  let nt2 = power nt1 1 in
+  let nt3 = power nt1 0 in
+  let nt1 = disj nt2 nt3 in
+  nt1 str *)
+  let nt1 = pack (char '-') (function _ -> false) in
+  let nt2 = pack (char '+') (function _ -> true) in
+  (* let nt1 = maybeify (disj nt1 nt2) true in *)
+  let nt_epsilon =
+    ((fun str index ->
+      {index_from = index;
+       index_to = index;
+       found = []}) : 'a parser) in
+  let nt3 = pack nt_epsilon (fun _ -> true) in
+  let nt1 = disj nt3 (disj nt1 nt2) in
+  nt1 str
   and nt_int str =
     let nt1 = caten nt_optional_sign nt_nat in
     let nt1 = pack nt1
