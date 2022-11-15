@@ -1,81 +1,48 @@
-(test_string "#t" 0)
+let arguments_boolean = ("#t", "#T", "#f", "#F");;
+let expected_boolean = ({index_from = 0; index_to = 2; found = ScmBoolean true},
+                {index_from = 0; index_to = 2; found = ScmBoolean true},
+                {index_from = 0; index_to = 2; found = ScmBoolean false},
+                {index_from = 0; index_to = 2; found = ScmBoolean false},
+);;
 
-# test_string nt_sexpr "#t" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 2; found = ScmBoolean true}
-# test_string nt_sexpr "#T" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 2; found = ScmBoolean true}
-# test_string nt_sexpr "#f" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 2; found = ScmBoolean false}
-# test_string nt_sexpr "#F" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 2; found = ScmBoolean false}
-# test_string nt_sexpr "#\\a" 0;;
-- : sexpr PC.parsing_result =
-4
-{index_from = 0; index_to = 3; found = ScmChar 'a'}
-# test_string nt_sexpr "#\\A" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 3; found = ScmChar 'A'}
-# test_string nt_sexpr "\"\"" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 2; found = ScmString ""}
-# test_string nt_sexpr "\"moshe !\"" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 8; found = ScmString "moshe!"}
-# test_string nt_sexpr "\"moshe !\\n\\t\\r\\f\"" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 16; found = ScmString "moshe !\n\t\r\012"}
-# test_string nt_sexpr "\"The letter 'a' can be entered as \\x61;\""
-0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 40;
-found = ScmString "The letter 'a' can be entered as a"}
-# test_string nt_sexpr "\"The letter 'A' can be entered as \\x41;\""
-0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 40;
-found = ScmString "The letter 'A' can be entered as A"}
-# test_string nt_sexpr "lambda" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 6; found = ScmSymbol "lambda"}
-# test_string nt_sexpr "if" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 2; found = ScmSymbol "if"}
-# test_string nt_sexpr "#\\ space" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 7; found = ScmChar ' '}
-# test_string nt_sexpr "#\\ return" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 8; found = ScmChar '\r'}
-# test_string nt_sexpr "#\\ newline" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 9; found = ScmChar '\n'}
-# test_string nt_sexpr "#\\ tab" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 5; found = ScmChar '\t'}
-# test_string nt_sexpr "#\\ ponpon" 0;;
+let arguments_strings = ("#\\a", "#\\A", "\"\"", "\"moshe !\"", "\"moshe !\\n\\t\\r\\f\"");;
+let expected_strings = (
+                {index_from = 0; index_to = 3; found = ScmChar 'a'},
+                {index_from = 0; index_to = 3; found = ScmChar 'A'},
+                {index_from = 0; index_to = 1; found = ScmString ""},
+                {index_from = 0; index_to = 9; found = ScmString "moshe !"},
+                {index_from = 0; index_to = 16; found = ScmString "moshe !\n\t\r\012"},
+
+);;
+
+let arguments_ascii = ("\"The letter 'a' can be entered as \\x61;\"", "\"The letter 'A' can be entered as \\x41;\"");;
+let expected_ascii = (
+{index_from = 0; index_to = 40; found = ScmString "The letter 'a' can be entered as a"},
+{index_from = 0; index_to = 40; found = ScmString "The letter 'A' can be entered as A"}
+);;
+
+let arguments_keywords = ("lambda", "if", "#\\ space", "#\\ return", "#\\ newline", "#\\ tab", "#\\ ponpon", "#\\ gafrur");;
+let expected_keywords = (
+{index_from = 0; index_to = 6; found = ScmSymbol "lambda"},
+{index_from = 0; index_to = 2; found = ScmSymbol "if"},
+{index_from = 0; index_to = 7; found = ScmChar ' '},
+{index_from = 0; index_to = 8; found = ScmChar '\r'},
+{index_from = 0; index_to = 9; found = ScmChar '\n'},
+{index_from = 0; index_to = 5; found = ScmChar '\t'},
+Exception: PC.X_no_match.,
 Exception: PC.X_no_match.
-# test_string nt_sexpr "#\\ gafrur" 0;;
-Exception: PC.X_no_match.
-# test_string nt_sexpr "#\\\\" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 3; found = ScmChar '\\'}
-5
-# test_string nt_sexpr "#\\\"" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 3; found = ScmChar '" '}
-# test_string nt_sexpr "#\\ x41" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 5; found = ScmChar 'A'}
-# test_string nt_sexpr "#\\ x20" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 5; found = ScmChar ' '}
-# test_string nt_sexpr "#\\ x61" 0;;
-- : sexpr PC.parsing_result =
-{index_from = 0; index_to = 5; found = ScmChar 'a'}
+);;
+
+let arguments_slash = ("#\\\\", "#\\\"", "#\\ x41", "#\\ x20", "#\\ x61");;
+let expected_slash = (
+{index_from = 0; index_to = 3; found = ScmChar '\\'},
+{index_from = 0; index_to = 3; found = ScmChar '" '},
+{index_from = 0; index_to = 5; found = ScmChar 'A'},
+{index_from = 0; index_to = 5; found = ScmChar ' '},
+{index_from = 0; index_to = 5; found = ScmChar 'a'},
+);;
+
+
 # test_string nt_sexpr "1234" 0;;
 - : sexpr PC.parsing_result =
 {index_from = 0; index_to = 4; found = ScmNumber (ScmRational (1234 , 1)
