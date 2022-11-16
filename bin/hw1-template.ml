@@ -130,13 +130,13 @@ module Reader : READER = struct
   let nt1 = pack (char '-') (function _ -> false) in
   let nt2 = pack (char '+') (function _ -> true) in
   (* let nt1 = maybeify (disj nt1 nt2) true in *)
-  let nt_epsilon =
-    ((fun str index ->
-      {index_from = index;
-       index_to = index;
-       found = []}) : 'a parser) in
+(*  let nt_epsilon =*)
+(*    ((fun str index ->*)
+(*      {index_from = index;*)
+(*       index_to = index;*)
+(*       found = []}) : 'a parser) in*)
   let nt3 = pack nt_epsilon (fun _ -> true) in
-  let nt1 = disj nt3 (disj nt1 nt2) in
+  let nt1 = disj_list [nt1; nt2; nt3] in
   nt1 str
   and nt_int str =
     let nt1 = caten nt_optional_sign nt_nat in
@@ -215,7 +215,15 @@ module Reader : READER = struct
     let nt1 = const(fun ch -> ' ' < ch) in
     let nt1 = not_followed_by nt1 nt_symbol_char in
     nt1 str
-  and nt_char_named str = raise X_not_yet_implemented
+  and nt_char_named str =
+  match str with
+  | "newline" ->
+  | "nul" -> expr2
+  | "page" ->
+  | "return" ->
+  | "space" ->
+  | "tab" ->
+
   and nt_char_hex str =
     let nt1 = caten (char_ci 'x') nt_hex_nat in
     let nt1 = pack nt1 (fun (_, n) -> n) in
