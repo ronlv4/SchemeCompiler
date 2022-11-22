@@ -215,15 +215,7 @@ module Reader : READER = struct
     let nt1 = const(fun ch -> ' ' < ch) in
     let nt1 = not_followed_by nt1 nt_symbol_char in
     nt1 str
-  and nt_char_named str =
-  match str with
-  | "newline" ->
-  | "nul" -> expr2
-  | "page" ->
-  | "return" ->
-  | "space" ->
-  | "tab" ->
-
+  and nt_char_named str = raise X_not_yet_implemented
   and nt_char_hex str =
     let nt1 = caten (char_ci 'x') nt_hex_nat in
     let nt1 = pack nt1 (fun (_, n) -> n) in
