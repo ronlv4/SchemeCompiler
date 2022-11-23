@@ -360,8 +360,7 @@ module Reader : READER = struct
     let nt2 = star nt_sexpr in
     let nt3 = char ')' in
     let nt1 = caten nt1 (caten nt2 nt3) in
-    let nt1 = pack nt1 (fun (_, (sexprs)) -> ScmVector sexprs) in
-    nt1 str
+    let nt1 = pack nt1 (fun (_, (sexprs)) -> sexprs) in
 
   and nt_list str =
     let nt1 = char '(' in
