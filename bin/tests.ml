@@ -138,7 +138,7 @@ let rec test_all_arguments all_argumnets all_expected =
   | [], [] -> ()
   | arguments::rest_arguments, expected::rest_expected ->
   begin
-  	let actual = test_string nt_sexpr Printf.sprintf "%s" arguments in
+  	let actual = test_string nt_sexpr (Printf.sprintf "%s" arguments) 0 in
   	if (actual == expected) then print_endline "good" else print_endline "bad";
   	test_all_arguments rest_arguments rest_expected
   end
