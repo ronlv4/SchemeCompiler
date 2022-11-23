@@ -190,7 +190,20 @@ module Reader : READER = struct
       (function
        | None -> none_value
        | Some(x) -> x)
-  and nt_float str = raise X_not_yet_implemented
+  and nt_float str =
+    let nt1 = caten nt_integer_part (char '.') in
+    let nt1 = pack nt1 (fun (int_part, _) -> int_part) in
+    let nt2 = make_maybe nt_mantissa 0.0 in
+    let nt1 = caten nt1 nt2 in
+    let nt1 = pack nt1
+                (fun (int_part, mantissa) ->
+                  int_part +. mantissa) in
+    let nt2 = make_maybe nt_exponent 1.0 in
+    let nt1 = caten nt1 nt2 in
+    let nt1 = pack nt1
+                (fun (num, exp) ->
+                  num *. exp) in
+    nt1 str
   and nt_number str =
     let nt1 = nt_float in
     let nt2 = nt_frac in
