@@ -83,7 +83,7 @@ let arguments_pairs_3 = ("#( ) ", " ( ) ", "(define a 3)", "\"~{(+ 2 3)}\"", "\"
 let expected_pairs_3 = (
 {index_from = 0; index_to = 12; found = ScmVector []},
 {index_from = 0; index_to = 12; found = ScmNil},
-{index_from = 0; index_to = 12; found = ScmPair (ScmSymbol "define", ScmPair (ScmSymbol "a", ScmPair (ScmNumber (ScmRational (3, 1)), ScmNil)))}
+{index_from = 0; index_to = 12; found = ScmPair (ScmSymbol "define", ScmPair (ScmSymbol "a", ScmPair (ScmNumber (ScmRational (3, 1)), ScmNil)))},
 {index_from = 0; index_to = 12; found = ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmPair (ScmSymbol "+", ScmPair (ScmNumber (ScmRational (2, 1)), ScmPair (ScmNumber (ScmRational (3, 1)), ScmNil))), ScmNil)))},
 {index_from = 0; index_to = 19; found = ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmPair (ScmSymbol "+", ScmPair (ScmNumber (ScmRational (2, 1)), ScmPair (ScmNumber (ScmRational (3, 1)), ScmNil))), ScmNil)))},
 {index_from = 0; index_to = 20; found = ScmPair (ScmSymbol "string -append", ScmPair (ScmString "2 + 3 = ", ScmPair (ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmPair (ScmSymbol "+", ScmPair (ScmNumber (ScmRational (2, 1)),ScmPair (ScmNumber (ScmRational (3, 1)), ScmNil))), ScmNil))), ScmNil)))}
