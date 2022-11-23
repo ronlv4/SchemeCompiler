@@ -319,7 +319,7 @@ module Reader : READER = struct
     let nt1 = word "~@" in
     let nt2 = nt_sexpr in
     let nt1 = caten nt1 nt2 in
-    let nt1 = pack nt1 (fun (_, sexpr) -> ScmString(sexpr)) in
+    let nt1 = pack nt1 (fun (_, sexpr) -> Dynamic(sexpr)) in
     nt1 str
   and nt_string_part_static str =
     let nt1 = disj_list [nt_string_part_simple;
