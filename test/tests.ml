@@ -35,14 +35,6 @@ let expected_keywords = (
 
 (*                Exception: PC.X_no_match.,*)
 (*                Exception: PC.X_no_match.*)
-(*let arguments_slash = ("#\\\\", "#\\\"", "#\\ x41", "#\\ x20", "#\\ x61");;*)
-(*let expected_slash = (*)
-(*                {index_from = 0; index_to = 3; found = ScmChar '\\'},*)
-(*                {index_from = 0; index_to = 3; found = ScmChar '" '},*)
-(*                {index_from = 0; index_to = 5; found = ScmChar 'A'},*)
-(*                {index_from = 0; index_to = 5; found = ScmChar ' '},*)
-(*                {index_from = 0; index_to = 5; found = ScmChar 'a'},*)
-(*)*)
 
 let arguments_numbers = ("1234", "00001234", "00001234 e0", "2/3", "2/0", "2/6", "1.234", "1.234 e1", "1.234e+1", "1.234*10^ -1", ".1234e-10", ".1234*10** -10", ".1234*10^ -10", " -.1234*10^ -10");;
 let expected_numbers = (
