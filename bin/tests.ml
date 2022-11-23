@@ -1,7 +1,7 @@
 #use "pc.ml";;
 
 let arguments_boolean = ("#t", "#T", "#f", "#F");;
-let expected_boolean = (
+let expected_boolean : boolean parsing_result = (
                 {index_from = 0; index_to = 2; found = ScmBoolean true},
                 {index_from = 0; index_to = 2; found = ScmBoolean true},
                 {index_from = 0; index_to = 2; found = ScmBoolean false},
