@@ -21,7 +21,7 @@ let expected_ascii = (
                 {index_from = 0; index_to = 40; found = ScmString "The letter 'A' can be entered as A"}
 );;
 
-let arguments_keywords = ("lambda", "if", "#\\ space", "#\\ return", "#\\ newline", "#\\ tab", "#\\ ponpon", "#\\ gafrur");;
+let arguments_keywords = ("lambda", "if", "#\\ space", "#\\ return", "#\\ newline", "#\\ tab");;
 let expected_keywords = (
                 {index_from = 0; index_to = 6; found = ScmSymbol "lambda"},
                 {index_from = 0; index_to = 2; found = ScmSymbol "if"},
@@ -29,10 +29,12 @@ let expected_keywords = (
                 {index_from = 0; index_to = 8; found = ScmChar '\r'},
                 {index_from = 0; index_to = 9; found = ScmChar '\n'},
                 {index_from = 0; index_to = 5; found = ScmChar '\t'},
-                Exception: PC.X_no_match.,
-                Exception: PC.X_no_match.
 );;
 
+(*"#\\ ponpon", "#\\ gafrur"*)
+
+(*                Exception: PC.X_no_match.,*)
+(*                Exception: PC.X_no_match.*)
 (*let arguments_slash = ("#\\\\", "#\\\"", "#\\ x41", "#\\ x20", "#\\ x61");;*)
 (*let expected_slash = (*)
 (*                {index_from = 0; index_to = 3; found = ScmChar '\\'},*)
