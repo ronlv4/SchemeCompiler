@@ -249,7 +249,10 @@ module Reader : READER = struct
     let nt3 = one_of "!$^*_-+=<>?/" in
     let nt1 = disj nt1 (disj nt2 nt3) in
     nt1 str
-  and nt_symbol str = raise X_not_yet_implemented
+  and nt_symbol str =
+    let nt1 = plus nt_symbol_char in
+    let nt1 = pack nt1 (fun chars -> ScmSymbol (String.of_char_list chars)) in
+    nt1 str
   and nt_string_part_simple str =
     let nt1 =
       disj_list [unitify (char '"'); unitify (char '\\'); unitify (word "~~");
