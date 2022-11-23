@@ -1,4 +1,5 @@
 #use "pc.ml";;
+open PC;;
 
 let arguments_boolean = ("#t", "#T", "#f", "#F");;
 let expected_boolean : boolean parsing_result = (
