@@ -66,7 +66,8 @@ let expected_pairs = (
 {index_from = 0; index_to = 6; found = ScmVector [ScmNumber (ScmRational (1, 1)); ScmNumber (ScmRational (2, 1))]}
 );;
 
-let arguments_pairs_2 = ("#(a b c)", "(a b c)", "(a b . c)", "((a . #t) (b . #f))" )
+let arguments_pairs_2 = ("#(a b c)", "(a b c)", "(a b . c)", "((a . #t) (b . #f))" );;
+let expected_pairs_2 = (
 {index_from = 0; index_to = 8; found = ScmVector [ScmSymbol "a"; ScmSymbol "b"; ScmSymbol "c"]}
 {index_from = 0; index_to = 7; found = ScmPair (ScmSymbol "a", ScmPair (ScmSymbol "b", ScmPair (ScmSymbol "c", ScmNil)))}
 {index_from = 0; index_to = 9; found = ScmPair (ScmSymbol "a", ScmPair (ScmSymbol "b", ScmSymbol "c"))}
