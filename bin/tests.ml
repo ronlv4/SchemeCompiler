@@ -129,7 +129,7 @@ let expected_strings_2 = (
 {index_from = 0; index_to = 20; found = ScmPair (ScmSymbol "a", ScmPair (ScmSymbol "b", ScmPair (ScmSymbol "c", ScmNil)))}
 );;
 
-let all_argumnets = [arguments_boolean, arguments_strings, arguments_strings_2, arguments_ascii, arguments_keywords, arguments_numbers, arguments_pairs, arguments_pairs_2, arguments_pairs_3, arguments_quotes]
+let all_arguments = [arguments_boolean, arguments_strings, arguments_strings_2, arguments_ascii, arguments_keywords, arguments_numbers, arguments_pairs, arguments_pairs_2, arguments_pairs_3, arguments_quotes]
 let all_expected = [expected_boolean, expected_strings, expected_strings_2, expected_ascii, expected_keywords, expected_numbers, expected_pairs, expected_pairs_2, expected_pairs_3, expected_quotes]
 
 
