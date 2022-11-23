@@ -56,7 +56,7 @@ let expected_numbers = (
 {index_from = 0; index_to = 13; found = ScmNumber (ScmReal ( -1.234e-11))}
 );;
 
-let arguments_pairs = ("()", "#()", "(1 . 2)", "(1.2)", "#(1.2)", "#(1 2)"));;
+let arguments_pairs = ("()", "#()", "(1 . 2)", "(1.2)", "#(1.2)", "#(1 2)");;
 let expected_pairs = (
 {index_from = 0; index_to = 2; found = ScmNil}
 {index_from = 0; index_to = 3; found = ScmVector []}
