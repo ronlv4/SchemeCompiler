@@ -3,7 +3,7 @@ let expected_boolean = (
                 {index_from = 0; index_to = 2; found = ScmBoolean true},
                 {index_from = 0; index_to = 2; found = ScmBoolean true},
                 {index_from = 0; index_to = 2; found = ScmBoolean false},
-                {index_from = 0; index_to = 2; found = ScmBoolean false},
+                {index_from = 0; index_to = 2; found = ScmBoolean false}
 );;
 
 let arguments_strings = ("#\\a", "#\\A", "\"\"", "\"moshe !\"", "\"moshe !\\n\\t\\r\\f\"");;
