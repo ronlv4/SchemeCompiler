@@ -83,7 +83,10 @@ module Reader : READER = struct
     nt1
   and nt_digit str =
     let nt1 = range '0' '9' in
-    let nt1 = pack nt1 int_of_char in
+    let nt1 = pack nt1
+                (fun digit_char ->
+                  ((int_of_char digit_char) - 48)
+                ) in
     nt1 str
   and nt_hex_digit str = (* check if case sensitive *)
     let nt1 = range 'a' 'f' in
