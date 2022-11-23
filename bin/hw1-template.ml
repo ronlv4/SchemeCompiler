@@ -61,8 +61,29 @@ module Reader : READER = struct
     let nt1 = caten nt1 nt_end_of_line_or_file in
     let nt1 = unitify nt1 in
     nt1 str
-  and nt_paired_comment str = raise X_not_yet_implemented
-  and nt_sexpr_comment str = raise X_not_yet_implemented
+  and nt_paired_comment str =
+    let nt1 = char '#' in
+    let nt2 = char '|' in
+    let nt1 = caten nt1 nt2 in
+    let nt2 = char '|' in
+    let nt2 = caten nt2 nt1 in
+    let nt2 = diff nt_any nt2 in
+    let nt2 = star nt2 in
+    let nt1 = caten nt1 nt2 in
+    let nt2 = char '|' in
+    let nt2 = caten nt2 nt1 in
+    let nt1 = unitify nt1 in
+    nt1 str
+  and nt_sexpr_comment str =
+    let nt1 = char '#' in
+    let nt2 = char ';' in
+    let nt1 = caten nt1 nt2 in
+    let nt2 = diff nt_any nt_end_of_line_or_file in
+    let nt2 = star nt2 in
+    let nt1 = caten nt1 nt2 in
+    let nt1 = caten nt1 nt_end_of_line_or_file in
+    let nt1 = unitify nt1 in
+    nt1 str
   and nt_comment str =
     disj_list
       [nt_line_comment;
@@ -294,7 +315,12 @@ module Reader : READER = struct
     let nt1 = pack nt1 (fun (_, (n, _)) -> n) in
     let nt1 = pack nt1 char_of_int in
     nt1 str
-  and nt_string_part_dynamic str = raise X_not_yet_implemented
+  and nt_string_part_dynamic str =
+    let nt1 = word "~@" in
+    let nt2 = nt_sexpr in
+    let nt1 = caten nt1 nt2 in
+    let nt1 = pack nt1 (fun (_, sexpr) -> ScmStringPartDynamic sexpr) in
+    nt1 str
   and nt_string_part_static str =
     let nt1 = disj_list [nt_string_part_simple;
                          nt_string_part_meta;
