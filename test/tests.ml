@@ -34,15 +34,14 @@ let expected_keywords = (
                 Exception: PC.X_no_match.
 );;
 
-let arguments_slash = ("#\\\\", "#\\\"", "#\\ x41", "#\\ x20", "#\\ x61");;
-let expected_slash = (
-                {index_from = 0; index_to = 3; found = ScmChar '\\'},
-                {index_from = 0; index_to = 3; found = ScmChar '" '},
-                {index_from = 0; index_to = 5; found = ScmChar 'A'},
-                {index_from = 0; index_to = 5; found = ScmChar ' '},
-                {index_from = 0; index_to = 5; found = ScmChar 'a'},
-);;
-"
+(*let arguments_slash = ("#\\\\", "#\\\"", "#\\ x41", "#\\ x20", "#\\ x61");;*)
+(*let expected_slash = (*)
+(*                {index_from = 0; index_to = 3; found = ScmChar '\\'},*)
+(*                {index_from = 0; index_to = 3; found = ScmChar '" '},*)
+(*                {index_from = 0; index_to = 5; found = ScmChar 'A'},*)
+(*                {index_from = 0; index_to = 5; found = ScmChar ' '},*)
+(*                {index_from = 0; index_to = 5; found = ScmChar 'a'},*)
+(*)*)
 
 let arguments_numbers = ("1234", "00001234", "00001234 e0", "2/3", "2/0", "2/6", "1.234", "1.234 e1", "1.234e+1", "1.234*10^ -1", ".1234e-10", ".1234*10** -10", ".1234*10^ -10", " -.1234*10^ -10");;
 let expected_numbers = (
@@ -130,3 +129,18 @@ let expected_strings_2 = (
 {index_from = 0; index_to = 13; found = ScmPair (ScmSymbol "a", ScmPair (ScmSymbol "b", ScmPair (ScmSymbol "c", ScmNil)))}
 {index_from = 0; index_to = 20; found = ScmPair (ScmSymbol "a", ScmPair (ScmSymbol "b", ScmPair (ScmSymbol "c", ScmNil)))}
 );;
+
+let all_argumnets = [arguments_boolean, arguments_strings, arguments_strings_2, arguments_ascii, arguments_keywords, arguments_numbers, arguments_pairs, arguments_pairs_2, arguments_pairs_3, arguments_quotes]
+let all_expected = [expected_boolean, expected_strings, expected_strings_2, expected_ascii, expected_keywords, expected_numbers, expected_pairs, expected_pairs_2, expected_pairs_3, expected_quotes]
+
+
+let rec test_all_arguments all_argumnets all_expected =
+  match all_argumnets, all_expected with
+  | [], [] -> ()
+  | arguments::rest_arguments, expected::rest_expected ->
+  begin
+  	let actual = test_string nt_sexpr Printf.sprintf "%s" arguments in
+  	if (actual == expected) then print_endline "good" else print_endline "bad";
+  	test_all_arguments rest_arguments rest_expected
+  end
+  | _ -> failwith "test_all_arguments: lists of arguments and expected values must have the same length"
