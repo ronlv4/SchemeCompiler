@@ -70,10 +70,10 @@ module Reader : READER = struct
     let nt2 = diff nt_any nt2 in
     let nt2 = star nt2 in
     let nt1 = caten nt1 nt2 in
-    let nt2 = char '|' in
-    let nt2 = caten nt2 nt1 in
+    let nt1 = caten nt1 nt2 in
     let nt1 = unitify nt1 in
     nt1 str
+
   and nt_sexpr_comment str =
     let nt1 = char '#' in
     let nt2 = char ';' in
