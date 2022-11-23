@@ -327,7 +327,7 @@ module Reader : READER = struct
                          nt_string_part_hex] in
     let nt1 = plus nt1 in
     let nt1 = pack nt1 string_of_list in
-    let nt1 = pack nt1 (fun str -> Static str) in
+    let nt1 = pack nt1 (fun str -> Static(str)) in
     nt1 str
   and nt_string_part str =
     disj nt_string_part_static nt_string_part_dynamic str
