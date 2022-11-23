@@ -12,8 +12,7 @@ let expected_strings = (
                 {index_from = 0; index_to = 3; found = ScmChar 'A'},
                 {index_from = 0; index_to = 1; found = ScmString ""},
                 {index_from = 0; index_to = 9; found = ScmString "moshe !"},
-                {index_from = 0; index_to = 16; found = ScmString "moshe !\n\t\r\012"},
-
+                {index_from = 0; index_to = 16; found = ScmString "moshe !\n\t\r\012"}
 );;
 
 let arguments_ascii = ("\"The letter 'a' can be entered as \\x61;\"", "\"The letter 'A' can be entered as \\x41;\"");;
