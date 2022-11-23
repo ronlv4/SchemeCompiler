@@ -48,7 +48,7 @@ module Reader : READER = struct
 
   let rec nt_whitespace str =
     const (fun ch -> ch <= ' ') str
-  and nt_end_of_line_or_file str = 
+  and nt_end_of_line_or_file str =
     let nt1 = unitify (char '\n') in
     let nt2 = unitify nt_end_of_input in
     let nt1 = disj nt1 nt2 in
@@ -103,7 +103,7 @@ module Reader : READER = struct
                     0
                     digits) in
     nt1 str
-  and nt_hex_nat str = 
+  and nt_hex_nat str =
     let nt1 = plus nt_hex_digit in
     let nt1 = pack nt1
                 (fun digits ->
@@ -202,7 +202,7 @@ module Reader : READER = struct
     let nt1 = caten nt1 nt2 in
     let nt1 = pack nt1
                 (fun (num, exp) ->
-                  num *. exp) in
+                  ScmReal(num *. exp)) in
     nt1 str
   and nt_number str =
     let nt1 = nt_float in
@@ -211,7 +211,7 @@ module Reader : READER = struct
     let nt1 = disj nt1 (disj nt2 nt3) in
     let nt1 = pack nt1 (fun r -> ScmNumber r) in
     let nt1 = not_followed_by nt1 nt_symbol_char in
-    nt1 str  
+    nt1 str
   and nt_boolean str =
     let nt1 = char '#' in
     let nt2 = char_ci 'f' in
@@ -248,7 +248,7 @@ module Reader : READER = struct
     let nt1 = pack nt1 (fun (_, n) -> n) in
     let nt1 = only_if nt1 (fun n -> n < 256) in
     let nt1 = pack nt1 (fun n -> char_of_int n) in
-    nt1 str  
+    nt1 str
   and nt_char str =
     let nt1 = word "#\\" in
     let nt2 = disj nt_char_simple (disj nt_char_named nt_char_hex) in
@@ -344,7 +344,7 @@ module Reader : READER = struct
                     "unquote");
                  (make_quoted_form (unitify (word ",@")) "unquote-splicing")] in
     nt1 str
-  and nt_sexpr str = 
+  and nt_sexpr str =
     let nt1 =
       disj_list [nt_void; nt_number; nt_boolean; nt_char; nt_symbol;
                  nt_string; nt_vector; nt_list; nt_quoted_forms] in
