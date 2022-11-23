@@ -1,5 +1,7 @@
 #use "pc.ml";;
+#use "hw1-template.ml";;
 open PC;;
+open Reader;;
 
 let arguments_boolean = ("#t", "#T", "#f", "#F");;
 let expected_boolean = (
