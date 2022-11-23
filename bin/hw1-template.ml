@@ -215,7 +215,21 @@ module Reader : READER = struct
     let nt1 = const(fun ch -> ' ' < ch) in
     let nt1 = not_followed_by nt1 nt_symbol_char in
     nt1 str
-  and nt_char_named str = raise X_not_yet_implemented
+  and nt_char_named str =
+    let nt1 = word_ci "nul" in
+    let nt1 = pack nt1 (fun _ -> '\000') in
+    let nt2 = word_ci "tab" in
+    let nt2 = pack nt2 (fun _ -> '\009') in
+    let nt3 = word_ci "newline" in
+    let nt3 = pack nt3 (fun _ -> '\010') in
+    let nt4 = word_ci "page" in
+    let nt4 = pack nt4 (fun _ -> '\012') in
+    let nt5 = word_ci "return" in
+    let nt5 = pack nt5 (fun _ -> '\013') in
+    let nt6 = word_ci "space" in
+    let nt6 = pack nt6 (fun _ -> '\032') in
+    let nt1 = disj_list [nt1; nt2; nt3; nt4; nt5; nt6] in
+    nt1 str
   and nt_char_hex str =
     let nt1 = caten (char_ci 'x') nt_hex_nat in
     let nt1 = pack nt1 (fun (_, n) -> n) in
