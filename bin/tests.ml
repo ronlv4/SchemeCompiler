@@ -132,6 +132,16 @@ let expected_strings_2 = (
 let all_arguments = [arguments_boolean, arguments_strings, arguments_strings_2, arguments_ascii, arguments_keywords, arguments_numbers, arguments_pairs, arguments_pairs_2, arguments_pairs_3, arguments_quotes]
 let all_expected = [expected_boolean, expected_strings, expected_strings_2, expected_ascii, expected_keywords, expected_numbers, expected_pairs, expected_pairs_2, expected_pairs_3, expected_quotes]
 
+let rec test_single_type arguments expected =
+  match arguments, expected with
+  | [], [] -> ()
+  | arg1::rest_args, expected1::rest_expected ->
+  begin
+    let actual = test_string nt_sexpr (Printf.sprintf "%s" arg1) 0 in
+    if (actual == expected1) then print_endline "good" else print_endline "bad";
+    test_single_type rest_args rest_expected
+  end
+    | _ -> failwith "test_single_type: lists of arguments and expected values must have the same length"
 
 let rec test_all_arguments arguments_list expected_list =
   match arguments_list, expected_list with
@@ -143,13 +153,3 @@ let rec test_all_arguments arguments_list expected_list =
   end
   | _ -> failwith "test_all_arguments: lists of arguments and expected values must have the same length"
 
-let rec test_single_type arguments expected =
-  match arguments, expected with
-  | [], [] -> ()
-  | arg1::rest_args, expected1::rest_expected ->
-  begin
-    let actual = test_string nt_sexpr (Printf.sprintf "%s" arg1) 0 in
-    if (actual == expected1) then print_endline "good" else print_endline "bad";
-    test_single_type rest_args rest_expected
-  end
-    | _ -> failwith "test_single_type: lists of arguments and expected values must have the same length"
