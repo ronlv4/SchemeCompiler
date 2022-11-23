@@ -28,7 +28,7 @@ let expected_keywords = (
                 {index_from = 0; index_to = 7; found = ScmChar ' '},
                 {index_from = 0; index_to = 8; found = ScmChar '\r'},
                 {index_from = 0; index_to = 9; found = ScmChar '\n'},
-                {index_from = 0; index_to = 5; found = ScmChar '\t'},
+                {index_from = 0; index_to = 5; found = ScmChar '\t'}
 );;
 
 (*"#\\ ponpon", "#\\ gafrur"*)
