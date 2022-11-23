@@ -329,8 +329,27 @@ module Reader : READER = struct
                          ScmNil in
                      ScmPair(ScmSymbol "string-append", argl)) in
     nt1 str
-  and nt_vector str = raise X_not_yet_implemented
-  and nt_list str = raise X_not_yet_implemented
+  and nt_vector str =
+    let nt1 = word "#(" in
+    let nt2 = star nt_sexpr in
+    let nt3 = char ')' in
+    let nt1 = caten nt1 (caten nt2 nt3) in
+    let nt1 = pack nt1 (fun (_, (sexprs)) -> ScmVector sexprs) in
+    nt1 str
+
+  and nt_list str =
+    let nt1 = char '(' in
+    let nt2 = star nt_sexpr in
+    let nt3 = char ')' in
+    let nt1 = caten nt1 (caten nt2 nt3) in
+    let nt1 = pack nt1 (fun (_, (sexprs, _)) -> sexprs) in
+    let nt1 = pack nt1
+                (fun sexprs ->
+                  List.fold_right
+                    (fun car cdr -> ScmPair(car, cdr))
+                    sexprs
+                    ScmNil) in
+    nt1 str
   and make_quoted_form nt_qf qf_name =
     let nt1 = caten nt_qf nt_sexpr in
     let nt1 = pack nt1
