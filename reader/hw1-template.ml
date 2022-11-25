@@ -1,4 +1,4 @@
-(*#use "pc.ml";;*)
+#use "pc.ml";;
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen of string;;
@@ -61,29 +61,8 @@ module Reader : READER = struct
     let nt1 = caten nt1 nt_end_of_line_or_file in
     let nt1 = unitify nt1 in
     nt1 str
-  and nt_paired_comment str =
-    let nt1 = char '#' in
-    let nt2 = char '|' in
-    let nt1 = caten nt1 nt2 in
-    let nt2 = char '|' in
-    let nt2 = caten nt2 nt1 in
-    let nt2 = diff nt_any nt2 in
-    let nt2 = star nt2 in
-    let nt1 = caten nt1 nt2 in
-    let nt1 = caten nt1 nt2 in
-    let nt1 = unitify nt1 in
-    nt1 str
-
-  and nt_sexpr_comment str =
-    let nt1 = char '#' in
-    let nt2 = char ';' in
-    let nt1 = caten nt1 nt2 in
-    let nt2 = diff nt_any nt_end_of_line_or_file in
-    let nt2 = star nt2 in
-    let nt1 = caten nt1 nt2 in
-    let nt1 = caten nt1 nt_end_of_line_or_file in
-    let nt1 = unitify nt1 in
-    nt1 str
+  and nt_paired_comment str = raise X_not_yet_implemented
+  and nt_sexpr_comment str = raise X_not_yet_implemented
   and nt_comment str =
     disj_list
       [nt_line_comment;
@@ -102,31 +81,9 @@ module Reader : READER = struct
     let nt1 = caten nt_skip_star (caten nt nt_skip_star) in
     let nt1 = pack nt1 (fun (_, (e, _)) -> e) in
     nt1
-  and nt_digit str =
-    let nt1 = range '0' '9' in
-    let nt1 = pack nt1
-                (fun digit_char ->
-                  ((int_of_char digit_char) - 48)
-                ) in
-    nt1 str
-  and nt_hex_digit str = (* check if case sensitive *)
-    let nt1 = range 'a' 'f' in
-    let nt1 = pack nt1
-                (fun hex_char ->
-                  ((int_of_char hex_char) - 87)
-                ) in
-    let nt1 = disj nt1 nt_digit in
-    nt1 str
-  and nt_nat str =
-    let nt1 = plus nt_digit in
-    let nt1 = pack nt1
-                (fun digits ->
-                  List.fold_left
-                    (fun num digit ->
-                      10 * num + digit)
-                    0
-                    digits) in
-    nt1 str
+  and nt_digit str = raise X_not_yet_implemented
+  and nt_hex_digit str = raise X_not_yet_implemented
+  and nt_nat str = raise X_not_yet_implemented
   and nt_hex_nat str =
     let nt1 = plus nt_hex_digit in
     let nt1 = pack nt1
@@ -137,31 +94,7 @@ module Reader : READER = struct
                     0
                     digits) in
     nt1 str
-  (* and maybeify nt none_value = *)
-    (* pack nt (function *)
-      (* | None -> none_value *)
-      (* | Some x -> x) *)
-  and nt_optional_sign str =
-  (* let nt_plus = char '+' in
-  let nt_minus = char '-' in
-  let nt1 = disj nt_plus nt_minus in
-  (* let nt1 = star nt1 in *)
-  (* let nt1 = power nt1 1 *)
-  let nt2 = power nt1 1 in
-  let nt3 = power nt1 0 in
-  let nt1 = disj nt2 nt3 in
-  nt1 str *)
-  let nt1 = pack (char '-') (function _ -> false) in
-  let nt2 = pack (char '+') (function _ -> true) in
-  (* let nt1 = maybeify (disj nt1 nt2) true in *)
-(*  let nt_epsilon =*)
-(*    ((fun str index ->*)
-(*      {index_from = index;*)
-(*       index_to = index;*)
-(*       found = []}) : 'a parser) in*)
-  let nt3 = pack nt_epsilon (fun _ -> true) in
-  let nt1 = disj_list [nt1; nt2; nt3] in
-  nt1 str
+  and nt_optional_sign str = raise X_not_yet_implemented
   and nt_int str =
     let nt1 = caten nt_optional_sign nt_nat in
     let nt1 = pack nt1
@@ -214,44 +147,7 @@ module Reader : READER = struct
       (function
        | None -> none_value
        | Some(x) -> x)
-  and nt_float_a str =
-    let nt1 = char '.' in
-    let nt2 = make_maybe nt_mantissa 0.0 in
-    let nt3 = make_maybe nt_exponent 1.0 in
-    let nt1 = caten nt_integer_part (caten nt1 (caten nt2 nt3)) in
-    let nt1 = pack nt1 (fun (int_part, (_, (mantissa, exponent))) ->
-                            (int_part +. mantissa) *. exponent
-                            ) in
-    nt1 str
-  and nt_float_b str =
-    let nt1 = char '.' in
-    let nt2 = make_maybe nt_exponent 1.0 in
-    let nt1 = caten nt1 (caten nt_mantissa nt2) in
-    let nt1 = pack nt1 (fun (_, (mantissa, exponent)) ->
-                        mantissa *. exponent) in
-    nt1 str
-  and nt_float_c str =
-    let nt1 = caten nt_integer_part nt_exponent in
-    let nt1 = pack nt1 (fun (int_part, exponent) ->
-                        int_part *. exponent) in
-    nt1 str
-  and nt_float str =
-    let nt1 = disj_list [nt_float_a; nt_float_b; nt_float_c] in
-    let nt1 = pack nt1 (fun num -> ScmReal(num)) in
-(*    let nt1 = caten nt_integer_part (char '.') in*)
-(*    let nt1 = pack nt1 (fun (int_part, _) -> int_part) in*)
-(*    let nt2 = make_maybe nt_mantissa 0.0 in*)
-(*    let nt1 = caten nt1 nt2 in*)
-(*    let nt1 = pack nt1*)
-(*                (fun (int_part, mantissa) ->*)
-(*                  int_part +. mantissa) in*)
-(*    let nt2 = make_maybe nt_exponent 1.0 in*)
-(*    let nt1 = caten nt1 nt2 in*)
-(*    let nt1 = pack nt1*)
-(*                (fun (num, exp) ->*)
-(*                  ScmReal(num *. exp)) in*)
-(*    nt1 str*)
-    nt1 str
+  and nt_float str = raise X_not_yet_implemented
   and nt_number str =
     let nt1 = nt_float in
     let nt2 = nt_frac in
@@ -276,21 +172,7 @@ module Reader : READER = struct
     let nt1 = const(fun ch -> ' ' < ch) in
     let nt1 = not_followed_by nt1 nt_symbol_char in
     nt1 str
-  and nt_char_named str =
-    let nt1 = word_ci "nul" in
-    let nt1 = pack nt1 (fun _ -> '\000') in
-    let nt2 = word_ci "tab" in
-    let nt2 = pack nt2 (fun _ -> '\009') in
-    let nt3 = word_ci "newline" in
-    let nt3 = pack nt3 (fun _ -> '\010') in
-    let nt4 = word_ci "page" in
-    let nt4 = pack nt4 (fun _ -> '\012') in
-    let nt5 = word_ci "return" in
-    let nt5 = pack nt5 (fun _ -> '\013') in
-    let nt6 = word_ci "space" in
-    let nt6 = pack nt6 (fun _ -> '\032') in
-    let nt1 = disj_list [nt1; nt2; nt3; nt4; nt5; nt6] in
-    nt1 str
+  and nt_char_named str = raise X_not_yet_implemented
   and nt_char_hex str =
     let nt1 = caten (char_ci 'x') nt_hex_nat in
     let nt1 = pack nt1 (fun (_, n) -> n) in
@@ -310,10 +192,7 @@ module Reader : READER = struct
     let nt3 = one_of "!$^*_-+=<>?/" in
     let nt1 = disj nt1 (disj nt2 nt3) in
     nt1 str
-  and nt_symbol str =
-    let nt1 = plus nt_symbol_char in
-    let nt1 = pack nt1 (fun chars -> ScmSymbol (string_of_list chars)) in
-    nt1 str
+  and nt_symbol str = raise X_not_yet_implemented
   and nt_string_part_simple str =
     let nt1 =
       disj_list [unitify (char '"'); unitify (char '\\'); unitify (word "~~");
@@ -339,19 +218,14 @@ module Reader : READER = struct
     let nt1 = pack nt1 (fun (_, (n, _)) -> n) in
     let nt1 = pack nt1 char_of_int in
     nt1 str
-  and nt_string_part_dynamic str =
-    let nt1 = word "~@" in
-    let nt2 = nt_sexpr in
-    let nt1 = caten nt1 nt2 in
-    let nt1 = pack nt1 (fun (_, sexpr) -> Dynamic(sexpr)) in
-    nt1 str
+  and nt_string_part_dynamic str = raise X_not_yet_implemented
   and nt_string_part_static str =
     let nt1 = disj_list [nt_string_part_simple;
                          nt_string_part_meta;
                          nt_string_part_hex] in
     let nt1 = plus nt1 in
     let nt1 = pack nt1 string_of_list in
-    let nt1 = pack nt1 (fun str -> Static(str)) in
+    let nt1 = pack nt1 (fun str -> Static str) in
     nt1 str
   and nt_string_part str =
     disj nt_string_part_static nt_string_part_dynamic str
@@ -379,46 +253,8 @@ module Reader : READER = struct
                          ScmNil in
                      ScmPair(ScmSymbol "string-append", argl)) in
     nt1 str
-  and nt_vector str =
-    let nt1 = word "#(" in
-    let nt2 = star nt_sexpr in
-    let nt3 = char ')' in
-    let nt1 = caten nt1 (caten nt2 nt3) in
-    let nt1 = pack nt1 (fun (_, (sexprs, _)) -> sexprs) in
-    let nt1 = pack nt1 (fun sexprs -> ScmVector(sexprs)) in
-    nt1 str
-
-   and nt_proper_list str =
-   let nt1 = char '(' in
-   let nt2 = star nt_sexpr in
-   let nt3 = char ')' in
-   let nt1 = caten nt1 (caten nt2 nt3) in
-   let nt1 = pack nt1 (fun (_, (sexprs, _)) -> sexprs) in
-   let nt1 = pack nt1
-                (fun sexprs ->
-                  List.fold_right
-                    (fun car cdr -> ScmPair(car, cdr))
-                    sexprs
-                    ScmNil) in
-   nt1 str
-
-  and nt_improper_list str =
-    let nt1 = char '(' in
-    let nt2 = plus nt_sexpr in
-    let nt3 = char '.' in
-    let nt4 = char ')' in
-    let nt1 = caten nt1 (caten nt2 (caten nt3 (caten nt_sexpr nt4))) in
-    let nt1 = pack nt1
-                 (fun (_, (sexprs, (_, (last_sexpr, _)))) ->
-                  List.fold_right
-                    (fun car cdr -> ScmPair(car, cdr))
-                    sexprs
-                    last_sexpr) in
-    nt1 str
-
-  and nt_list str =
-    let nt1 = disj nt_proper_list nt_improper_list in
-    nt1 str
+  and nt_vector str = raise X_not_yet_implemented
+  and nt_list str = raise X_not_yet_implemented
   and make_quoted_form nt_qf qf_name =
     let nt1 = caten nt_qf nt_sexpr in
     let nt1 = pack nt1
@@ -500,7 +336,7 @@ module Reader : READER = struct
     | ScmNil -> Printf.sprintf "(%s)" car_string
     | ScmPair(cadr, cddr) ->
        let new_car_string =
-         Printf.sprintf "%s %s" car_string (string_of_sexpr cadr) in
+         Printf.sprintf "%s %s" mcar_string (string_of_sexpr cadr) in
        string_of_sexpr' new_car_string cddr
     | cdr ->
        let cdr_string = (string_of_sexpr cdr) in
