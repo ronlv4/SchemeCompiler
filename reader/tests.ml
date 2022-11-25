@@ -1,5 +1,5 @@
 #use "pc.ml";;
-#use "hw1-template.ml";;
+#use "reader.ml";;
 open PC;;
 open Reader;;
 
@@ -137,7 +137,8 @@ let rec test_single_type arguments expected =
   | [], [] -> ()
   | arg1::rest_args, expected1::rest_expected ->
   begin
-    let actual = test_string nt_sexpr (Printf.sprintf "%s" arg1) 0 in
+(*    let actual = test_string nt_sexpr (Printf.sprintf "%s" arg1) 0 in*)
+    let actual = test_string nt_sexpr "#t" 0 in
     if (actual == expected1) then print_endline "good" else print_endline "bad";
     test_single_type rest_args rest_expected
   end
