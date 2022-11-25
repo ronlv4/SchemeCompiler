@@ -1,4 +1,4 @@
-#use "pc.ml";;
+(*#use "pc.ml";;*)
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen of string;;
@@ -361,21 +361,39 @@ module Reader : READER = struct
     let nt3 = char ')' in
     let nt1 = caten nt1 (caten nt2 nt3) in
     let nt1 = pack nt1 (fun (_, (sexprs, _)) -> sexprs) in
-    let nt1 = pack nt1 (fun sexprs -> ScmVector sexprs) in
+    let nt1 = pack nt1 (fun sexprs -> ScmVector(sexprs)) in
     nt1 str
 
-  and nt_list str =
-    let nt1 = char '(' in
-    let nt2 = star nt_sexpr in
-    let nt3 = char ')' in
-    let nt1 = caten nt1 (caten nt2 nt3) in
-    let nt1 = pack nt1 (fun (_, (sexprs, _)) -> sexprs) in
-    let nt1 = pack nt1
+   and nt_proper_list str =
+   let nt1 = char '(' in
+   let nt2 = star nt_sexpr in
+   let nt3 = char ')' in
+   let nt1 = caten nt1 (caten nt2 nt3) in
+   let nt1 = pack nt1 (fun (_, (sexprs, _)) -> sexprs) in
+   let nt1 = pack nt1
                 (fun sexprs ->
                   List.fold_right
                     (fun car cdr -> ScmPair(car, cdr))
                     sexprs
                     ScmNil) in
+   nt1 str
+
+  and nt_improper_list str =
+    let nt1 = char '(' in
+    let nt2 = plus nt_sexpr in
+    let nt3 = char '.' in
+    let nt4 = char ')' in
+    let nt1 = caten nt1 (caten nt2 (caten nt3 (caten nt_sexpr nt4))) in
+    let nt1 = pack nt1
+                 (fun (_, (sexprs, (_, (last_sexpr, _)))) ->
+                  List.fold_right
+                    (fun car cdr -> ScmPair(car, cdr))
+                    sexprs
+                    last_sexpr) in
+    nt1 str
+
+  and nt_list str =
+    let nt1 = disj nt_proper_list nt_improper_list in
     nt1 str
   and make_quoted_form nt_qf qf_name =
     let nt1 = caten nt_qf nt_sexpr in
