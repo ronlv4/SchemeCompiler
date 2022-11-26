@@ -62,16 +62,12 @@ module Reader : READER = struct
     let nt1 = unitify nt1 in
     nt1 str
   and nt_paired_comment str =
-    let nt1 = char '#' in
-    let nt2 = char '|' in
-    let nt1 = caten nt1 nt2 in
-    let nt2 = char '|' in
-    let nt2 = caten nt2 nt1 in
-    let nt2 = diff nt_any nt2 in
-    let nt2 = star nt2 in
-    let nt1 = caten nt1 nt2 in
-    let nt1 = caten nt1 nt2 in
-    let nt1 = unitify nt1 in
+    let uncomment_sexpr = disj_list [unitify (disj (word "#\\{") (word "#\\}")); unitify nt_string; unitify nt_comment] in
+    let nt1 = disj uncomment_sexpr (unitify (one_of "{}")) in
+    let nt1 = diff nt_any nt1 in
+    let nt1 = disj (unitify nt1) uncomment_sexpr in
+    let nt1 = star nt1 in
+    let nt1 = unitify (caten (char '{') (caten nt1 (char '}'))) in
     nt1 str
   and nt_sexpr_comment str =
     let nt1 = char '#' in
