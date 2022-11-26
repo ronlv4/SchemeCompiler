@@ -1,3 +1,9 @@
+#require "containers";;
+open CCFormat;;
+set_color_default true;;
+
+  "what is your @{<White>favorite color@}? @{<blue>blue@}! No, @{<red>red@}! Ahhhhhhh@.";;
+
 let arguments_boolean = ["#t"; "#T"; "#f"; "#F"];;
 let expected_boolean = [
                 {index_from = 0; index_to = 2; found = ScmBoolean true};
@@ -125,7 +131,7 @@ mary had a little lambda!
 \"so all four strings shall be dumped and not appear in the list!\"
 )
 "; "(you should know {that you can have paired/
-matching comments too , and that these are entered using braces !})"; "({and {that {these too }}} may be nested !)"; "(a {#\\}} b c)"; "(a {#\\{} b c)"; "(a {\"}}}}{{{{\"} b c)"
+matching comments too , and that these are entered using braces !})"; "({and {that {these too }}} may be nested!)"; "(a {#\\}} b c)"; "(a {#\\{} b c)"; "(a {\"}}}}{{{{\"} b c)"
 ];;
 
 let expected_strings_2 = [
@@ -144,7 +150,7 @@ let all_expected = [expected_boolean; expected_ascii; expected_keywords; expecte
 
 let print_failed arg expected =
     begin
-    	print_endline "test failed";
+    	Format.printf "@{<red>test failed@}\n";
 (*    	print_endline (Printf.sprintf "expected %s" string_of_sexpr(expected))*)
 (*    	print_endline (Printf.sprintf "expected %s but found %s" arg string_of_sexpr(expected))*)
     end
@@ -157,7 +163,7 @@ let rec test_single_type arguments expected =
   begin
     print_endline (Printf.sprintf "testing '%s'" arg1);
     let actual = (test_string nt_sexpr (Printf.sprintf "%s" arg1) 0).found in
-    if actual = expected1.found then print_endline "success" else (print_failed arg1 expected1.found);
+    if actual = expected1.found then Format.printf "@{<green>success@}\n" else (print_failed arg1 expected1.found);
     test_single_type rest_args rest_expected
   end
     | _ -> failwith "test_single_type: lists of arguments and expected values must have the same length"
