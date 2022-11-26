@@ -73,7 +73,6 @@ module Reader : READER = struct
     let nt1 = caten nt1 nt2 in
     let nt1 = unitify nt1 in
     nt1 str
-
   and nt_sexpr_comment str =
     let nt1 = char '#' in
     let nt2 = char ';' in
@@ -137,28 +136,9 @@ module Reader : READER = struct
                     0
                     digits) in
     nt1 str
-  (* and maybeify nt none_value = *)
-    (* pack nt (function *)
-      (* | None -> none_value *)
-      (* | Some x -> x) *)
   and nt_optional_sign str =
-  (* let nt_plus = char '+' in
-  let nt_minus = char '-' in
-  let nt1 = disj nt_plus nt_minus in
-  (* let nt1 = star nt1 in *)
-  (* let nt1 = power nt1 1 *)
-  let nt2 = power nt1 1 in
-  let nt3 = power nt1 0 in
-  let nt1 = disj nt2 nt3 in
-  nt1 str *)
   let nt1 = pack (char '-') (function _ -> false) in
   let nt2 = pack (char '+') (function _ -> true) in
-  (* let nt1 = maybeify (disj nt1 nt2) true in *)
-(*  let nt_epsilon =*)
-(*    ((fun str index ->*)
-(*      {index_from = index;*)
-(*       index_to = index;*)
-(*       found = []}) : 'a parser) in*)
   let nt3 = pack nt_epsilon (fun _ -> true) in
   let nt1 = disj_list [nt1; nt2; nt3] in
   nt1 str
@@ -238,19 +218,6 @@ module Reader : READER = struct
   and nt_float str =
     let nt1 = disj_list [nt_float_a; nt_float_b; nt_float_c] in
     let nt1 = pack nt1 (fun num -> ScmReal(num)) in
-(*    let nt1 = caten nt_integer_part (char '.') in*)
-(*    let nt1 = pack nt1 (fun (int_part, _) -> int_part) in*)
-(*    let nt2 = make_maybe nt_mantissa 0.0 in*)
-(*    let nt1 = caten nt1 nt2 in*)
-(*    let nt1 = pack nt1*)
-(*                (fun (int_part, mantissa) ->*)
-(*                  int_part +. mantissa) in*)
-(*    let nt2 = make_maybe nt_exponent 1.0 in*)
-(*    let nt1 = caten nt1 nt2 in*)
-(*    let nt1 = pack nt1*)
-(*                (fun (num, exp) ->*)
-(*                  ScmReal(num *. exp)) in*)
-(*    nt1 str*)
     nt1 str
   and nt_number str =
     let nt1 = nt_float in
@@ -385,7 +352,6 @@ module Reader : READER = struct
     let nt2 = caten nt1 (caten nt_skip_star (char ')')) in
     let nt1 = pack nt2 (fun _ -> ScmVector []) in
     nt1 str
-
   and nt_non_empty_vector str =
     let nt1 = word "#(" in
     let nt2 = plus nt_sexpr in
@@ -396,7 +362,6 @@ module Reader : READER = struct
   and nt_vector str =
     let nt1 = disj nt_empty_vector nt_non_empty_vector in
     nt1 str
-
    and nt_proper_list str =
    let nt1 = char '(' in
    let nt2 = star nt_sexpr in
@@ -410,7 +375,6 @@ module Reader : READER = struct
                     sexprs
                     ScmNil) in
    nt1 str
-
   and nt_improper_list str =
     let nt1 = char '(' in
     let nt2 = plus nt_sexpr in
@@ -424,13 +388,11 @@ module Reader : READER = struct
                     sexprs
                     last_sexpr) in
     nt1 str
-
     and nt_empty_list str =
         let nt1 = char '(' in
         let nt1 = caten nt1 (caten nt_skip_star (char ')')) in
         let nt1 = pack nt1 (fun _ -> ScmNil) in
         nt1 str
-
   and nt_list str =
     let nt1 = disj_list [nt_empty_list; nt_proper_list; nt_improper_list] in
     nt1 str
@@ -456,7 +418,6 @@ module Reader : READER = struct
                  nt_string; nt_vector; nt_list; nt_quoted_forms] in
     let nt1 = make_skipped_star nt1 in
     nt1 str;;
-
   let rec string_of_sexpr = function
     | ScmVoid -> "#<void>"
     | ScmNil -> "()"
