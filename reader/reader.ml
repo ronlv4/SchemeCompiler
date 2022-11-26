@@ -379,13 +379,22 @@ module Reader : READER = struct
                          ScmNil in
                      ScmPair(ScmSymbol "string-append", argl)) in
     nt1 str
-  and nt_vector str =
+
+  and nt_empty_vector str =
     let nt1 = word "#(" in
-    let nt2 = star nt_sexpr in
+    let nt2 = caten nt1 (caten nt_skip_star (char ')')) in
+    let nt1 = pack nt2 (fun _ -> ScmVector []) in
+    nt1 str
+
+  and nt_non_empty_vector str =
+    let nt1 = word "#(" in
+    let nt2 = plus nt_sexpr in
     let nt3 = char ')' in
     let nt1 = caten nt1 (caten nt2 nt3) in
-    let nt1 = pack nt1 (fun (_, (sexprs, _)) -> sexprs) in
-    let nt1 = pack nt1 (fun sexprs -> ScmVector(sexprs)) in
+    let nt1 = pack nt1 (fun (_, (sexprs, _)) -> ScmVector sexprs) in
+    nt1 str
+  and nt_vector str =
+    let nt1 = disj nt_empty_vector nt_non_empty_vector in
     nt1 str
 
    and nt_proper_list str =
@@ -416,8 +425,14 @@ module Reader : READER = struct
                     last_sexpr) in
     nt1 str
 
+    and nt_empty_list str =
+        let nt1 = char '(' in
+        let nt1 = caten nt1 (caten nt_skip_star (char ')')) in
+        let nt1 = pack nt1 (fun _ -> ScmNil) in
+        nt1 str
+
   and nt_list str =
-    let nt1 = disj nt_proper_list nt_improper_list in
+    let nt1 = disj_list [nt_empty_list; nt_proper_list; nt_improper_list] in
     nt1 str
   and make_quoted_form nt_qf qf_name =
     let nt1 = caten nt_qf nt_sexpr in

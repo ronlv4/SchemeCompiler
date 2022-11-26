@@ -1,8 +1,3 @@
-#use "pc.ml";;
-#use "reader.ml";;
-open PC;;
-open Reader;;
-
 let arguments_boolean = ["#t"; "#T"; "#f"; "#F"];;
 let expected_boolean = [
                 {index_from = 0; index_to = 2; found = ScmBoolean true};
@@ -16,7 +11,7 @@ let expected_strings = [
                 {index_from = 0; index_to = 3; found = ScmChar 'a'};
                 {index_from = 0; index_to = 3; found = ScmChar 'A'};
                 {index_from = 0; index_to = 2; found = ScmString ""};
-                {index_from = 0; index_to = 8; found = ScmString "moshe !"};
+                {index_from = 0; index_to = 8; found = ScmString "moshe!"};
                 {index_from = 0; index_to = 16; found = ScmString "moshe!\n\t\r\012"}
                 ];;
 
@@ -26,7 +21,7 @@ let expected_ascii = [
                 {index_from = 0; index_to = 40; found = ScmString "The letter 'A' can be entered as A"}
 ];;
 
-let arguments_keywords = ["lambda"; "if"; "#\\ space"; "#\\ return"; "#\\ newline"; "#\\ tab"];;
+let arguments_keywords = ["lambda"; "if"; "#\\space"; "#\\return"; "#\\newline"; "#\\tab"];;
 let expected_keywords = [
                 {index_from = 0; index_to = 6; found = ScmSymbol "lambda"};
                 {index_from = 0; index_to = 2; found = ScmSymbol "if"};
@@ -40,8 +35,23 @@ let expected_keywords = [
 
 (*                Exception: PC.X_no_match.,*)
 (*                Exception: PC.X_no_match.*)
-
-let arguments_numbers = ["1234"; "00001234"; "00001234 e0"; "2/3"; "2/0"; "2/6"; "1.234"; "1.234 e1"; "1.234e+1"; "1.234*10^ -1"; ".1234e-10"; ".1234*10** -10"; ".1234*10^ -10"; " -.1234*10^ -10"];;
+let arguments_numbers = [
+"1234";
+"00001234";
+"00001234e0";
+"2/3";
+"2/0";
+"2/6";
+"1.234";
+"1.234e1";
+"1.234e+1";
+"1.234*10^+1";
+"1.234*10^1";
+"1.234*10^-1";
+".1234e-10";
+".1234*10**-10";
+".1234*10^-10";
+"-.1234*10^-10"];;
 let expected_numbers = [
 {index_from = 0; index_to = 4; found = ScmNumber (ScmRational (1234 , 1))};
 {index_from = 0; index_to = 8; found = ScmNumber (ScmRational (1234 , 1))};
@@ -129,17 +139,25 @@ let expected_strings_2 = [
 {index_from = 0; index_to = 20; found = ScmPair (ScmSymbol "a", ScmPair (ScmSymbol "b", ScmPair (ScmSymbol "c", ScmNil)))}
 ];;
 
-let all_arguments = [arguments_boolean; arguments_strings; arguments_strings_2; arguments_ascii; arguments_keywords; arguments_numbers; arguments_pairs; arguments_pairs_2; arguments_pairs_3; arguments_quotes]
-let all_expected = [expected_boolean; expected_strings; expected_strings_2; expected_ascii; expected_keywords; expected_numbers; expected_pairs; expected_pairs_2; expected_pairs_3; expected_quotes]
+let all_arguments = [arguments_boolean; arguments_ascii; arguments_keywords; arguments_numbers; arguments_pairs; arguments_pairs_2; arguments_pairs_3; arguments_quotes; arguments_strings; arguments_strings_2]
+let all_expected = [expected_boolean; expected_ascii; expected_keywords; expected_numbers; expected_pairs; expected_pairs_2; expected_pairs_3; expected_quotes; expected_strings; expected_strings_2]
+
+let print_failed arg expected =
+    begin
+    	print_endline "test failed";
+(*    	print_endline (Printf.sprintf "expected %s" string_of_sexpr(expected))*)
+(*    	print_endline (Printf.sprintf "expected %s but found %s" arg string_of_sexpr(expected))*)
+    end
+
 
 let rec test_single_type arguments expected =
   match arguments, expected with
   | [], [] -> ()
   | arg1::rest_args, expected1::rest_expected ->
   begin
+    print_endline (Printf.sprintf "testing '%s'" arg1);
     let actual = (test_string nt_sexpr (Printf.sprintf "%s" arg1) 0).found in
-(*    let actual = (test_string nt_sexpr "#t" 0).found in*)
-    if actual = expected1.found then print_endline "good" else print_endline "bad";
+    if actual = expected1.found then print_endline "success" else (print_failed arg1 expected1.found);
     test_single_type rest_args rest_expected
   end
     | _ -> failwith "test_single_type: lists of arguments and expected values must have the same length"
@@ -153,4 +171,6 @@ let rec test_all_arguments arguments_list expected_list =
   	test_all_arguments rest_arguments rest_expected
   end
   | _ -> failwith "test_all_arguments: lists of arguments and expected values must have the same length"
+
+let test = test_all_arguments all_arguments all_expected;;
 
