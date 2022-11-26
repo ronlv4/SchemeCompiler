@@ -217,6 +217,10 @@ module Reader : READER = struct
     nt1 str
   and nt_float str =
     let nt1 = disj_list [nt_float_a; nt_float_b; nt_float_c] in
+    let nt1 = caten nt_optional_sign nt1 in
+    let nt1 = pack nt1
+                (fun (is_positive, n) ->
+                  if is_positive then n else -.n) in
     let nt1 = pack nt1 (fun num -> ScmReal(num)) in
     nt1 str
   and nt_number str =

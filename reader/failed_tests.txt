@@ -1,8 +1,5 @@
-test_string nt_sexpr "-.1234*10^-10" 0;;
-{index_from = 0; index_to = 13; found = ScmNumber (ScmReal ( -1.234e-11))}
-
 test_string nt_sexpr " #( ) " 0;;
-{index_from = 0; index_to = 12; found = ScmVector []}
+{index_from = 0; index_to = 12; found = ScmVector []} (* wring index, should not use skip_star *)
 
 test_string nt_sexpr " ( ) " 0;;
-{index_from = 0; index_to = 12; found = ScmNil}
+{index_from = 0; index_to = 12; found = ScmNil} (* wring index, should not use skip_star *)
