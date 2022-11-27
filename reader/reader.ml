@@ -1,4 +1,4 @@
-(*#use "pc.ml";;*)
+#use "pc.ml";;
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen of string;;
@@ -70,15 +70,10 @@ module Reader : READER = struct
     let nt1 = unitify (caten (char '{') (caten nt1 (char '}'))) in
     nt1 str
   and nt_sexpr_comment str =
-    let nt1 = char '#' in
-    let nt2 = char ';' in
-    let nt1 = caten nt1 nt2 in
-    let nt2 = diff nt_any nt_end_of_line_or_file in
-    let nt2 = star nt2 in
-    let nt1 = caten nt1 nt2 in
-    let nt1 = caten nt1 nt_end_of_line_or_file in
-    let nt1 = unitify nt1 in
-    nt1 str
+    let nt1 = word "#;" in
+    let nt2 = unitify (caten nt1 nt_sexpr) in
+    let nt3 = unitify(disj nt2 (unitify (caten nt1 (caten nt_sexpr_comment nt_sexpr))))  in
+    nt3 str
   and nt_comment str =
     disj_list
       [nt_line_comment;
@@ -307,10 +302,15 @@ module Reader : READER = struct
     let nt1 = pack nt1 char_of_int in
     nt1 str
   and nt_string_part_dynamic str =
-    let nt1 = word "~@" in
-    let nt2 = nt_sexpr in
-    let nt1 = caten nt1 nt2 in
-    let nt1 = pack nt1 (fun (_, sexpr) -> Dynamic(sexpr)) in
+    let nt_tilde = char '~' in
+    let nt_space = star nt_whitespace in
+    let nt_bra = char '{' in
+    let nt_ket = char '}' in
+    let nt1 = caten nt_tilde (caten nt_bra nt_space) in
+    let nt1 = unitify nt1 in
+    let nt1 = caten nt1 (caten nt_sexpr (caten nt_space nt_ket)) in
+    let nt1 = pack nt1 (fun (_ , (sexpr, (_ , _))) -> Dynamic(ScmPair
+    (ScmSymbol "format", ScmPair(ScmString "~a", ScmPair(sexpr, ScmNil))))) in
     nt1 str
   and nt_string_part_static str =
     let nt1 = disj_list [nt_string_part_simple;
