@@ -107,13 +107,13 @@ let expected_pairs_3 = [
 
 let arguments_quotes = [" `(,a ,@b)"; "'a"; "''a"; "'''a"; "```a"; ",@a"; ",@,@,@a"; "(( lambda (x) `(,x ',x)) '(lambda (x) `(,x ',x)))"]
 let expected_quotes = [
-{index_from = 0; index_to = 9; found = ScmPair (ScmSymbol "quasiquote", ScmPair (ScmPair (ScmPair (ScmSymbol "unquote", ScmPair (ScmSymbol "a", ScmNil)), ScmPair (ScmPair (ScmSymbol "unquote -splicing", ScmPair (ScmSymbol "b", ScmNil)), ScmNil)), ScmNil))};
+{index_from = 0; index_to = 9; found = ScmPair (ScmSymbol "quasiquote", ScmPair (ScmPair (ScmPair (ScmSymbol "unquote", ScmPair (ScmSymbol "a", ScmNil)), ScmPair (ScmPair (ScmSymbol "unquote-splicing", ScmPair (ScmSymbol "b", ScmNil)), ScmNil)), ScmNil))};
 {index_from = 0; index_to = 2; found = ScmPair (ScmSymbol "quote", ScmPair (ScmSymbol "a", ScmNil))};
 {index_from = 0; index_to = 3; found = ScmPair (ScmSymbol "quote", ScmPair (ScmPair (ScmSymbol "quote", ScmPair (ScmSymbol "a", ScmNil)), ScmNil))};
 {index_from = 0; index_to = 4; found = ScmPair (ScmSymbol "quote", ScmPair (ScmPair (ScmSymbol "quote", ScmPair (ScmPair (ScmSymbol "quote", ScmPair (ScmSymbol "a", ScmNil)), ScmNil)), ScmNil))};
 {index_from = 0; index_to = 4; found = ScmPair (ScmSymbol "quasiquote", ScmPair (ScmPair  (ScmSymbol "quasiquote", ScmPair (ScmPair (ScmSymbol "quasiquote", ScmPair (ScmSymbol "a", ScmNil)), ScmNil)), ScmNil))};
-{index_from = 0; index_to = 3; found = ScmPair (ScmSymbol "unquote -splicing", ScmPair (ScmSymbol "a", ScmNil ))};
-{index_from = 0; index_to = 7; found = ScmPair (ScmSymbol "unquote -splicing", ScmPair (ScmPair (ScmSymbol "unquote -splicing", ScmPair (ScmPair (ScmSymbol "unquote -splicing", ScmPair (ScmSymbol "a", ScmNil)), ScmNil)), ScmNil))};
+{index_from = 0; index_to = 3; found = ScmPair (ScmSymbol "unquote-splicing", ScmPair (ScmSymbol "a", ScmNil ))};
+{index_from = 0; index_to = 7; found = ScmPair (ScmSymbol "unquote-splicing", ScmPair (ScmPair (ScmSymbol "unquote-splicing", ScmPair (ScmPair (ScmSymbol "unquote-splicing", ScmPair (ScmSymbol "a", ScmNil)), ScmNil)), ScmNil))};
 {index_from = 0; index_to = 48; found = ScmPair (ScmPair (ScmSymbol "lambda", ScmPair (ScmPair (ScmSymbol "x", ScmNil), ScmPair (ScmPair (ScmSymbol "quasiquote", ScmPair (ScmPair (ScmPair (ScmSymbol "unquote", ScmPair (ScmSymbol "x", ScmNil)) , ScmPair (ScmPair (ScmSymbol "quote", ScmPair (ScmPair (ScmSymbol "unquote", ScmPair (ScmSymbol "x", ScmNil)), ScmNil)), ScmNil)), ScmNil)), ScmNil))), ScmPair (ScmPair (ScmSymbol "quote", ScmPair (ScmPair (ScmSymbol "lambda", ScmPair (ScmPair (ScmSymbol "x", ScmNil), ScmPair (ScmPair (ScmSymbol "quasiquote", ScmPair (ScmPair (ScmPair (ScmSymbol "unquote", ScmPair (ScmSymbol "x", ScmNil)), ScmPair (ScmPair (ScmSymbol "quote", ScmPair (ScmPair (ScmSymbol "unquote", ScmPair (ScmSymbol "x", ScmNil)), ScmNil)), ScmNil)), ScmNil)), ScmNil))), ScmNil)), ScmNil))}
 ];;
 
@@ -135,8 +135,8 @@ matching comments too , and that these are entered using braces !})"; "({and {th
 ];;
 
 let expected_strings_2 = [
-{index_from = 0; index_to = 142; found = ScmPair (ScmSymbol "string -append", ScmPair (ScmString "This is static: ABC and this is dynamic: ", ScmPair (ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmString "even though the string is static *in Scheme*, it is interpolated , so we consider it dynamic ...", ScmNil))), ScmNil)))};
-{index_from = 0; index_to = 53; found = ScmPair (ScmSymbol "string -append", ScmPair (ScmString "static ", ScmPair (ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmPair (ScmSymbol "quote", ScmPair (ScmSymbol "dynamic", ScmNil )), ScmNil))), ScmPair (ScmString " more static ",ScmPair(ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmPair(ScmSymbol "quote", ScmPair (ScmPair (ScmSymbol "more", ScmPair (ScmSymbol "dynamic!", ScmNil)), ScmNil)), ScmNil))), ScmPair (ScmString " ", ScmNil))))))};
+{index_from = 0; index_to = 142; found = ScmPair (ScmSymbol "string-append", ScmPair (ScmString "This is static: ABC and this is dynamic: ", ScmPair (ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmString "even though the string is static *in Scheme*, it is interpolated , so we consider it dynamic ...", ScmNil))), ScmNil)))};
+{index_from = 0; index_to = 53; found = ScmPair (ScmSymbol "string-append", ScmPair (ScmString "static ", ScmPair (ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmPair (ScmSymbol "quote", ScmPair (ScmSymbol "dynamic", ScmNil )), ScmNil))), ScmPair (ScmString " more static ",ScmPair(ScmPair (ScmSymbol "format", ScmPair (ScmString "~a", ScmPair (ScmPair(ScmSymbol "quote", ScmPair (ScmPair (ScmSymbol "more", ScmPair (ScmSymbol "dynamic!", ScmNil)), ScmNil)), ScmNil))), ScmPair (ScmString " ", ScmNil))))))};
 {index_from = 0; index_to = 290; found = ScmPair (ScmSymbol "a", ScmPair (ScmSymbol "b", ScmPair (ScmSymbol "c", ScmPair (ScmSymbol "mary", ScmPair (ScmSymbol "had", ScmPair (ScmSymbol "a", ScmPair (ScmSymbol "little", ScmPair (ScmSymbol "lambda!", ScmNil))))))))};
 {index_from = 0; index_to = 108; found = ScmPair (ScmSymbol "you", ScmPair (ScmSymbol "should", ScmPair (ScmSymbol "know", ScmNil)))};
 {index_from = 0; index_to = 41; found = ScmPair (ScmSymbol "may", ScmPair (ScmSymbol "be", ScmPair (ScmSymbol "nested!", ScmNil)))};
