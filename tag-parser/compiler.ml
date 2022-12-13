@@ -507,7 +507,7 @@ end;; (* end of struct Reader *)
 
 exception X_syntax of string;;
 
-type var = 
+type var =
   | Var of string;;
 
 type lambda_kind =
@@ -530,12 +530,12 @@ module type TAG_PARSER = sig
   val print_expr : out_channel -> expr -> unit
   val print_exprs : out_channel -> expr list -> unit
   val sprint_expr : 'a -> expr -> string
-  val sprint_exprs : 'a -> expr list -> string    
+  val sprint_exprs : 'a -> expr list -> string
 end;;
 
 module Tag_Parser : TAG_PARSER = struct
   open Reader;;
-  
+
   let reserved_word_list =
     ["and"; "begin"; "cond"; "do"; "else"; "if"; "lambda";
      "let"; "let*"; "letrec"; "or"; "quasiquote"; "quote";
@@ -545,7 +545,7 @@ module Tag_Parser : TAG_PARSER = struct
     | ScmNil -> ([], ScmNil)
     | ScmPair(car, cdr) ->
        ((fun (rdc, last) -> (car :: rdc, last))
-          (scheme_list_to_ocaml cdr))  
+          (scheme_list_to_ocaml cdr))
     | rac -> ([], rac);;
 
   let is_reserved_word name = is_member name reserved_word_list;;
@@ -593,16 +593,15 @@ module Tag_Parser : TAG_PARSER = struct
                           (scheme_sexpr_list_of_sexpr_list sexprs) in
             ScmPair (ScmSymbol "list->vector",
                      ScmPair (sexpr, ScmNil))
-       else let sexprs = 
+       else let sexprs =
               (scheme_sexpr_list_of_sexpr_list
                  (List.map macro_expand_qq sexprs)) in
             ScmPair (ScmSymbol "vector", sexprs)
     | sexpr -> sexpr;;
 
   let rec macro_expand_and_clauses expr = function
-    | [] -> ScmConst(ScmBoo)
-    | expr' :: exprs -> raise X_not_yet_implemented;;
-
+    | [] -> expr
+    | expr' :: exprs -> if (expr = ScmBoolean(true)) then (macro_expand_and_clauses expr' exprs) else ScmBoolean(false)
   let rec macro_expand_cond_ribs ribs =
     match ribs with
     | ScmNil -> raise X_not_yet_implemented
@@ -762,7 +761,7 @@ module Tag_Parser : TAG_PARSER = struct
     | ScmConst(ScmNil as sexpr) ->
        ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil))
     | ScmConst((ScmVector _) as sexpr) ->
-       ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil))  
+       ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil))
     | ScmVarGet(Var var) -> ScmSymbol var
     | ScmIf(test, dit, ScmConst ScmVoid) ->
        let test = sexpr_of_expr test in
@@ -783,7 +782,7 @@ module Tag_Parser : TAG_PARSER = struct
     | ScmSeq([]) -> ScmVoid
     | ScmSeq([expr]) -> sexpr_of_expr expr
     | ScmSeq(exprs) ->
-       ScmPair(ScmSymbol "begin", 
+       ScmPair(ScmSymbol "begin",
                scheme_sexpr_list_of_sexpr_list
                  (List.map sexpr_of_expr exprs))
     | ScmVarSet(Var var, expr) ->
@@ -885,7 +884,7 @@ module type SEMANTIC_ANALYSIS = sig
   val annotate_lexical_address : expr -> expr'
   val annotate_tail_calls : expr' -> expr'
   val auto_box : expr' -> expr'
-  val semantics : expr -> expr'  
+  val semantics : expr -> expr'
 end;; (* end of signature SEMANTIC_ANALYSIS *)
 
 module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
@@ -909,7 +908,7 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
             | Some(major, minor) -> Some(major + 1, minor))
         | Some minor -> Some(0, minor));;
 
-  let tag_lexical_address_for_var name params env = 
+  let tag_lexical_address_for_var name params env =
     match (lookup_in_rib name params) with
     | None ->
        (match (lookup_in_env name env) with
@@ -940,7 +939,7 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
     run expr [] [];;
 
   (* run this second *)
-  let annotate_tail_calls = 
+  let annotate_tail_calls =
     let rec run in_tail = function
       | (ScmConst' _) as orig -> raise X_not_yet_implemented
       | (ScmVarGet' _) as orig -> raise X_not_yet_implemented
@@ -1026,7 +1025,7 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
          else run name expr params' ((copy_list params) :: env)
       | ScmApplic' (proc, args, app_kind) ->
          let (rs1, ws1) = run name proc params env in
-         let (rs2, ws2) = 
+         let (rs2, ws2) =
            combine_pairs
              (List.map
                 (fun arg -> run name arg params env)
@@ -1108,13 +1107,13 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
          List.filter
            (fun param -> should_box_var param expr' params)
            params in
-       let new_body = 
+       let new_body =
          List.fold_left
            (fun body name -> box_sets_and_gets name body)
            (auto_box expr')
            box_these in
        let new_sets = make_sets box_these params in
-       let new_body = 
+       let new_body =
          match box_these, new_body with
          | [], _ -> new_body
          | _, ScmSeq' exprs -> ScmSeq' (new_sets @ exprs)
@@ -1145,7 +1144,7 @@ let rec sexpr_of_expr' = function
   | ScmConst'(ScmNil as sexpr) ->
      ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil))
   | ScmConst' ((ScmVector _) as sexpr) ->
-     ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil))      
+     ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil))
   | ScmVarGet' var -> sexpr_of_var' var
   | ScmIf' (test, dit, ScmConst' ScmVoid) ->
      let test = sexpr_of_expr' test in
@@ -1166,7 +1165,7 @@ let rec sexpr_of_expr' = function
   | ScmSeq' ([]) -> ScmVoid
   | ScmSeq' ([expr]) -> sexpr_of_expr' expr
   | ScmSeq' (exprs) ->
-     ScmPair (ScmSymbol "begin", 
+     ScmPair (ScmSymbol "begin",
               Reader.scheme_sexpr_list_of_sexpr_list
                 (List.map sexpr_of_expr' exprs))
   | ScmVarSet' (var, expr) ->
