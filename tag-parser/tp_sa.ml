@@ -1,3 +1,5 @@
+#use "reader.ml";;
+
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen of string;;
 
@@ -230,7 +232,7 @@ module Tag_Parser : TAG_PARSER = struct
                         exprs)) -> raise X_not_yet_implemented
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
        raise X_not_yet_implemented
-    | ScmPair (ScmSymbol "and", ScmNil) -> raise X_not_yet_implemented
+    | ScmPair (ScmSymbol "and", ScmNil) -> ScmConst(ScmBoolean(true))
     | ScmPair (ScmSymbol "and", exprs) ->
        (match (scheme_list_to_ocaml exprs) with
         | expr :: exprs, ScmNil ->
