@@ -601,7 +601,10 @@ module Tag_Parser : TAG_PARSER = struct
 
   let rec macro_expand_and_clauses expr = function
     | [] -> expr
-    | expr' :: exprs -> if (expr = ScmBoolean(true)) then (macro_expand_and_clauses expr' exprs) else ScmBoolean(false)
+    | expr' :: exprs -> ScmPair(ScmSymbol "if",
+           ScmPair(expr,
+            ScmPair(macro_expand_and_clauses expr' exprs,
+            ScmPair(ScmBoolean(false), ScmNil))))
   let rec macro_expand_cond_ribs ribs =
     match ribs with
     | ScmNil -> raise X_not_yet_implemented
