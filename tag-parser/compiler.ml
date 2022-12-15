@@ -607,9 +607,9 @@ module Tag_Parser : TAG_PARSER = struct
             ScmPair(ScmBoolean(false), ScmNil))))
   let rec macro_expand_cond_ribs ribs =
     match ribs with
-    | ScmNil -> raise X_not_yet_implemented
+    | ScmNil -> ScmNil
     | ScmPair (ScmPair (ScmSymbol "else", exprs), ribs) ->
-       raise X_not_yet_implemented
+                ScmPair(ScmSymbol("begin"), exprs)
     | ScmPair (ScmPair (expr,
                         ScmPair (ScmSymbol "=>",
                                  ScmPair (func, ScmNil))),
