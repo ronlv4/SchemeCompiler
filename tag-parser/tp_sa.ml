@@ -166,7 +166,7 @@ module Tag_Parser : TAG_PARSER = struct
     | ScmVoid | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ ->
        ScmConst sexpr
     | ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil)) ->
-       raise X_not_yet_implemented
+       ScmConst sexpr
     | ScmPair (ScmSymbol "quasiquote", ScmPair (sexpr, ScmNil)) ->
        tag_parse (macro_expand_qq sexpr)
     | ScmSymbol var ->
@@ -217,7 +217,24 @@ module Tag_Parser : TAG_PARSER = struct
            ScmLambda(unsymbolify_vars params, Opt opt, expr)
         | _ -> raise (X_syntax "invalid parameter list"))
     | ScmPair (ScmSymbol "let", ScmPair (ribs, exprs)) ->
-       raise X_not_yet_implemented
+       match sexpr with
+       | ScmPair(ScmNil, exprs) -> tag_parse (ScmPair(ScmPair(ScmSymbol("lambda"),ScmPair(ScmNil,exprs)),ScmNil))
+       | ScmPair(args, exprs)->
+            let arg_name = function
+            |ScmNil -> ScmNil
+            |ScmPair(name, _) -> name
+            |_ -> raise (X_this_should_not_happen
+                        "unexpected error") in
+            let arg_val = function
+            |ScmNil -> ScmNil
+            |ScmPair(_, ScmPair(value, ScmNil)) -> value
+            |_ -> raise (X_this_should_not_happen
+                        "unexpected error") in
+(*            let p_args = List.map arg_name (scheme_list_to_ocaml args) in*)
+(*            let p_vals = List.map arg_val args in*)
+(*            tag_parse (ScmPair(ScmPair(ScmSymbol("lambda"),ScmPair(arg_name, exprs)),arg_val))*)
+            |_ -> raise(X_syntax "invalid let expression")
+
     | ScmPair (ScmSymbol "let*", ScmPair (ScmNil, exprs)) ->
        raise X_not_yet_implemented
     | ScmPair (ScmSymbol "let*",
@@ -232,7 +249,7 @@ module Tag_Parser : TAG_PARSER = struct
                         exprs)) -> raise X_not_yet_implemented
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
        raise X_not_yet_implemented
-    | ScmPair (ScmSymbol "and", ScmNil) -> ScmConst(ScmBoolean(true))
+    | ScmPair (ScmSymbol "and", ScmNil) -> tag_parse (ScmBoolean(true))
     | ScmPair (ScmSymbol "and", exprs) ->
        (match (scheme_list_to_ocaml exprs) with
         | expr :: exprs, ScmNil ->
