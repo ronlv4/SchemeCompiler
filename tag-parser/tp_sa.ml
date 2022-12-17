@@ -568,11 +568,10 @@ module Semantic_Analysis = struct
 
 (* should_box_var: string * expr' * string list *)
   let should_box_var name expr params =
-    match (find_reads_and_writes name expr params [[]]) with
-    ([], _) -> false
-    (_, []) -> false
-    (reads, writes) ->
-
+    match (find_reads_and_writes name expr params) with
+    | ([], _) -> false
+    | (_, []) -> false
+    | (reads, writes) -> raise X_not_yet_implemented
 
   let box_sets_and_gets name body =
     let rec run expr =
