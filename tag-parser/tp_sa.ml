@@ -411,7 +411,9 @@ module type SEMANTIC_ANALYSIS = sig
   val semantics : expr -> expr'
 end;; (* end of signature SEMANTIC_ANALYSIS *)
 
-module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
+(*TODO restore signature before submission*)
+(*module Semantic_Analysis : SEMANTIC_ANALYSIS = struct*)
+module Semantic_Analysis = struct
 
   let rec lookup_in_rib name = function
     | [] -> None
@@ -502,6 +504,8 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
       (fun (rs1, ws1) (rs2, ws2) -> (rs1 @ rs2, ws1 @ ws2))
       ([], []);;
 
+
+(*find_reads_and_writes : string * expr' * string list * string list list *)
   let find_reads_and_writes =
     let rec run name expr params env =
       match expr with
@@ -564,7 +568,13 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
                      List.map (fun bj -> (ai, bj)) bs')
                    as');;
 
-  let should_box_var name expr params = raise X_not_yet_implemented;;
+(* should_box_var: string * expr' * string list *)
+  let should_box_var name expr params =
+    match (find_reads_and_writes name expr params [[]]) with
+    ([], _) -> false
+    (_, []) -> false
+    (reads, writes) ->
+
 
   let box_sets_and_gets name body =
     let rec run expr =
