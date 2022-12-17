@@ -442,16 +442,16 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
   let annotate_lexical_address =
     let rec run expr params env =
       match expr with
-      | ScmConst sexpr -> raise X_not_yet_implemented
-      | ScmVarGet (Var str) -> raise X_not_yet_implemented
-      | ScmIf (test, dit, dif) -> raise X_not_yet_implemented
-      | ScmSeq exprs -> raise X_not_yet_implemented
-      | ScmOr exprs -> raise X_not_yet_implemented
-      | ScmVarSet(Var v, expr) -> raise X_not_yet_implemented
+      | ScmConst sexpr -> ScmConst'(sexpr)
+      | ScmVarGet (Var str) -> ScmVarGet'(tag_lexical_address_for_var str params env)
+      | ScmIf (test, dit, dif) -> ScmIf'(run test params env, run dit params env, run dif params env)
+      | ScmSeq exprs -> ScmSeq'(List.map (fun exp -> run exp params env) exprs)
+      | ScmOr exprs -> ScmOr'(List.map (fun exp -> run exp params env) exprs)
+      | ScmVarSet(Var v, expr) -> ScmVarSet'(tag_lexical_address_for_var v params env, run expr params env)
       (* this code does not [yet?] support nested define-expressions *)
-      | ScmVarDef(Var v, expr) -> raise X_not_yet_implemented
-      | ScmLambda (params', Simple, expr) -> raise X_not_yet_implemented
-      | ScmLambda (params', Opt opt, expr) -> raise X_not_yet_implemented
+      | ScmVarDef(Var v, expr) -> ScmVarDef' (tag_lexical_address_for_var v params env, run expr params env)
+      | ScmLambda (params', Simple, expr) -> ScmLambda'(params', Simple, run expr params env)
+      | ScmLambda (params', Opt opt, expr) -> ScmLambda'(params', Opt opt, run expr params env)
       | ScmApplic (proc, args) ->
          ScmApplic' (run proc params env,
                      List.map (fun arg -> run arg params env) args,
@@ -621,9 +621,9 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
     | ScmIf' (test, dit, dif) ->
        ScmIf' (auto_box test, auto_box dit, auto_box dif)
     | ScmSeq' exprs -> ScmSeq' (List.map auto_box exprs)
-    | ScmVarSet' (v, expr) -> raise X_not_yet_implemented
-    | ScmVarDef' (v, expr) -> raise X_not_yet_implemented
-    | ScmOr' exprs -> raise X_not_yet_implemented
+    | ScmVarSet' (v, expr) -> ScmVarSet' (v, auto_box expr)
+    | ScmVarDef' (v, expr) -> ScmVarDef' (v, auto_box expr)
+    | ScmOr' exprs -> ScmOr' (List.map auto_box exprs)
     | ScmLambda' (params, Simple, expr') ->
        let box_these =
          List.filter
