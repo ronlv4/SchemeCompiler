@@ -175,10 +175,10 @@ module Tag_Parser : TAG_PARSER = struct
     let rec let_rec_vars ribs =
     match ribs with
     | ScmNil -> ScmNil
-    |ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),ScmNil) ->
-    ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(ScmSymbol("'whatever"),ScmNil))),ScmNil)
-    |ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),rest) ->
-    ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(ScmSymbol("'whatever"),ScmNil))),let_rec_vars rest)
+    | ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),ScmNil) ->
+        ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(ScmSymbol("'whatever"),ScmNil))),ScmNil)
+    | ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),rest) ->
+        ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(ScmSymbol("'whatever"),ScmNil))),let_rec_vars rest)
     | _ -> raise (X_syntax "malformed let rec rib");;
 
     let rec let_rec_vals ribs exprs =
