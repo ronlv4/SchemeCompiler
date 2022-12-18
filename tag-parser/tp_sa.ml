@@ -86,7 +86,6 @@ module Tag_Parser : TAG_PARSER = struct
                                                                                ScmNil))),
                                                     ScmNil)))),
                 ScmNil)
-       :: []
     | _ -> raise (X_syntax "bad letrec ribs");;
 
   let rec macro_expand_qq = function
