@@ -112,8 +112,7 @@ module Tag_Parser : TAG_PARSER = struct
   let rec macro_expand_cond_ribs ribs =
     match ribs with
     | ScmNil -> ScmNil
-    | ScmPair (ScmPair (ScmSymbol "else", exprs), ribs) ->
-                ScmPair(ScmSymbol("begin"), exprs)
+    | ScmPair (ScmPair (ScmSymbol "else", exprs), ribs) -> ScmPair(ScmSymbol("begin"), exprs)
     | ScmPair (ScmPair (expr,
                         ScmPair (ScmSymbol "=>",
                                  ScmPair (func, ScmNil))),
@@ -193,12 +192,9 @@ module Tag_Parser : TAG_PARSER = struct
 
   let rec tag_parse sexpr =
     match sexpr with
-    | ScmVoid | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ ->
-       ScmConst sexpr
-    | ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil)) ->
-       ScmConst sexpr
-    | ScmPair (ScmSymbol "quasiquote", ScmPair (sexpr, ScmNil)) ->
-       tag_parse (macro_expand_qq sexpr)
+    | ScmVoid | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ -> ScmConst sexpr
+    | ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil)) -> ScmConst sexpr
+    | ScmPair (ScmSymbol "quasiquote", ScmPair (sexpr, ScmNil)) -> tag_parse (macro_expand_qq sexpr)
     | ScmSymbol var ->
        if (is_reserved_word var)
        then raise (X_syntax "Variable cannot be a reserved word")
@@ -246,10 +242,10 @@ module Tag_Parser : TAG_PARSER = struct
         | params, ScmSymbol opt ->
            ScmLambda(unsymbolify_vars params, Opt opt, expr)
         | _ -> raise (X_syntax "invalid parameter list"))
-    | ScmPair (ScmSymbol "let", ScmPair (ribs, exprs)) -> match ribs with
-    | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
-    | _ -> tag_parse (ScmPair(ScmPair(ScmSymbol("let"), ScmPair((get_vars ribs),exprs)),(get_vals ribs)))
-
+    | ScmPair (ScmSymbol "let", ScmPair (ribs, exprs)) ->
+        (match ribs with
+            | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
+            | _ -> tag_parse (ScmPair(ScmPair(ScmSymbol("let"), ScmPair((get_vars ribs),exprs)),(get_vals ribs))))
     | ScmPair (ScmSymbol "let*", ScmPair (ScmNil, exprs)) ->
        tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
     | ScmPair (ScmSymbol "let*",
@@ -266,7 +262,6 @@ module Tag_Parser : TAG_PARSER = struct
                         let letSRib = ScmPair(ScmPair(var, ScmPair(arg,ScmNil)),ScmNil) in
                         let letSBody = ScmPair(ScmPair(ScmSymbol("let"),ScmPair(ribs,exprs)),ScmNil) in
                         tag_parse(ScmPair(ScmSymbol("let"),ScmPair(letSRib,letSBody)))
-
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
        tag_parse(ScmPair(ScmSymbol("let"),ScmPair(let_rec_vars ribs, let_rec_vals ribs exprs)))
     | ScmPair (ScmSymbol "and", ScmNil) -> tag_parse (ScmBoolean(true))
@@ -593,7 +588,17 @@ module Semantic_Analysis = struct
     match (find_reads_and_writes name expr params) with
     | ([], _) -> false
     | (_, []) -> false
-    | (reads, writes) -> raise X_not_yet_implemented
+    | (reads, writes) ->
+    let read_envs = List.map (fun (v, env) -> env) reads in
+    let write_envs = List.map (fun (v, env) -> env) writes in
+    let rec run read_envs writes =
+    match read_envs with
+      | [] -> false
+      | env :: envs ->
+         if (List.exists (fun write_env -> write_env == env) writes)
+         then true
+         else run envs writes in
+      run read_envs write_envs;;
 
   let box_sets_and_gets name body =
     let rec run expr =
