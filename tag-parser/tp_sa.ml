@@ -173,6 +173,24 @@ module Tag_Parser : TAG_PARSER = struct
     | ScmPair(ScmPair (_,ScmPair(_val,ScmNil)), rest_of_ribs) -> ScmPair(_val, get_vals rest_of_ribs)
     | _ -> raise (X_syntax "malformed let rib");;
 
+    let rec let_rec_vars ribs =
+    match ribs with
+    | ScmNil -> ScmNil
+    |ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),ScmNil) ->
+    ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(ScmSymbol("'whatever"),ScmNil))),ScmNil)
+    |ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),rest) ->
+    ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(ScmSymbol("'whatever"),ScmNil))),let_rec_vars rest)
+    | _ -> raise (X_syntax "malformed let rec rib");;
+
+    let rec let_rec_vals ribs exprs =
+    match ribs with
+    | ScmNil -> exprs
+    |ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),ScmNil) ->
+    ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(value,ScmNil))),exprs)
+    |ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),rest) ->
+    ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(value,ScmNil))),let_rec_vals rest exprs)
+    | _ -> raise (X_syntax "malformed let rec rib");;
+
   let rec tag_parse sexpr =
     match sexpr with
     | ScmVoid | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ ->
@@ -244,9 +262,13 @@ module Tag_Parser : TAG_PARSER = struct
                ScmPair (ScmPair (ScmPair (var,
                                           ScmPair (arg, ScmNil)),
                                  ribs),
-                        exprs)) -> raise X_not_yet_implemented
+                        exprs)) ->
+                        let letSRib = ScmPair(ScmPair(var, ScmPair(arg,ScmNil)),ScmNil) in
+                        let letSBody = ScmPair(ScmPair(ScmSymbol("let"),ScmPair(ribs,exprs)),ScmNil) in
+                        tag_parse(ScmPair(ScmSymbol("let"),ScmPair(letSRib,letSBody)))
+
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
-       raise X_not_yet_implemented
+       tag_parse(ScmPair(ScmSymbol("let"),ScmPair(let_rec_vars ribs, let_rec_vals ribs exprs)))
     | ScmPair (ScmSymbol "and", ScmNil) -> tag_parse (ScmBoolean(true))
     | ScmPair (ScmSymbol "and", exprs) ->
        (match (scheme_list_to_ocaml exprs) with
