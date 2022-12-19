@@ -596,17 +596,14 @@ module Semantic_Analysis = struct
     | ([], _) -> false
     | (_, []) -> false
     | (reads, writes) ->
-    let read_envs = List.map (fun (v, env) -> env) reads in
-    let write_envs = List.map (fun (v, env) -> env) writes in
-    let rec run read_envs writes =
-    match read_envs with
-      | [] -> false
-      | env :: envs ->
-         if (List.exists (fun write_env -> write_env == env) writes)
-         then true
-         else run envs writes in
-      run read_envs write_envs;;
-
+    (* if one of the reads refer to a different environment than the writes *)
+       let envs = List.map (fun (_, env) -> env) writes in
+       let envs' = List.map (fun (_, env) -> env) reads in
+       let envs'' = cross_product envs envs' in
+       let envs''' = List.filter (fun (env1, env2) -> env1 != env2) envs'' in
+       match envs''' with
+       | [] -> false
+       | _ -> true;;
   let box_sets_and_gets name body =
     let rec run expr =
       match expr with
