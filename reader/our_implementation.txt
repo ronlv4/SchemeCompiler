@@ -1,4 +1,4 @@
-nt_paired_comment
+wnt_paired_comment
 nt_sexpr_comment
 nt_digit
 nt_hex_digit

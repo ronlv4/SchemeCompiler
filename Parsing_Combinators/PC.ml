@@ -7,7 +7,7 @@
 (* general list-processing procedures *)
 
 let list_of_string string =
-  let rec run i s =
+	let rec run i s =
     if i < 0 then s
     else run (i - 1) (string.[i] :: s) in
   run (String.length string - 1) [];;
@@ -26,7 +26,7 @@ let rec ormap f s =
 let rec andmap f s =
   match s with
   | [] -> true
-  | car :: cdr -> (f car) && (andmap f cdr);;	  
+  | car :: cdr -> (f car) && (andmap f cdr);;
 
 module PC = struct
 
@@ -39,7 +39,7 @@ module PC = struct
   type 'a parser = string -> int -> 'a parsing_result;;
 
   (* the parsing combinators defined here *)
-  
+
   exception X_not_yet_implemented;;
 
   exception X_no_match;;
@@ -67,7 +67,7 @@ module PC = struct
        found = (e_1, e_2)}) : (('a * 'b) parser));;
 
   let pack (nt : 'a parser) (f : 'a -> 'b) =
-    ((fun str index -> 
+    ((fun str index ->
       let {index_from; index_to; found} = (nt str index) in
       {index_from; index_to; found = (f found)})
      : 'b parser);;
@@ -87,18 +87,18 @@ module PC = struct
       nt_epsilon;;
 
   let disj (nt1 : 'a parser) (nt2 : 'a parser) =
-    ((fun str index -> 
+    ((fun str index ->
       try (nt1 str index)
       with X_no_match -> (nt2 str index)) : 'a parser);;
 
   let nt_none = ((fun _str _index -> raise X_no_match) : 'a parser);;
-  
+
   let disj_list nts = List.fold_right disj nts nt_none;;
 
   let delayed (thunk : unit -> 'a parser) =
     ((fun str index -> thunk() str index) : 'a parser);;
 
-  let nt_end_of_input str index = 
+  let nt_end_of_input str index =
     if (index < String.length str)
     then raise X_no_match
     else {index_from = index; index_to = index; found = []};;
@@ -124,7 +124,7 @@ module PC = struct
   let rec power nt n =
     if n = 0 then nt_epsilon
     else pack(caten nt (power nt (n - 1)))
-           (fun (e, es) -> e :: es);;    
+           (fun (e, es) -> e :: es);;
 
   let at_least nt n =
     pack (caten (power nt n) (star nt))
@@ -142,7 +142,7 @@ module PC = struct
           {index_from; index_to; found = Some(found)}
       with X_no_match ->
         {index_from = index; index_to = index; found = None})
-     : 'a option parser);;  
+     : 'a option parser);;
 
   let diff nt1 nt2 =
     ((fun str index ->
@@ -155,7 +155,7 @@ module PC = struct
          | _ -> raise X_no_match) : 'a parser);;
 
   let followed_by (nt1 : 'a parser) (nt2 : 'b parser) =
-    ((fun str index -> 
+    ((fun str index ->
       let ({index_from; index_to; found} as result) = (nt1 str index) in
       let _ = (nt2 str index_to) in
       result) : 'a parser);;
@@ -168,7 +168,7 @@ module PC = struct
 	     with X_no_match -> (Some(result))) with
       | None -> raise X_no_match
       | Some(result) -> result) : 'a parser);;
-  
+
   (* useful general parsers for working with text *)
 
   let make_char equal ch1 = const (fun ch2 -> equal ch1 ch2);;
@@ -180,7 +180,7 @@ module PC = struct
 	(Char.lowercase_ascii ch1) =
 	  (Char.lowercase_ascii ch2));;
 
-  let make_word char str = 
+  let make_word char str =
     List.fold_right
       (fun nt1 nt2 -> pack (caten nt1 nt2) (fun (a, b) -> a :: b))
       (List.map char (list_of_string str))
@@ -242,11 +242,11 @@ module PC = struct
             | {index_from; index_to; found = Some(e)} ->
                {index_from; index_to; found = e})
       else raise X_no_match in
-    run 0;; 
+    run 0;;
 
   let search_forward_all (nt : 'a parser) str =
     let limit = String.length str in
-    let rec run i = 
+    let rec run i =
       if (i < limit)
       then (match (maybe nt str i) with
             | {index_from; index_to; found = None} -> run (i + 1)
@@ -263,11 +263,11 @@ module PC = struct
             | {index_from; index_to; found = Some(e)} ->
                {index_from; index_to; found = e})
       else raise X_no_match in
-    run (String.length str - 1);; 
+    run (String.length str - 1);;
 
   let search_backward_all (nt : 'a parser) str =
     let limit = String.length str in
-    let rec run i = 
+    let rec run i =
       if (-1 < i)
       then (match (maybe nt str i) with
             | {index_from; index_to; found = None} -> run (i - 1)

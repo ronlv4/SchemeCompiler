@@ -7,7 +7,7 @@
 (* general list-processing procedures *)
 
 let list_of_string string =
-  let rec run i s =
+	let rec run i s =
     if i < 0 then s
     else run (i - 1) (string.[i] :: s) in
   run (String.length string - 1) [];;
