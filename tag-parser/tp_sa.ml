@@ -255,7 +255,7 @@ module Tag_Parser : TAG_PARSER = struct
     | ScmPair (ScmSymbol "let*", ScmPair (ScmPair (ScmPair (var, ScmPair (arg, ScmNil)), ribs), exprs)) ->
                         let letSRib = ScmPair (ScmPair (var, ScmPair (arg, ScmNil)), ScmNil) in
                         let letSBody = ScmPair (ScmSymbol ("let*"), ScmPair (ribs, exprs)) in
-                        tag_parse (ScmPair(ScmSymbol("let"), ScmPair (tag_parse letSRib,tag_parse letSBody)))
+                        tag_parse (ScmPair(ScmSymbol("let"), ScmPair (letSRib, letSBody)))
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
         (match ribs with
             | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
