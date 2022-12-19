@@ -280,7 +280,12 @@ module Tag_Parser : TAG_PARSER = struct
     | ScmPair (ScmSymbol "cond", ribs) -> tag_parse (macro_expand_cond_ribs ribs)
     | ScmPair (ScmSymbol "or", ScmNil) -> tag_parse (ScmBoolean(false))
     | ScmPair (ScmSymbol "or", ScmPair (expr, ScmNil)) -> tag_parse expr
-    | ScmPair (ScmSymbol "or", exprs) -> ScmOr (List.map tag_parse exprs)
+    | ScmPair (ScmSymbol "or", exprs) ->
+      match (scheme_list_to_ocaml exprs) with
+        | exprs, ScmNil -> ScmOr (List.map tag_parse exprs)
+        | _ -> raise (X_syntax "malformed or-expression")
+    let (exprs,ScmNil) = scheme_list_to_ocaml exprs in
+      ScmOr (List.map tag_parse exprs)
     | ScmPair (proc, args) ->
        let proc =
          (match proc with
