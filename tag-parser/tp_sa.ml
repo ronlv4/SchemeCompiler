@@ -105,12 +105,12 @@ module Tag_Parser = struct
             ScmPair (ScmSymbol "vector", sexprs)
     | sexpr -> sexpr;;
 
-  let rec macro_expand_let_star = function
+  let rec macro_expand_let_star_ribs = function
     | ScmNil -> ScmNil
     | ScmPair (ScmPair (var, ScmPair (value, ScmNil)), rest) ->
        ScmPair (ScmPair (ScmSymbol "let",
                          ScmPair (ScmPair (var, ScmPair (value, ScmNil)),
-                                  ScmPair (macro_expand_let_star rest,
+                                  ScmPair (macro_expand_let_star_ribs rest,
                                            ScmNil))),
                 ScmNil)
     | _ -> raise (X_syntax "bad let*");;
@@ -265,8 +265,8 @@ module Tag_Parser = struct
         tag_parse (ScmPair(ScmSymbol("let"), ScmPair (ScmPair (ScmPair (var, ScmPair (value, ScmNil)),ScmNil), exprs)))
     | ScmPair (ScmSymbol "let*", ScmPair (ScmPair (ScmPair (var, ScmPair (arg, ScmNil)), ribs), exprs)) ->
                         let letSRib = ScmPair (ScmPair (var, ScmPair (arg, ScmNil)), ScmNil) in
-                        let letSBody = ScmPair (ScmSymbol ("let*"), ScmPair (ribs, exprs)) in
-                        tag_parse (ScmPair(ScmSymbol("let"), ScmPair (letSRib, macro_expand_let_star letSBody)))
+                        let letSBody = ScmPair (ribs, exprs)) in
+                        tag_parse (ScmPair(ScmSymbol("let"), ScmPair (letSRib, macro_expand_let_star_ribs letSBody)))
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
         (match ribs with
             | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
