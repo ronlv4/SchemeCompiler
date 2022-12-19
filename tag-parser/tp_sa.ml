@@ -108,11 +108,8 @@ module Tag_Parser = struct
   let rec macro_expand_let_star_ribs = function
     | ScmNil -> ScmNil
     | ScmPair (ScmPair (var, ScmPair (value, ScmNil)), cdr) ->
-       ScmPair (ScmPair (ScmSymbol "let",
-                         ScmPair (ScmPair (var, ScmPair (value, ScmNil)),
-                                  ScmPair (macro_expand_let_star_ribs cdr,
-                                           ScmNil))),
-                ScmNil)
+       ScmPair (ScmSymbol "let", ScmPair (ScmPair (var, ScmPair (value, ScmNil)),
+                                  macro_expand_let_star_ribs cdr))
     | _ -> raise (X_syntax "bad let* rib");;
   let rec macro_expand_and_clauses expr = function
     | [] -> expr
