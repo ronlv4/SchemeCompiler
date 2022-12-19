@@ -1,4 +1,5 @@
 #use "/home/ronlv4/repos/compilation_assignment/Reader/Reader.ml";;
+open Reader;;
 
 type 'a success_test = {str: string; start_index: int; expected_result: 'a parsing_result};;
 
