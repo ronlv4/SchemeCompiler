@@ -31,7 +31,6 @@ module type SEMANTIC_ANALYSIS = sig
 end;; (* end of signature SEMANTIC_ANALYSIS *)
 
 module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
-
   let rec lookup_in_rib name = function
     | [] -> None
     | name' :: rib ->
@@ -303,6 +302,8 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
 
 end;; (* end of module Semantic_Analysis *)
 
+let sexpr_of_var' (Var' (name, _)) = ScmSymbol name;;
+
 let rec sexpr_of_expr' = function
   | ScmConst' (ScmVoid) -> ScmVoid
   | ScmConst' ((ScmBoolean _) as sexpr) -> sexpr
@@ -414,10 +415,6 @@ let rec sexpr_of_expr' = function
     Printf.sprintf "[%s]"
       (String.concat "; "
          (List.map string_of_expr exprs));;
-
-end;; (* end of struct Tag_Parser *)
-
-let sexpr_of_var' (Var' (name, _)) = ScmSymbol name;;
 
 let string_of_expr' expr =
   Printf.sprintf "%a" Reader.sprint_sexpr (sexpr_of_expr' expr);;

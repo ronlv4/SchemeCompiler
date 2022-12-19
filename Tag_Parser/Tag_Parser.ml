@@ -368,4 +368,6 @@ module Tag_Parser : TAG_PARSER = struct
       ScmPair (proc, args)
     | _ -> raise (X_syntax "Unknown form");;
 
+end;; (* struct Tag_Parser *)
+
 (* end-of-input *)
