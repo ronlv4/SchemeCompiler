@@ -37,7 +37,9 @@ module type TAG_PARSER = sig
   val sprint_exprs : 'a -> expr list -> string
 end;;
 
-module Tag_Parser : TAG_PARSER = struct
+(*TODO: Restore sig before submission*)
+(*module Tag_Parser : TAG_PARSER = struct*)
+module Tag_Parser = struct
   open Reader;;
 
   let reserved_word_list =
