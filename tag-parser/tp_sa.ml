@@ -210,8 +210,7 @@ module Tag_Parser : TAG_PARSER = struct
              tag_parse dit,
              tag_parse dif)
     | ScmPair (ScmSymbol "begin", ScmNil) -> ScmConst(ScmVoid)
-    | ScmPair (ScmSymbol "begin", ScmPair (sexpr, ScmNil)) ->
-       tag_parse sexpr
+    | ScmPair (ScmSymbol "begin", ScmPair (sexpr, ScmNil)) -> tag_parse sexpr
     | ScmPair (ScmSymbol "begin", sexprs) ->
        (match (scheme_list_to_ocaml sexprs) with
         | (sexprs', ScmNil) -> ScmSeq(List.map tag_parse sexprs')
@@ -243,9 +242,15 @@ module Tag_Parser : TAG_PARSER = struct
            ScmLambda(unsymbolify_vars params, Opt opt, expr)
         | _ -> raise (X_syntax "invalid parameter list"))
     | ScmPair (ScmSymbol "let", ScmPair (ribs, exprs)) ->
-        (match ribs with
-            | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
-            | _ -> tag_parse (ScmPair(ScmPair(ScmSymbol("let"), ScmPair((get_vars ribs),exprs)),(get_vals ribs))))
+    (* macro expand let into a lambda application *)
+    let vars = get_vars ribs in
+    let vals = get_vals ribs in
+    let lambda = ScmPair(ScmSymbol("lambda"),ScmPair(vars,exprs)) in
+    let app = ScmPair(lambda,vals) in
+    tag_parse app
+(*        (match ribs with*)
+(*            | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))*)
+(*            | _ -> tag_parse (ScmPair(ScmPair(ScmSymbol("let"), ScmPair((get_vars ribs),exprs)),(get_vals ribs))))*)
     | ScmPair (ScmSymbol "let*", ScmPair (ScmNil, exprs)) ->
        tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
     | ScmPair (ScmSymbol "let*",
@@ -272,8 +277,7 @@ module Tag_Parser : TAG_PARSER = struct
         | expr :: exprs, ScmNil ->
            tag_parse (macro_expand_and_clauses expr exprs)
         | _ -> raise (X_syntax "malformed and-expression"))
-    | ScmPair (ScmSymbol "cond", ribs) ->
-       tag_parse (macro_expand_cond_ribs ribs)
+    | ScmPair (ScmSymbol "cond", ribs) -> tag_parse (macro_expand_cond_ribs ribs)
     | ScmPair (proc, args) ->
        let proc =
          (match proc with
