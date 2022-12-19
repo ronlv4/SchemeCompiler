@@ -261,10 +261,9 @@ module Tag_Parser = struct
     | ScmPair (ScmSymbol "let*", ScmPair (ScmPair (ScmPair (var, ScmPair (value, ScmNil)), ScmNil), exprs)) ->
         tag_parse (ScmPair(ScmSymbol("let"), ScmPair (ScmPair (ScmPair (var, ScmPair (value, ScmNil)),ScmNil), exprs)))
     | ScmPair (ScmSymbol "let*", ScmPair (ScmPair (ScmPair (var, ScmPair (arg, ScmNil)), ribs), exprs)) ->
-            (* macro expand let* recursively using macro_expand_let_star_ribs *)
-            let ribs = macro_expand_let_star_ribs ribs in
-            let ribs = ScmPair(ScmPair(var,ScmPair(arg,ScmNil)),ribs) in
-            tag_parse (ScmPair(ScmSymbol("let"), ScmPair (ribs, exprs)))
+            let exprs = ScmPair (ScmPair (ScmSymbol "let*", ScmPair (ribs, exprs)),ScmNil) in
+                           tag_parse (ScmPair (ScmSymbol "let", ScmPair
+                             (ScmPair(ScmPair (var, ScmPair (arg, ScmNil)),ScmNil), exprs)))
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
         (match ribs with
             | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
