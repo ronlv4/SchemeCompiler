@@ -25,7 +25,9 @@
    {test = "`(,@a b ,@c)"; expected_result = "(append a (cons 'b c))"};
    {test = "`((a ,a) (b ,b))"; expected_result = "(cons (cons 'a (cons a '())) (cons (cons 'b (cons b '())) '()))"};
    {test = "\"the value is ~{ (foo x (+ x y)) }\\n\""; expected_result = "(string-append \"the value is \" (format \"~a\" (foo x (+ x y))) \"\\n\")"};
-   {test = "((lambda () (or 1 2)))"; expected_result = "(let () (or 1 2))"}
+   {test = "((lambda () (or 1 2)))"; expected_result = "(let () (or 1 2))"};
+   {test = "(or)"; expected_result = "#f"};
+   {test = "(or 1)"; expected_result = "1"};
  ];;
 
  let tp_failure_tests = [
