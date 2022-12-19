@@ -278,9 +278,6 @@ module Tag_Parser : TAG_PARSER = struct
            tag_parse (macro_expand_and_clauses expr exprs)
         | _ -> raise (X_syntax "malformed and-expression"))
     | ScmPair (ScmSymbol "cond", ribs) -> tag_parse (macro_expand_cond_ribs ribs)
-utop[65]> demo "(or expr1 expr2)";;
-- : expr = ScmOr [ScmVarGet (Var "expr1"); ScmVarGet (Var "expr2")]
-
     | ScmPair (ScmSymbol "or", ScmNil) -> tag_parse (ScmBoolean(false))
     | ScmPair (ScmSymbol "or", ScmPair (expr, ScmNil)) -> tag_parse expr
     | ScmPair (ScmSymbol "or", exprs) -> ScmOr (List.map tag_parse exprs)
