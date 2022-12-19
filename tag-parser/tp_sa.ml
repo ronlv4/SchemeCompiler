@@ -243,10 +243,10 @@ module Tag_Parser : TAG_PARSER = struct
         | _ -> raise (X_syntax "invalid parameter list"))
     | ScmPair (ScmSymbol "let", ScmPair (ribs, exprs)) ->
     (* macro expand let into a lambda application *)
-    let vars = get_vars ribs in
-    let vals = get_vals ribs in
-    let lambda = ScmPair(ScmSymbol("lambda"),ScmPair(vars,exprs)) in
-    let app = ScmPair(lambda,vals) in
+    let vars = tag_parse (get_vars ribs) in
+    let vals = tag_parse (get_vals ribs) in
+    let lambda = tag_parse (ScmPair (ScmSymbol ("lambda"),ScmPair(vars, exprs))) in
+    let app = ScmPair (lambda,vals) in
     tag_parse app
     | ScmPair (ScmSymbol "let*", ScmPair (ScmNil, exprs)) ->
        tag_parse (ScmPair (ScmSymbol("let"), ScmPair (ScmNil, exprs)))
