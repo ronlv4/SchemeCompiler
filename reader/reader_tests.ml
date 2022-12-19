@@ -1,7 +1,4 @@
-#use "pc.ml";;
-#use "reader.ml";;
-open PC;;
-open Reader;;
+#use "Reader.ml";;
 
 type 'a success_test = {str: string; start_index: int; expected_result: 'a parsing_result};;
 

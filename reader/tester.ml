@@ -1,4 +1,4 @@
-#use "tests.ml";;
+#use "reader_tests.ml";;
 
 exception X_test_failed of string;;
 
