@@ -396,26 +396,6 @@ let rec sexpr_of_expr' = function
   (* for reversing macro-expansion... *)
   | _ -> raise X_not_yet_implemented;;
 
-  let string_of_expr expr =
-    Printf.sprintf "%a" sprint_sexpr (sexpr_of_expr expr);;
-
-  let print_expr chan expr =
-    output_string chan
-      (string_of_expr expr);;
-
-  let print_exprs chan exprs =
-    output_string chan
-      (Printf.sprintf "[%s]"
-         (String.concat "; "
-            (List.map string_of_expr exprs)));;
-
-  let sprint_expr _ expr = string_of_expr expr;;
-
-  let sprint_exprs chan exprs =
-    Printf.sprintf "[%s]"
-      (String.concat "; "
-         (List.map string_of_expr exprs));;
-
 let string_of_expr' expr =
   Printf.sprintf "%a" Reader.sprint_sexpr (sexpr_of_expr' expr);;
 
