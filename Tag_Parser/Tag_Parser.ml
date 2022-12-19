@@ -181,19 +181,19 @@ module Tag_Parser : TAG_PARSER = struct
     let rec let_rec_vars ribs =
     match ribs with
     | ScmNil -> ScmNil
-    | ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),ScmNil) ->
-        ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(ScmSymbol("'whatever"),ScmNil))),ScmNil)
-    | ScmPair(ScmPair(var, (ScmPair(value,ScmNil))),rest) ->
-        ScmPair(ScmPair(ScmSymbol("set!"),ScmPair(var,ScmPair(ScmSymbol("'whatever"),ScmNil))),let_rec_vars rest)
+    | ScmPair (ScmPair (var, ScmPair (_, ScmNil)), ScmNil) ->
+        ScmPair (ScmPair (var, ScmPair (ScmSymbol ("'whatever"), ScmNil)), ScmNil)
+    | ScmPair (ScmPair (var, ScmPair (_, ScmNil)), rest) ->
+        ScmPair (ScmPair (var, ScmPair (ScmSymbol ("'whatever"), ScmNil)), let_rec_vars rest)
     | _ -> raise (X_syntax "malformed let rec rib");;
 
-    let rec let_rec_vals ribs exprs =
+    let rec let_rec_vals ribs =
     match ribs with
-    | ScmNil -> exprs
-    | ScmPair (ScmPair (var, (ScmPair (value, ScmNil))), ScmNil) ->
-        ScmPair (ScmPair (ScmSymbol ("set!"), ScmPair (var, ScmPair (value,ScmNil))), exprs)
-    | ScmPair (ScmPair (var, (ScmPair(value, ScmNil))), rest) ->
-        ScmPair (ScmPair (ScmSymbol ("set!"), ScmPair (var, ScmPair (value,ScmNil))), let_rec_vals rest exprs)
+    | ScmNil -> ScmNil
+    | ScmPair (ScmPair (var, ScmPair (value, ScmNil)), ScmNil) ->
+        ScmPair (ScmPair (ScmSymbol ("set!"), ScmPair (var, ScmPair (value, ScmNil))), ScmNil)
+    | ScmPair (ScmPair (var, ScmPair (value, ScmNil)), rest) ->
+        ScmPair (ScmPair (ScmSymbol ("set!"), ScmPair (var, ScmPair (value, ScmNil))), let_rec_vals rest)
     | _ -> raise (X_syntax "malformed let rec rib");;
 
   let rec tag_parse sexpr =
@@ -264,12 +264,12 @@ module Tag_Parser : TAG_PARSER = struct
                              (ScmPair(ScmPair (var, ScmPair (arg, ScmNil)),ScmNil), new_exprs)))
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
     (* macro expand letrec into a let with all vars, body with set! and then empty let with exprs *)
-        let vars = get_vars ribs in
-        let vals = get_vals ribs in
-        let new_ribs = let_rec_vals ribs ScmNil in
-        let new_ribs = ScmPair (ScmPair (ScmSymbol "let", ScmPair (new_ribs, ScmNil)), ScmNil) in
-        let new_exprs = ScmPair (new_ribs, exprs) in
-        tag_parse (ScmPair (ScmSymbol "let", ScmPair (ribs, new_exprs)))
+    let new_ribs = let_rec_vars ribs in
+    let new_vals = let_rec_vals ribs in
+    let new_let = ScmPair (ScmSymbol ("let"), ScmPair (new_ribs, new_vals)) in
+    let new_let2 = ScmPair (ScmSymbol ("let"), ScmPair (ScmNil, exprs)) in
+    let app = ScmPair (new_let, ScmPair (new_let2, ScmNil)) in
+    tag_parse app
     | ScmPair (ScmSymbol "and", ScmNil) -> tag_parse (ScmBoolean(true))
     | ScmPair (ScmSymbol "and", exprs) ->
        (match (scheme_list_to_ocaml exprs) with
