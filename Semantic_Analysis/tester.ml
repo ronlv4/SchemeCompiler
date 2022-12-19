@@ -1,5 +1,4 @@
-#use "Semantic_Analysis.ml";;
-#use "sa_test.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Semantic_Analysis/sa_test.ml";;
 
 let test_sa str expected_success expected_result =
         try let result =  semantics (tag_parse (nt_sexpr str 0).found) in

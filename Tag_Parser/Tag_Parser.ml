@@ -1,4 +1,4 @@
-#use "../Reader/Reader.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Reader/Reader.ml";;
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen of string;;

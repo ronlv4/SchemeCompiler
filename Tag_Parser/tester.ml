@@ -1,5 +1,5 @@
-#use "Tag_Parser.ml";;
-#use "tp_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/Tag_Parser.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/tp_tests.ml";;
 open Tag_Parser;;
 
 exception X_test_failed of string;;
