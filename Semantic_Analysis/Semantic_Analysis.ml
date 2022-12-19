@@ -123,7 +123,7 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
       ([], []);;
 
 
-(*find_reads_and_writes : string * expr' * string list * string list list *)
+(*find_reads_and_writes : string -> expr' -> string list -> (var' * string list list) list * (var' * string list list) list *)
   let find_reads_and_writes =
     let rec run name expr params env =
       match expr with
@@ -186,20 +186,19 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
                      List.map (fun bj -> (ai, bj)) bs')
                    as');;
 
-(* should_box_var: string * expr' * string list *)
+
+(* should_box_var: string -> expr' -> string list -> bool *)
   let should_box_var name expr params =
     match (find_reads_and_writes name expr params) with
     | ([], _) -> false
     | (_, []) -> false
     | (reads, writes) ->
-    (* if one of the reads refer to a different environment than the writes *)
-       let envs = List.map (fun (_, env) -> env) writes in
-       let envs' = List.map (fun (_, env) -> env) reads in
-       let envs'' = cross_product envs envs' in
-       let envs''' = List.filter (fun (env1, env2) -> env1 != env2) envs'' in
-       match envs''' with
-       | [] -> false
-       | _ -> true;;
+         let reads' = List.map (fun (v, envs) -> (v, List.length envs)) reads in
+         let writes' = List.map (fun (v, envs) -> (v, List.length envs)) writes in
+         let cross = cross_product reads' writes' in
+         let cross' = List.filter (fun ((v1, n1), (v2, n2)) -> v1 = v2) cross in
+         let cross'' = List.filter (fun ((v1, n1), (v2, n2)) -> n1 > n2) cross' in
+         cross'' <> [];;
   let box_sets_and_gets name body =
     let rec run expr =
       match expr with
