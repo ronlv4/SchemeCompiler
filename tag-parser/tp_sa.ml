@@ -37,8 +37,7 @@ module type TAG_PARSER = sig
   val sprint_exprs : 'a -> expr list -> string
 end;;
 
-(*TODO: Restore sig before submission*)
-(*module Tag_Parser : TAG_PARSER = struct*)
+module Tag_Parser : TAG_PARSER = struct
 module Tag_Parser = struct
   open Reader;;
 
@@ -429,8 +428,7 @@ module type SEMANTIC_ANALYSIS = sig
   val semantics : expr -> expr'
 end;; (* end of signature SEMANTIC_ANALYSIS *)
 
-(*TODO restore signature before submission*)
-(*module Semantic_Analysis : SEMANTIC_ANALYSIS = struct*)
+module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
 module Semantic_Analysis = struct
 
   let rec lookup_in_rib name = function
