@@ -187,13 +187,13 @@ module Tag_Parser : TAG_PARSER = struct
         ScmPair (ScmPair (var, ScmPair (ScmSymbol ("'whatever"), ScmNil)), let_rec_vars rest)
     | _ -> raise (X_syntax "malformed let rec rib");;
 
-    let rec let_rec_vals ribs =
+    let rec let_rec_vals ribs exprs=
     match ribs with
     | ScmNil -> ScmNil
     | ScmPair (ScmPair (var, ScmPair (value, ScmNil)), ScmNil) ->
-        ScmPair (ScmPair (ScmSymbol ("set!"), ScmPair (var, ScmPair (value, ScmNil))), ScmNil)
+        ScmPair (ScmPair (ScmSymbol ("set!"), ScmPair (var, ScmPair (value, ScmNil))), exprs)
     | ScmPair (ScmPair (var, ScmPair (value, ScmNil)), rest) ->
-        ScmPair (ScmPair (ScmSymbol ("set!"), ScmPair (var, ScmPair (value, ScmNil))), let_rec_vals rest)
+        ScmPair (ScmPair (ScmSymbol ("set!"), ScmPair (var, ScmPair (value, ScmNil))), let_rec_vals rest exprs)
     | _ -> raise (X_syntax "malformed let rec rib");;
 
   let rec tag_parse sexpr =
@@ -270,9 +270,10 @@ module Tag_Parser : TAG_PARSER = struct
         let new_ribs = let_rec_vars ribs in
         let new_vals = let_rec_vals ribs in
         let new_let = ScmPair (ScmSymbol ("let"), ScmPair (new_ribs, new_vals)) in
-        let new_let2 = ScmPair (ScmSymbol ("let"), ScmPair (ScmNil, exprs)) in
-        let app = ScmPair (new_let, ScmPair (new_let2, ScmNil)) in
-        tag_parse app)
+        tag_parse new_let)
+(*        let new_let2 = ScmPair (ScmSymbol ("let"), ScmPair (ScmNil, exprs)) in*)
+(*        let app = ScmPair (new_let, ScmPair (new_let2, ScmNil)) in*)
+(*        tag_parse app)*)
     | ScmPair (ScmSymbol "and", ScmNil) -> tag_parse (ScmBoolean(true))
     | ScmPair (ScmSymbol "and", exprs) ->
        (match (scheme_list_to_ocaml exprs) with
