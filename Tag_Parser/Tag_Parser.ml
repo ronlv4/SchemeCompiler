@@ -264,12 +264,15 @@ module Tag_Parser : TAG_PARSER = struct
                              (ScmPair(ScmPair (var, ScmPair (arg, ScmNil)),ScmNil), new_exprs)))
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
     (* macro expand letrec into a let with all vars, body with set! and then empty let with exprs *)
-    let new_ribs = let_rec_vars ribs in
-    let new_vals = let_rec_vals ribs in
-    let new_let = ScmPair (ScmSymbol ("let"), ScmPair (new_ribs, new_vals)) in
-    let new_let2 = ScmPair (ScmSymbol ("let"), ScmPair (ScmNil, exprs)) in
-    let app = ScmPair (new_let, ScmPair (new_let2, ScmNil)) in
-    tag_parse app
+      match ribs with
+      | ScmNil -> ScmNil
+      | _ ->
+        let new_ribs = let_rec_vars ribs in
+        let new_vals = let_rec_vals ribs in
+        let new_let = ScmPair (ScmSymbol ("let"), ScmPair (new_ribs, new_vals)) in
+        let new_let2 = ScmPair (ScmSymbol ("let"), ScmPair (ScmNil, exprs)) in
+        let app = ScmPair (new_let, ScmPair (new_let2, ScmNil)) in
+        tag_parse app
     | ScmPair (ScmSymbol "and", ScmNil) -> tag_parse (ScmBoolean(true))
     | ScmPair (ScmSymbol "and", exprs) ->
        (match (scheme_list_to_ocaml exprs) with
