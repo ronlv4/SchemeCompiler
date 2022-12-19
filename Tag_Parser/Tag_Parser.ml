@@ -268,7 +268,7 @@ module Tag_Parser : TAG_PARSER = struct
       | ScmNil -> tag_parse (ScmPair (ScmSymbol ("let"), ScmPair (ScmNil, exprs)))
       | _ ->
         let new_ribs = let_rec_vars ribs in
-        let new_vals = let_rec_vals ribs in
+        let new_vals = let_rec_vals ribs exprs in
         let new_let = ScmPair (ScmSymbol ("let"), ScmPair (new_ribs, new_vals)) in
         tag_parse new_let)
 (*        let new_let2 = ScmPair (ScmSymbol ("let"), ScmPair (ScmNil, exprs)) in*)
