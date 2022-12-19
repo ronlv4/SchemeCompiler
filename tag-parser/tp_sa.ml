@@ -248,25 +248,14 @@ module Tag_Parser : TAG_PARSER = struct
     let lambda = ScmPair(ScmSymbol("lambda"),ScmPair(vars,exprs)) in
     let app = ScmPair(lambda,vals) in
     tag_parse app
-(*        (match ribs with*)
-(*            | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))*)
-(*            | _ -> tag_parse (ScmPair(ScmPair(ScmSymbol("let"), ScmPair((get_vars ribs),exprs)),(get_vals ribs))))*)
     | ScmPair (ScmSymbol "let*", ScmPair (ScmNil, exprs)) ->
-       tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
-    | ScmPair (ScmSymbol "let*",
-               ScmPair
-                 (ScmPair
-                    (ScmPair (var, ScmPair (value, ScmNil)), ScmNil),
-                  exprs)) ->
-                  tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmPair(ScmPair(var, ScmPair(value, ScmNil)),ScmNil), exprs)))
-    | ScmPair (ScmSymbol "let*",
-               ScmPair (ScmPair (ScmPair (var,
-                                          ScmPair (arg, ScmNil)),
-                                 ribs),
-                        exprs)) ->
-                        let letSRib = ScmPair(ScmPair(var, ScmPair(arg,ScmNil)),ScmNil) in
-                        let letSBody = ScmPair(ScmPair(ScmSymbol("let"),ScmPair(ribs,exprs)),ScmNil) in
-                        tag_parse(ScmPair(ScmSymbol("let"),ScmPair(letSRib,letSBody)))
+       tag_parse (ScmPair (ScmSymbol("let"), ScmPair (ScmNil, exprs)))
+    | ScmPair (ScmSymbol "let*", ScmPair (ScmPair (ScmPair (var, ScmPair (value, ScmNil)), ScmNil), exprs)) ->
+        tag_parse (ScmPair(ScmSymbol("let"), ScmPair (ScmPair (ScmPair (var, ScmPair (value, ScmNil)),ScmNil), exprs)))
+    | ScmPair (ScmSymbol "let*", ScmPair (ScmPair (ScmPair (var, ScmPair (arg, ScmNil)), ribs), exprs)) ->
+                        let letSRib = ScmPair (ScmPair (var, ScmPair (arg, ScmNil)), ScmNil) in
+                        let letSBody = ScmPair (ScmSymbol ("let*"), ScmPair (ribs, exprs)) in
+                        tag_parse (ScmPair(ScmSymbol("let"), ScmPair (letSRib,letSBody)))
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
         (match ribs with
             | ScmNil -> tag_parse (ScmPair(ScmSymbol("let"), ScmPair(ScmNil, exprs)))
