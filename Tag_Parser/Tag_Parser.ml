@@ -265,7 +265,7 @@ module Tag_Parser : TAG_PARSER = struct
     | ScmPair (ScmSymbol "letrec", ScmPair (ribs, exprs)) ->
     (* macro expand letrec into a let with all vars, body with set! and then empty let with exprs *)
       match ribs with
-      | ScmNil -> ScmNil
+      | ScmNil -> tag_parse (ScmPair (ScmSymbol("let"), ScmPair (ScmNil, exprs)))
       | _ ->
         let new_ribs = let_rec_vars ribs in
         let new_vals = let_rec_vals ribs in
