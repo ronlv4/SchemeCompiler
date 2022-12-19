@@ -38,7 +38,6 @@ module type TAG_PARSER = sig
 end;;
 
 module Tag_Parser : TAG_PARSER = struct
-module Tag_Parser = struct
   open Reader;;
 
   let reserved_word_list =

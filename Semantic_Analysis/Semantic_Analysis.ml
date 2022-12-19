@@ -31,7 +31,6 @@ module type SEMANTIC_ANALYSIS = sig
 end;; (* end of signature SEMANTIC_ANALYSIS *)
 
 module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
-module Semantic_Analysis = struct
 
   let rec lookup_in_rib name = function
     | [] -> None
