@@ -1,4 +1,9 @@
 #use "/home/ronlv4/repos/compilation_assignment/Semantic_Analysis/sa_tests.ml";;
+open Reader;;
+open Tag_Parser;;
+open Semantic_Analysis;;
+
+exception X_test_failed of string;;
 
 let test_sa str expected_success expected_result =
         try let result =  semantics (tag_parse (nt_sexpr str 0).found) in

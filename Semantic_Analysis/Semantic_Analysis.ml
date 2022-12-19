@@ -1,4 +1,5 @@
 #use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/Tag_Parser.ml";;
+open Reader;;
 
 type app_kind = Tail_Call | Non_Tail_Call;;
 
@@ -31,6 +32,7 @@ module type SEMANTIC_ANALYSIS = sig
 end;; (* end of signature SEMANTIC_ANALYSIS *)
 
 module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
+  open Reader;;
   let rec lookup_in_rib name = function
     | [] -> None
     | name' :: rib ->
