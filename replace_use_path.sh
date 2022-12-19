@@ -11,7 +11,7 @@ else
   path=$or_path
 fi
 
-for file in $(find ${path} -name "*.c" -o -name "*.h")
+for file in $(find ${path} -name "*.ml" -type f)
 do
   sed -i "s|${current_path}|${path}|g" $file
 done
