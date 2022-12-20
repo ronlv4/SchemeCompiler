@@ -37,7 +37,9 @@ module type READER = sig
   val scheme_sexpr_list_of_sexpr_list : sexpr list -> sexpr
 end;; (* end of READER signature *)
 
-module Reader : READER = struct
+(* TODO: restore the sig to the module *)
+(*module Reader : READER = struct*)
+module Reader = struct
   open PC;;
 
   type string_part =
