@@ -18,11 +18,7 @@ let convert_to_string (sexpr : sexpr) : string =
 
 let read_in_chez_scheme (input_string : string) : sexpr =
   let command = Printf.sprintf "(read %s)" (String.escaped input_string) in
-  let process = Unix.create_process
-      ~prog:"scheme"
-      ~args:["--quiet"; "-e"; command]
-      ()
-  in
+  let process = Unix.create_process "scheme" [| "scheme" |] Unix.stdin Unix.stdout Unix.stderr in
   let output = Process.read_output_line_exn process in
   (* parse the output string to produce an s-expression *)
   (nt_sexpr output 0).found;;
