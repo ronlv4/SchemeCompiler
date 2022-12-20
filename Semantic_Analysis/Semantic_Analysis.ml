@@ -186,19 +186,21 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
                      List.map (fun bj -> (ai, bj)) bs')
                    as');;
 
-
 (* should_box_var: string -> expr' -> string list -> bool *)
   let should_box_var name expr params =
     match (find_reads_and_writes name expr params) with
     | ([], _) -> false
     | (_, []) -> false
     | (reads, writes) ->
-         let reads' = List.map (fun (v, envs) -> (v, List.length envs)) reads in
-         let writes' = List.map (fun (v, envs) -> (v, List.length envs)) writes in
+    (* (lambda (x) (list (lambda () x) (lambda (y) (set! x y)))) - should box x, should not box y *)
+    (* (lambda (x) (lambda (u) (u (lambda () x) (lambda (y) (set! x y))))) - should not box x, should not box y, should not box u*)
+         let reads' = List.map (fun (v, env) -> (v, List.length env)) reads in
+         let writes' = List.map (fun (v, env) -> (v, List.length env)) writes in
          let cross = cross_product reads' writes' in
-         let cross' = List.filter (fun ((v1, n1), (v2, n2)) -> v1 = v2) cross in
-         let cross'' = List.filter (fun ((v1, n1), (v2, n2)) -> n1 > n2) cross' in
-         cross'' <> [];;
+         let cross' = List.filter (fun ((v1, l1), (v2, l2)) -> v1 = v2 && l1 > l2) cross in
+         match cross' with
+         | [] -> false
+         | _ -> true;;
   let box_sets_and_gets name body =
     let rec run expr =
       match expr with
