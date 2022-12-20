@@ -192,8 +192,6 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
     | ([], _) -> false
     | (_, []) -> false
     | (reads, writes) ->
-    (* (lambda (x) (list (lambda () x) (lambda (y) (set! x y)))) - should box x, should not box y *)
-    (* (lambda (x) (lambda (u) (u (lambda () x) (lambda (y) (set! x y))))) - should not box x, should not box y, should not box u*)
          let reads' = List.map (fun (v, env) -> (v, List.length env)) reads in
          let writes' = List.map (fun (v, env) -> (v, List.length env)) writes in
          let cross = cross_product reads' writes' in
