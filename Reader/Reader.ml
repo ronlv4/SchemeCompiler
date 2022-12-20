@@ -9,8 +9,8 @@ let rec is_member a = function
 
 let rec gcd a b =
   match (a, b) with
-  | (0, b) -> b
-  | (a, 0) -> a
+  | (0, b) -> Int.abs b
+  | (a, 0) -> Int.abs a
   | (a, b) -> gcd b (a mod b);;
 
 type scm_number =
