@@ -17,7 +17,7 @@ let convert_to_string (sexpr : sexpr) : string =
   string_of_sexpr sexpr
 
 let read_in_chez_scheme (input_string : string) : sexpr =
-  let command = sprintf "(read %s)" (String.escaped input_string) in
+  let command = Printf.sprintf "(read %s)" (String.escaped input_string) in
   let process = Process.create
       ~prog:"scheme"
       ~args:["--quiet"; "-e"; command]
