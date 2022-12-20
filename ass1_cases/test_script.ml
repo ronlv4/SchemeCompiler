@@ -1,5 +1,5 @@
-open Core
-open Pervasives
+open Pervasives;;
+Open Reader;;
 
 let read_input_file (input_file : string) : string =
   let chan = open_in input_file in
@@ -9,7 +9,7 @@ let read_input_file (input_file : string) : string =
 
 let parse_sexpr (input_string : string) : sexpr =
   (* call the Reader module to parse the input string and return the resulting s-expression *)
-  reader_module.parse input_string
+  (nt_sexpr input_string 0).found;;
 
 let convert_to_string (sexpr : sexpr) : string =
   string_of_expr sexpr
@@ -23,7 +23,7 @@ let read_in_chez_scheme (input_string : string) : sexpr =
   in
   let output = Process.read_output_line_exn process in
   (* parse the output string to produce an s-expression *)
-  reader_module.parse output
+  (nt_sexpr output 0).found;;
 
 let compare_sexprs (sexpr1 : sexpr) (sexpr2 : sexpr) : bool =
   (* compare the two s-expressions and return true if they are equal, false otherwise *)
