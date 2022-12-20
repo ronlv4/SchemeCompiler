@@ -736,7 +736,7 @@ let rec sexpr_of_expr' = function
   | ScmOr'([expr']) -> sexpr_of_expr' expr'
   | ScmOr'(exprs) ->
      ScmPair (ScmSymbol "or",
-              scheme_sexpr_list_of_sexpr_list
+              Reader.scheme_sexpr_list_of_sexpr_list
                 (List.map sexpr_of_expr' exprs))
   | ScmSeq' ([]) -> ScmVoid
   | ScmSeq' ([expr]) -> sexpr_of_expr' expr
