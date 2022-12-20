@@ -186,19 +186,34 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
                      List.map (fun bj -> (ai, bj)) bs')
                    as');;
 
-(* should_box_var: string -> expr' -> string list -> bool *)
+  let rec last env =
+  match env with
+     |[] -> []
+     |env::envs ->
+        match envs with
+        |[] -> env
+        |envz -> last envs;;
+
   let should_box_var name expr params =
-    match (find_reads_and_writes name expr params) with
-    | ([], _) -> false
-    | (_, []) -> false
-    | (reads, writes) ->
-         let reads' = List.map (fun (v, env) -> (v, List.length env)) reads in
-         let writes' = List.map (fun (v, env) -> (v, List.length env)) writes in
-         let cross = cross_product reads' writes' in
-         let cross' = List.filter (fun ((v1, l1), (v2, l2)) -> v1 = v2 && l1 > l2) cross in
-         match cross' with
-         | [] -> false
-         | _ -> true;;
+     let reads, writes = find_reads_and_writes name expr params in
+     let renv = List.map(fun (x,y)->y) reads in
+     let wenv = List.map(fun (x,y)->y) writes in
+     List.exists (fun (env_r) -> List.exists (fun (env_w) -> last env_r != last env_w) wenv) renv
+     ;;
+
+(* should_box_var: string -> expr' -> string list -> bool *)
+(*  let should_box_var name expr params =*)
+(*    match (find_reads_and_writes name expr params) with*)
+(*    | ([], _) -> false*)
+(*    | (_, []) -> false*)
+(*    | (reads, writes) ->*)
+(*         let reads' = List.map (fun (v, env) -> (v, List.length env)) reads in*)
+(*         let writes' = List.map (fun (v, env) -> (v, List.length env)) writes in*)
+(*         let cross = cross_product reads' writes' in*)
+(*         let cross' = List.filter (fun ((v1, l1), (v2, l2)) -> v1 = v2 && l1 > l2) cross in*)
+(*         match cross' with*)
+(*         | [] -> false*)
+(*         | _ -> true;;*)
   let box_sets_and_gets name body =
     let rec run expr =
       match expr with
