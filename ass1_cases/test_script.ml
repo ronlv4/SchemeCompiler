@@ -1,5 +1,5 @@
 open Pervasives;;
-Open Reader;;
+open Reader;;
 
 let read_input_file (input_file : string) : string =
   let chan = open_in input_file in
