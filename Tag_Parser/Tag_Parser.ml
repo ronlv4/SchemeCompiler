@@ -2,14 +2,13 @@
 
 exception X_not_yet_implemented;;
 exception X_this_should_not_happen of string;;
+exception X_syntax of string;;
 
 let rec is_member a = function
   | [] -> false
   | a' :: s -> (a = a') || (is_member a s);;
 
 (* the tag-parser *)
-
-exception X_syntax of string;;
 
 type var =
   | Var of string;;
@@ -32,9 +31,6 @@ type expr =
 module type TAG_PARSER = sig
   val tag_parse : sexpr -> expr
   val print_expr : out_channel -> expr -> unit
-  val print_exprs : out_channel -> expr list -> unit
-  val sprint_expr : 'a -> expr -> string
-  val sprint_exprs : 'a -> expr list -> string
 end;;
 
 module Tag_Parser : TAG_PARSER = struct
@@ -301,102 +297,105 @@ module Tag_Parser : TAG_PARSER = struct
                           "Unknown form: \n%a\n"
                           Reader.sprint_sexpr sexpr));;
 
-  let rec sexpr_of_expr = function
-    | ScmConst(ScmVoid) -> ScmVoid
-    | ScmConst((ScmBoolean _) as sexpr) -> sexpr
-    | ScmConst((ScmChar _) as sexpr) -> sexpr
-    | ScmConst((ScmString _) as sexpr) -> sexpr
-    | ScmConst((ScmNumber _) as sexpr) -> sexpr
-    | ScmConst((ScmSymbol _) as sexpr)
-    | ScmConst(ScmNil as sexpr)
-    | ScmConst(ScmPair _ as sexpr)
-    | ScmConst((ScmVector _) as sexpr) -> ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil))
-    | ScmVarGet(Var var) -> ScmSymbol var
-    | ScmIf(test, dit, ScmConst ScmVoid) ->
-        let test = sexpr_of_expr test in
-        let dit = sexpr_of_expr dit in
-        ScmPair (ScmSymbol "if", ScmPair (test, ScmPair (dit, ScmNil)))
-    | ScmIf(e1, e2, ScmConst (ScmBoolean false)) ->
-        let e1 = sexpr_of_expr e1 in
-        (match (sexpr_of_expr e2) with
-            | ScmPair (ScmSymbol "and", exprs) -> ScmPair (ScmSymbol "and", ScmPair(e1, exprs))
-            | e2 -> ScmPair (ScmSymbol "and", ScmPair (e1, ScmPair (e2, ScmNil))))
-    | ScmIf(test, dit, dif) ->
-     let test = sexpr_of_expr test in
-     let dit = sexpr_of_expr dit in
-     let dif = sexpr_of_expr dif in
-     ScmPair (ScmSymbol "if", ScmPair (test, ScmPair (dit, ScmPair (dif, ScmNil))))
-    | ScmOr([]) -> ScmBoolean false
-    | ScmOr([expr]) -> sexpr_of_expr expr
-    | ScmOr(exprs) ->
-      ScmPair (ScmSymbol "or",
-        scheme_sexpr_list_of_sexpr_list
-        (List.map sexpr_of_expr exprs))
-    | ScmSeq([]) -> ScmVoid
-    | ScmSeq([expr]) -> sexpr_of_expr expr
-    | ScmSeq(exprs) ->
-      ScmPair(ScmSymbol "begin",
-        scheme_sexpr_list_of_sexpr_list
-        (List.map sexpr_of_expr exprs))
-    | ScmVarSet(Var var, expr) ->
-      let var = ScmSymbol var in
-      let expr = sexpr_of_expr expr in
-      ScmPair (ScmSymbol "set!", ScmPair (var, ScmPair (expr, ScmNil)))
-    | ScmVarDef(Var var, expr) ->
-      let var = ScmSymbol var in
-      let expr = sexpr_of_expr expr in
-      ScmPair (ScmSymbol "define", ScmPair (var, ScmPair (expr, ScmNil)))
-    | ScmLambda(params, Simple, expr) ->
-      let params = scheme_sexpr_list_of_sexpr_list
-        (List.map (fun str -> ScmSymbol str) params) in
-      let expr = sexpr_of_expr expr in
-      ScmPair (ScmSymbol "lambda",
-        ScmPair (params,
-          ScmPair (expr, ScmNil)))
-    | ScmLambda([], Opt opt, expr) ->
-      let expr = sexpr_of_expr expr in
-      let opt = ScmSymbol opt in
-      ScmPair (ScmSymbol "lambda", ScmPair (opt, ScmPair (expr, ScmNil)))
-    | ScmLambda(params, Opt opt, expr) ->
-      let expr = sexpr_of_expr expr in
-      let opt = ScmSymbol opt in
-      let params = List.fold_right
-                    (fun param sexpr -> ScmPair(ScmSymbol param, sexpr))
-                    params
-                    opt in
-      ScmPair (ScmSymbol "lambda", ScmPair (params, ScmPair (expr, ScmNil)))
-    | ScmApplic (ScmLambda (params, Simple, expr), args) ->
-      let ribs = scheme_sexpr_list_of_sexpr_list
-        (List.map2
-        (fun param arg -> ScmPair (ScmSymbol param, ScmPair (arg, ScmNil)))
-        params
-        (List.map sexpr_of_expr args)) in
-      let expr = sexpr_of_expr expr in
-      ScmPair (ScmSymbol "let", ScmPair (ribs, ScmPair (expr, ScmNil)))
-    | ScmApplic (proc, args) ->
-      let proc = sexpr_of_expr proc in
-      let args = scheme_sexpr_list_of_sexpr_list (List.map sexpr_of_expr args) in
-      ScmPair (proc, args)
-    | _ -> raise (X_syntax "Unknown form");;
-
-  let string_of_expr expr =
-      Printf.sprintf "%a" sprint_sexpr (sexpr_of_expr expr);;
-
   let print_expr chan expr =
     output_string chan
       (string_of_expr expr);;
 
-  let print_exprs chan exprs =
-    output_string chan
-      (Printf.sprintf "[%s]"
-         (String.concat "; "
-            (List.map string_of_expr exprs)));;
-
-  let sprint_expr _ expr = string_of_expr expr;;
-
-  let sprint_exprs chan exprs =
-    Printf.sprintf "[%s]"
-      (String.concat "; "
-        (List.map string_of_expr exprs));;
-
 end;; (* struct Tag_Parser *)
+
+let rec sexpr_of_expr = function
+  | ScmConst(ScmVoid) -> ScmVoid
+  | ScmConst((ScmBoolean _) as sexpr) -> sexpr
+  | ScmConst((ScmChar _) as sexpr) -> sexpr
+  | ScmConst((ScmString _) as sexpr) -> sexpr
+  | ScmConst((ScmNumber _) as sexpr) -> sexpr
+  | ScmConst((ScmSymbol _) as sexpr)
+  | ScmConst(ScmNil as sexpr)
+  | ScmConst(ScmPair _ as sexpr)
+  | ScmConst((ScmVector _) as sexpr) -> ScmPair (ScmSymbol "quote", ScmPair (sexpr, ScmNil))
+  | ScmVarGet(Var var) -> ScmSymbol var
+  | ScmIf(test, dit, ScmConst ScmVoid) ->
+      let test = sexpr_of_expr test in
+      let dit = sexpr_of_expr dit in
+      ScmPair (ScmSymbol "if", ScmPair (test, ScmPair (dit, ScmNil)))
+  | ScmIf(e1, e2, ScmConst (ScmBoolean false)) ->
+      let e1 = sexpr_of_expr e1 in
+      (match (sexpr_of_expr e2) with
+          | ScmPair (ScmSymbol "and", exprs) -> ScmPair (ScmSymbol "and", ScmPair(e1, exprs))
+          | e2 -> ScmPair (ScmSymbol "and", ScmPair (e1, ScmPair (e2, ScmNil))))
+  | ScmIf(test, dit, dif) ->
+   let test = sexpr_of_expr test in
+   let dit = sexpr_of_expr dit in
+   let dif = sexpr_of_expr dif in
+   ScmPair (ScmSymbol "if", ScmPair (test, ScmPair (dit, ScmPair (dif, ScmNil))))
+  | ScmOr([]) -> ScmBoolean false
+  | ScmOr([expr]) -> sexpr_of_expr expr
+  | ScmOr(exprs) ->
+    ScmPair (ScmSymbol "or",
+      scheme_sexpr_list_of_sexpr_list
+      (List.map sexpr_of_expr exprs))
+  | ScmSeq([]) -> ScmVoid
+  | ScmSeq([expr]) -> sexpr_of_expr expr
+  | ScmSeq(exprs) ->
+    ScmPair(ScmSymbol "begin",
+      scheme_sexpr_list_of_sexpr_list
+      (List.map sexpr_of_expr exprs))
+  | ScmVarSet(Var var, expr) ->
+    let var = ScmSymbol var in
+    let expr = sexpr_of_expr expr in
+    ScmPair (ScmSymbol "set!", ScmPair (var, ScmPair (expr, ScmNil)))
+  | ScmVarDef(Var var, expr) ->
+    let var = ScmSymbol var in
+    let expr = sexpr_of_expr expr in
+    ScmPair (ScmSymbol "define", ScmPair (var, ScmPair (expr, ScmNil)))
+  | ScmLambda(params, Simple, expr) ->
+    let params = scheme_sexpr_list_of_sexpr_list
+      (List.map (fun str -> ScmSymbol str) params) in
+    let expr = sexpr_of_expr expr in
+    ScmPair (ScmSymbol "lambda",
+      ScmPair (params,
+        ScmPair (expr, ScmNil)))
+  | ScmLambda([], Opt opt, expr) ->
+    let expr = sexpr_of_expr expr in
+    let opt = ScmSymbol opt in
+    ScmPair (ScmSymbol "lambda", ScmPair (opt, ScmPair (expr, ScmNil)))
+  | ScmLambda(params, Opt opt, expr) ->
+    let expr = sexpr_of_expr expr in
+    let opt = ScmSymbol opt in
+    let params = List.fold_right
+                  (fun param sexpr -> ScmPair(ScmSymbol param, sexpr))
+                  params
+                  opt in
+    ScmPair (ScmSymbol "lambda", ScmPair (params, ScmPair (expr, ScmNil)))
+  | ScmApplic (ScmLambda (params, Simple, expr), args) ->
+    let ribs = scheme_sexpr_list_of_sexpr_list
+      (List.map2
+      (fun param arg -> ScmPair (ScmSymbol param, ScmPair (arg, ScmNil)))
+      params
+      (List.map sexpr_of_expr args)) in
+    let expr = sexpr_of_expr expr in
+    ScmPair (ScmSymbol "let", ScmPair (ribs, ScmPair (expr, ScmNil)))
+  | ScmApplic (proc, args) ->
+    let proc = sexpr_of_expr proc in
+    let args = scheme_sexpr_list_of_sexpr_list (List.map sexpr_of_expr args) in
+    ScmPair (proc, args)
+  | _ -> raise (X_syntax "Unknown form");;
+
+let string_of_expr expr =
+    Printf.sprintf "%a" sprint_sexpr (sexpr_of_expr expr);;
+
+(* print_exprs : out_channel -> expr list -> unit *)
+let print_exprs chan exprs =
+  output_string chan
+    (Printf.sprintf "[%s]"
+       (String.concat "; "
+          (List.map string_of_expr exprs)));;
+
+(* sprint_expr : 'a -> expr -> string *)
+let sprint_expr _ expr = string_of_expr expr;;
+
+(* sprint_exprs : 'a -> expr list -> string *)
+let sprint_exprs chan exprs =
+  Printf.sprintf "[%s]"
+    (String.concat "; "
+      (List.map string_of_expr exprs));;
