@@ -326,13 +326,13 @@ let rec sexpr_of_expr = function
   | ScmOr([expr]) -> sexpr_of_expr expr
   | ScmOr(exprs) ->
     ScmPair (ScmSymbol "or",
-      scheme_sexpr_list_of_sexpr_list
+      Reader.scheme_sexpr_list_of_sexpr_list
       (List.map sexpr_of_expr exprs))
   | ScmSeq([]) -> ScmVoid
   | ScmSeq([expr]) -> sexpr_of_expr expr
   | ScmSeq(exprs) ->
     ScmPair(ScmSymbol "begin",
-      scheme_sexpr_list_of_sexpr_list
+      Reader.scheme_sexpr_list_of_sexpr_list
       (List.map sexpr_of_expr exprs))
   | ScmVarSet(Var var, expr) ->
     let var = ScmSymbol var in
@@ -343,7 +343,7 @@ let rec sexpr_of_expr = function
     let expr = sexpr_of_expr expr in
     ScmPair (ScmSymbol "define", ScmPair (var, ScmPair (expr, ScmNil)))
   | ScmLambda(params, Simple, expr) ->
-    let params = scheme_sexpr_list_of_sexpr_list
+    let params = Reader.scheme_sexpr_list_of_sexpr_list
       (List.map (fun str -> ScmSymbol str) params) in
     let expr = sexpr_of_expr expr in
     ScmPair (ScmSymbol "lambda",
@@ -362,7 +362,7 @@ let rec sexpr_of_expr = function
                   opt in
     ScmPair (ScmSymbol "lambda", ScmPair (params, ScmPair (expr, ScmNil)))
   | ScmApplic (ScmLambda (params, Simple, expr), args) ->
-    let ribs = scheme_sexpr_list_of_sexpr_list
+    let ribs = Reader.scheme_sexpr_list_of_sexpr_list
       (List.map2
       (fun param arg -> ScmPair (ScmSymbol param, ScmPair (arg, ScmNil)))
       params
@@ -371,7 +371,7 @@ let rec sexpr_of_expr = function
     ScmPair (ScmSymbol "let", ScmPair (ribs, ScmPair (expr, ScmNil)))
   | ScmApplic (proc, args) ->
     let proc = sexpr_of_expr proc in
-    let args = scheme_sexpr_list_of_sexpr_list (List.map sexpr_of_expr args) in
+    let args = Reader.scheme_sexpr_list_of_sexpr_list (List.map sexpr_of_expr args) in
     ScmPair (proc, args)
   | _ -> raise (X_syntax "Unknown form");;
 
