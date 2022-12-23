@@ -291,7 +291,6 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
          | _, _ -> ScmSeq'(new_sets @ [new_body]) in
        ScmLambda' (params, Simple, new_body)
     | ScmLambda' (params, Opt opt, expr') ->
-      let params = (params @ [opt]) in
       let box_these =
         List.filter
           (fun param -> should_box_var param expr' (params @ [opt]))
