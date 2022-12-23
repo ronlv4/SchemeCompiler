@@ -262,11 +262,13 @@ module Reader : READER = struct
     let nt1 = pack nt1 (fun (_, ch) -> ScmChar ch) in
     nt1 str
   and nt_symbol_char str =
-    let nt1 = range_ci 'a' 'z' in
-    let nt1 = pack nt1 Char.lowercase_ascii in
-    let nt2 = range '0' '9' in
-    let nt3 = one_of "!$^*_-+=<>?/" in
-    let nt1 = disj nt1 (disj nt2 nt3) in
+    let nt1 = one_of "!$%&*/:<=>?~_^" in
+    let nt2 = one_of ".+@-" in
+    let char_digit = range '0' '9' in
+    let letter = range_ci 'a' 'z' in
+    let initial = disj letter nt1 in
+    let subsequent = disj_list [initial; char_digit; nt2] in
+    let nt1 = caten initial (star subsequent) in
     nt1 str
   and nt_symbol str =
     let nt1 = plus nt_symbol_char in
