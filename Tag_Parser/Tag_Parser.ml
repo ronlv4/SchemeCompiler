@@ -295,7 +295,7 @@ module Tag_Parser : TAG_PARSER = struct
     | sexpr -> raise (X_syntax
                        (Printf.sprintf
                           "Unknown form: \n%a\n"
-                          Reader.sprint_sexpr sexpr));;
+                          sprint_sexpr sexpr));;
 
   let print_expr chan expr =
     output_string chan
