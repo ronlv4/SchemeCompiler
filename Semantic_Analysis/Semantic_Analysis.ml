@@ -295,7 +295,7 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
       let box_these =
         List.filter
           (fun param -> should_box_var param expr' (params @ [opt]))
-          params in
+          (params @ [opt]) in
       let new_body =
         List.fold_left
           (fun body name -> box_sets_and_gets name body)
