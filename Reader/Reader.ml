@@ -270,7 +270,7 @@ module Reader : READER = struct
     let initial = disj letter nt1 in
     let subsequent = disj_list [initial; char_digit; nt2] in
     let nt1 = caten initial (star subsequent) in
-    let nt1 = pack nt1 (fun (ch, str) -> ch ^ str) in
+    let nt1 = pack nt1 (fun (ch, str) -> String.make 1 ch ^ str) in
     nt1 str
   and nt_symbol str =
     let nt1 = plus nt_symbol_char in
