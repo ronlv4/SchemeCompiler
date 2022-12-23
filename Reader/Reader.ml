@@ -269,9 +269,9 @@ module Reader : READER = struct
     let letter = pack letter Char.lowercase_ascii in
     let initial = disj letter nt1 in
     let subsequent = disj initial (disj char_digit nt2) in
-(*    let nt1 = caten initial (star subsequent) in*)
+    let nt1 = caten initial (star subsequent) in
 (*    let nt1 = pack nt1 (fun (ch, str) -> ch :: str) in*)
-    subsequent str
+    nt1 str
   and nt_symbol str =
     let nt1 = plus nt_symbol_char in
     let nt1 = pack nt1 (fun chars -> ScmSymbol (string_of_list chars)) in
