@@ -273,7 +273,6 @@ module Reader : READER = struct
     let nt2 = one_of ".+@-" in
     let char_digit = range '0' '9' in
     let letter = range_ci 'a' 'z' in
-    let letter = pack letter Char.lowercase_ascii in
     let initial = disj letter nt1 in
     let subsequent = disj initial (disj char_digit nt2) in
     let nt1 = caten initial (star subsequent) in
