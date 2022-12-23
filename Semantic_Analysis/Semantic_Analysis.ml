@@ -1,5 +1,4 @@
 #use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/Tag_Parser.ml";;
-open Reader;;
 
 type app_kind = Tail_Call | Non_Tail_Call;;
 
@@ -414,7 +413,7 @@ let rec sexpr_of_expr' = function
   | _ -> raise X_not_yet_implemented;;
 
 let string_of_expr' expr =
-  Printf.sprintf "%a" Reader.sprint_sexpr (sexpr_of_expr' expr);;
+  Printf.sprintf "%a" sprint_sexpr (sexpr_of_expr' expr);;
 
 let print_expr' chan expr =
   output_string chan
