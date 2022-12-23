@@ -353,13 +353,13 @@ let rec sexpr_of_expr' = function
   | ScmOr'([expr']) -> sexpr_of_expr' expr'
   | ScmOr'(exprs) ->
      ScmPair (ScmSymbol "or",
-              scheme_sexpr_list_of_sexpr_list
+              Reader.scheme_sexpr_list_of_sexpr_list
                 (List.map sexpr_of_expr' exprs))
   | ScmSeq' ([]) -> ScmVoid
   | ScmSeq' ([expr]) -> sexpr_of_expr' expr
   | ScmSeq' (exprs) ->
      ScmPair (ScmSymbol "begin",
-              scheme_sexpr_list_of_sexpr_list
+              Reader.scheme_sexpr_list_of_sexpr_list
                 (List.map sexpr_of_expr' exprs))
   | ScmVarSet' (var, expr) ->
      let var = sexpr_of_var' var in
@@ -371,7 +371,7 @@ let rec sexpr_of_expr' = function
      ScmPair (ScmSymbol "define", ScmPair (var, ScmPair (expr, ScmNil)))
   | ScmLambda' (params, Simple, expr) ->
      let expr = sexpr_of_expr' expr in
-     let params = scheme_sexpr_list_of_sexpr_list
+     let params = Reader.scheme_sexpr_list_of_sexpr_list
                     (List.map (fun str -> ScmSymbol str) params) in
      ScmPair (ScmSymbol "lambda",
               ScmPair (params,
@@ -393,7 +393,7 @@ let rec sexpr_of_expr' = function
        (ScmSymbol "lambda", ScmPair (params, ScmPair (expr, ScmNil)))
   | ScmApplic' (ScmLambda' (params, Simple, expr), args, app_kind) ->
      let ribs =
-       scheme_sexpr_list_of_sexpr_list
+       Reader.scheme_sexpr_list_of_sexpr_list
          (List.map2
             (fun param arg -> ScmPair (ScmSymbol param, ScmPair (arg, ScmNil)))
             params
@@ -406,7 +406,7 @@ let rec sexpr_of_expr' = function
   | ScmApplic' (proc, args, app_kind) ->
      let proc = sexpr_of_expr' proc in
      let args =
-       scheme_sexpr_list_of_sexpr_list
+       Reader.scheme_sexpr_list_of_sexpr_list
          (List.map sexpr_of_expr' args) in
      ScmPair (proc, args)
   (* for reversing macro-expansion... *)
