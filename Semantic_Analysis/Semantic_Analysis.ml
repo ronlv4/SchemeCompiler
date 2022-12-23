@@ -307,7 +307,7 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
           | [], _ -> new_body
           | _, ScmSeq' exprs -> ScmSeq' (new_sets @ exprs)
           | _, _ -> ScmSeq'(new_sets @ [new_body]) in
-      ScmLambda' (params, Simple, new_body)
+      ScmLambda' (params, Opt opt, new_body)
     | ScmApplic' (proc, args, app_kind) ->
        ScmApplic' (auto_box proc, List.map auto_box args, app_kind);;
 
