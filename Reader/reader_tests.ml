@@ -34,7 +34,6 @@ let success_tests = [
         {str = "00001234" ; start_index = 0 ; expected_result = {index_from = 0; index_to = 8; found = ScmNumber (ScmRational (1234, 1))}} ;
         {str = "00001234e0" ; start_index = 0 ; expected_result = {index_from = 0; index_to = 10; found = ScmNumber (ScmReal 1234.)}} ;
         {str = "2/3" ; start_index = 0 ; expected_result = {index_from = 0; index_to = 3; found = ScmNumber (ScmRational (2, 3))}} ;
-        {str = "2/0" ; start_index = 0 ; expected_result = {index_from = 0; index_to = 3; found = ScmSymbol "2/0"}} ;
         {str = "2/6" ; start_index = 0 ; expected_result = {index_from = 0; index_to = 3; found = ScmNumber (ScmRational (1, 3))}} ;
         {str = "1.234" ; start_index = 0 ; expected_result = {index_from = 0; index_to = 5; found = ScmNumber (ScmReal 1.234)}} ;
         {str = "1.234e1" ; start_index = 0 ; expected_result = {index_from = 0; index_to = 7; found = ScmNumber (ScmReal 12.34)}} ;
