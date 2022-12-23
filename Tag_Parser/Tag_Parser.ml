@@ -30,7 +30,6 @@ type expr =
 
 module type TAG_PARSER = sig
   val tag_parse : sexpr -> expr
-  val print_expr : out_channel -> expr -> unit
 end;;
 
 module Tag_Parser : TAG_PARSER = struct
@@ -296,11 +295,6 @@ module Tag_Parser : TAG_PARSER = struct
                        (Printf.sprintf
                           "Unknown form: \n%a\n"
                           sprint_sexpr sexpr));;
-
-  let print_expr chan expr =
-    output_string chan
-      (string_of_expr expr);;
-
 end;; (* struct Tag_Parser *)
 
 let rec sexpr_of_expr = function
@@ -383,6 +377,11 @@ let rec sexpr_of_expr = function
 
 let string_of_expr expr =
     Printf.sprintf "%a" sprint_sexpr (sexpr_of_expr expr);;
+
+(* print_expr : out_channel -> expr -> unit *)
+let print_expr chan expr =
+    output_string chan
+      (string_of_expr expr);;
 
 (* print_exprs : out_channel -> expr list -> unit *)
 let print_exprs chan exprs =
