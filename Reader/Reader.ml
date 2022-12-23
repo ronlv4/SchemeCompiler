@@ -268,7 +268,7 @@ module Reader : READER = struct
     let letter = range_ci 'a' 'z' in
     let letter = pack letter Char.lowercase_ascii in
     let initial = disj letter nt1 in
-    let subsequent = disj_list [initial; char_digit; nt2] in
+    let subsequent = disj initial (disj char_digit nt2) in
     let nt1 = caten initial (star subsequent) in
     let nt1 = pack nt1 (fun (ch, str) -> ch :: str) in
     nt1 str
