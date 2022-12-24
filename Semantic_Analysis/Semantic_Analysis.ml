@@ -97,7 +97,7 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
       | (ScmBoxGet' _) as expr' -> expr'
       | ScmBoxSet' (var', expr') -> ScmVarSet'(var',run false expr')
       | ScmLambda' (params, Simple, expr) -> ScmLambda'(params,Simple, run true expr)
-      | ScmLambda' (params, Opt opt, expr) -> ScmLambda'(params,Opt opt, expr)
+      | ScmLambda' (params, Opt opt, expr) -> ScmLambda'(params,Opt opt, run true expr)
       | ScmApplic' (proc, args, app_kind) ->
          if in_tail
          then ScmApplic' (run false proc,
