@@ -185,20 +185,30 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
                      List.map (fun bj -> (ai, bj)) bs')
                    as');;
 
-  let rec last env =
-  match env with
-     |[] -> []
-     |env::envs ->
-        match envs with
-        |[] -> env
-        |envz -> last envs;;
+(*  let rec last env =*)
+(*  match env with*)
+(*     |[] -> []*)
+(*     |env::envs ->*)
+(*        match envs with*)
+(*        |[] -> env*)
+(*        |envz -> last envs;;*)
+(**)
+(*  let should_box_var name expr params =*)
+(*     let reads, writes = find_reads_and_writes name expr params in*)
+(*     let renv = List.map(fun (x,y)->y) reads in*)
+(*     let wenv = List.map(fun (x,y)->y) writes in*)
+(*     List.exists (fun (env_r) -> List.exists (fun (env_w) -> last env_r != last env_w) wenv) renv*)
+(*     ;;*)
 
   let should_box_var name expr params =
-     let reads, writes = find_reads_and_writes name expr params in
-     let renv = List.map(fun (x,y)->y) reads in
-     let wenv = List.map(fun (x,y)->y) writes in
-     List.exists (fun (env_r) -> List.exists (fun (env_w) -> last env_r != last env_w) wenv) renv
-     ;;
+    match (find_reads_and_writes name expr params) with
+    | ([], _) -> false
+    | (_, []) -> false
+    | (reads, writes) ->
+       let renv = List.map(fun (x,y)->y) reads in
+       let wenv = List.map(fun (x,y)->y) writes in
+       List.exists (fun (env_r) -> List.exists (fun (env_w) -> env_r != env_w) wenv) renv
+       ;;
 
 (* should_box_var: string -> expr' -> string list -> bool *)
 (*  let should_box_var name expr params =*)
