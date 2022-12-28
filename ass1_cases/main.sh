@@ -4,7 +4,7 @@ dir_student="in_to_student"
 dir_scheme="in_to_scheme"
 
 all_passed=true
-for file_name in $(ls ${dir_student})
+for file_name in $(ls ${dir_student} | grep -P ".out$")
 do
 	student_string=$(cat ${dir_student}/${file_name})
 	scheme_string=$(cat ${dir_scheme}/${file_name}) 
