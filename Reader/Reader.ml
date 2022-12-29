@@ -391,7 +391,7 @@ module Reader : READER = struct
         nt1 str
   and nt_list str =
     let nt1 = char '(' in
-    let nt2 = pack (caten nt_skip (char ')')) (fun _ -> ScmNil) in
+    let nt2 = pack (caten nt_skip_star (char ')')) (fun _ -> ScmNil) in
     let nt3 = plus nt_sexpr in
     let nt4 = pack (char ')' ) (fun _ -> ScmNil) in
     let nt5 = pack (caten (char '.') (caten nt_sexpr (char ')' ))) (fun (_, (sexpr, _)) -> sexpr) in
