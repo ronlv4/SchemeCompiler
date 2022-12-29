@@ -14,7 +14,7 @@
 (define (get-file-path-without-extension file-path)
   (let ((dot-pos (first-occurrence-of-char-in-char-list (string->list file-path) #\. 0)))
     (if (eq? dot-pos -1)
-      (raise "currupt file name")
+      (raise "corrupt file name")
       (substring file-path 0 dot-pos))))
 
 

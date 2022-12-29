@@ -390,8 +390,19 @@ module Reader : READER = struct
         let nt1 = pack nt1 (fun _ -> ScmNil) in
         nt1 str
   and nt_list str =
-    let nt1 = disj_list [nt_empty_list; nt_proper_list; nt_improper_list] in
+    let nt1 = char '(' in
+    let nt2 = pack (caten nt_skip (char ')')) (fun _ -> ScmNil) in
+    let nt3 = plus nt_sexpr in
+    let nt4 = pack (char ')' ) (fun _ -> ScmNil) in
+    let nt5 = pack (caten (char '.') (caten nt_sexpr (char ')' ))) (fun (_, (sexpr, _)) -> sexpr) in
+    let nt4 = disj nt4 nt5 in
+    let nt3 = pack (caten nt3 nt4) (fun (sexprs, last_sexpr) -> List.fold_right (fun car cdr -> ScmPair(car, cdr)) sexprs last_sexpr) in
+    let nt2 = disj nt2 nt3 in
+    let nt1 = pack (caten nt1 nt2) (fun (_, sexpr) -> sexpr) in
     nt1 str
+
+(*    let nt1 = disj_list [nt_empty_list; nt_proper_list; nt_improper_list] in*)
+(*    nt1 str*)
   and make_quoted_form nt_qf qf_name =
     let nt1 = caten nt_qf nt_sexpr in
     let nt1 = pack nt1

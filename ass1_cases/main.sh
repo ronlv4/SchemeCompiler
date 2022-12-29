@@ -3,6 +3,11 @@
 dir_student="in_to_student"
 dir_scheme="in_to_scheme"
 
+process_id=$(ocaml $dir_scheme/check_script.ml $dir_student)
+wait $process_id
+scheme_process_id=$(test.scm $dir_student)
+wait $scheme_process_id
+
 all_passed=true
 for file_name in $(ls ${dir_student} | grep -P ".out$")
 do
