@@ -19,7 +19,9 @@ module type CODE_GENERATION =
     val compile_scheme_file : string -> string -> unit
   end;;
 
-module Code_Generation : CODE_GENERATION= struct
+(* TODO: Restore sig before submission *)
+(*module Code_Generation : CODE_GENERATION= struct*)
+module Code_Generation = struct
 
   (* areas that raise this exception are NOT for the
    * final project! please leave these unimplemented,
