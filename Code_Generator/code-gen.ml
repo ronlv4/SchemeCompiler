@@ -98,7 +98,7 @@ module Code_Generation = struct
     | QuadFloat of float
     | ConstPtr of int;;
 
-  let search_constant_address sexpr =
+  let search_constant_address sexpr table=
     let rec run = function
       | [] -> raise X_not_yet_supported
       | (sexpr', ptr, _) :: s ->
