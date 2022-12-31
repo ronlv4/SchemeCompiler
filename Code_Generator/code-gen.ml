@@ -62,7 +62,18 @@ module Code_Generation = struct
          else a :: (run s)
     in run;;
 
-  let collect_constants = raise X_not_yet_implemented;;
+  let collect_constants : expr' list -> sexpr list =
+    let rec run = function
+      | ScmBox' _ | ScmBoxGet' _ | ScmVarGet' _ -> []
+      | ScmConst' (sexpr) -> [sexpr]
+      | ScmIf' (test, dit, dif) -> (run test) @ (run dit) @ (run dif)
+      | ScmSeq' (exprs) | ScmOr' (exprs) -> List.flatten (List.map run exprs)
+      | ScmVarSet' (_, expr') | ScmVarDef' (_, expr') | ScmBoxSet' (_, expr') -> run expr'
+      | ScmLambda' (_, _, body) -> run body
+      | ScmApplic' (rator, rands, _) -> (run rator) @ (List.flatten (List.map run rands))
+      in function
+      | [] -> []
+      | exprs -> List.flatten (List.map run exprs);;
 
   let add_sub_constants : sexpr list -> sexpr list =
     let rec run sexpr = match sexpr with
