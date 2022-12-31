@@ -98,7 +98,13 @@ module Code_Generation = struct
     | QuadFloat of float
     | ConstPtr of int;;
 
-  let search_constant_address = raise X_not_yet_implemented;;
+  let search_constant_address sexpr =
+    let rec run = function
+      | [] -> raise X_not_yet_supported
+      | (sexpr', ptr, _) :: s ->
+         if sexpr = sexpr' then ptr
+         else run s
+    in run table;;
 
   let const_repr sexpr loc table = match sexpr with
     | ScmVoid -> ([RTTI "T_void"], 1)
