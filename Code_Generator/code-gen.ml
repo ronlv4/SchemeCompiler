@@ -64,15 +64,14 @@ module Code_Generation = struct
 
   let collect_constants = raise X_not_yet_implemented;;
 
-  let add_sub_constants =
+  let add_sub_constants : sexpr list -> sexpr list =
     let rec run sexpr = match sexpr with
-      | ScmVoid -> raise X_not_yet_implemented
-      | ScmNil -> raise X_not_yet_implemented
-      | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ ->
-         raise X_not_yet_implemented
+      | ScmVoid -> []
+      | ScmNil -> []
+      | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ -> [sexpr]
       | ScmSymbol sym -> raise X_not_yet_implemented
       | ScmPair (car, cdr) -> (run car) @ (run cdr) @ [sexpr]
-      | ScmVector sexprs -> raise X_not_yet_implemented
+      | ScmVector sexprs -> List.flatten (List.map run sexprs) @ [sexpr]
     and runs sexprs =
       List.fold_left (fun full sexpr -> full @ (run sexpr)) [] sexprs
     in fun exprs' ->
