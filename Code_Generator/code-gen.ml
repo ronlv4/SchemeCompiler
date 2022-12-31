@@ -54,7 +54,7 @@ module Code_Generation = struct
     | [] -> []
     | s -> run (s, n, (fun s -> s));;
 
-  let remove_duplicates : sexpr list -> sexpr list =
+  let remove_duplicates =
     let rec run = function
       | [] -> []
       | a :: s ->
