@@ -62,7 +62,8 @@ module Code_Generation = struct
          else a :: (run s)
     in run;;
 
-  let collect_constants : expr' list -> sexpr list =
+(* expr' list -> sexpr list *)
+  let collect_constants =
     let rec run = function
       | ScmBox' _ | ScmBoxGet' _ | ScmVarGet' _ -> []
       | ScmConst' (sexpr) -> [sexpr]
@@ -75,7 +76,8 @@ module Code_Generation = struct
       | [] -> []
       | exprs -> List.flatten (List.map run exprs);;
 
-  let add_sub_constants : sexpr list -> sexpr list =
+(* sexpr list -> sexpr list *)
+  let add_sub_constants =
     let rec run sexpr = match sexpr with
       | ScmVoid -> []
       | ScmNil -> []
