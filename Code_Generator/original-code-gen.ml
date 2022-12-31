@@ -1,7 +1,7 @@
 let file_to_string input_file =
   let in_channel = open_in input_file in
   let rec run () =
-    try 
+    try
       let ch = input_char in_channel in ch :: (run ())
     with End_of_file ->
       ( close_in in_channel;
@@ -19,9 +19,7 @@ module type CODE_GENERATION =
     val compile_scheme_file : string -> string -> unit
   end;;
 
-(* TODO: Restore sig before submission *)
-(* module Code_Generation : CODE_GENERATION= struct *)
-module Code_Generation = struct
+module Code_Generation : CODE_GENERATION= struct
 
   (* areas that raise this exception are NOT for the
    * final project! please leave these unimplemented,
@@ -44,7 +42,7 @@ module Code_Generation = struct
     | [] -> None
     | a :: s -> Some (run a s);;
 
-  let split_to_sublists n = 
+  let split_to_sublists n =
     let rec run = function
       | ([], _, f) -> [f []]
       | (s, 0, f) -> (f []) :: (run (s, n, (fun s -> s)))
@@ -54,24 +52,19 @@ module Code_Generation = struct
     | [] -> []
     | s -> run (s, n, (fun s -> s));;
 
-  let remove_duplicates =
-    let rec run = function
-      | [] -> []
-      | a :: s ->
-         if List.mem a s then run s
-         else a :: (run s)
-    in run;;
+  let remove_duplicates = raise X_not_yet_implemented;;
 
   let collect_constants = raise X_not_yet_implemented;;
 
-  let add_sub_constants : sexpr list -> sexpr list =
+  let add_sub_constants =
     let rec run sexpr = match sexpr with
-      | ScmVoid -> []
-      | ScmNil -> []
-      | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ -> [sexpr]
-      | ScmSymbol sym -> [ScmString sym]
+      | ScmVoid -> raise X_not_yet_implemented
+      | ScmNil -> raise X_not_yet_implemented
+      | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ ->
+         raise X_not_yet_implemented
+      | ScmSymbol sym -> raise X_not_yet_implemented
       | ScmPair (car, cdr) -> (run car) @ (run cdr) @ [sexpr]
-      | ScmVector (sexprs) -> (List.fold_left (fun acc sexpr -> acc @ (run sexpr)) [] sexprs) @ [sexpr]
+      | ScmVector sexprs -> raise X_not_yet_implemented
     and runs sexprs =
       List.fold_left (fun full sexpr -> full @ (run sexpr)) [] sexprs
     in fun exprs' ->
@@ -134,7 +127,7 @@ module Code_Generation = struct
       (remove_duplicates
          (add_sub_constants
             (remove_duplicates
-               (collect_constants exprs'))));;    
+               (collect_constants exprs'))));;
 
   let asm_comment_of_sexpr sexpr =
     let str = string_of_sexpr sexpr in
@@ -330,9 +323,9 @@ module Code_Generation = struct
            ^ (Printf.sprintf "\tmov rsi, %s\n" asm_code_ptr)
            ^ "\tcall bind_primitive\n")
          global_bindings_table);;
-  
+
   let asm_of_free_vars_table table =
-    let tmp = 
+    let tmp =
       List.map
         (fun (scm_var, asm_label) ->
           Printf.sprintf "%s:\t; location of %s\n\tresq 1"
@@ -405,7 +398,7 @@ module Code_Generation = struct
            (List.map (run params env) exprs')
       | ScmOr' exprs' ->
          let label_end = make_or_end () in
-         let asm_code = 
+         let asm_code =
            (match (list_and_last exprs') with
             | Some (exprs', last_expr') ->
                let exprs_code =
@@ -540,7 +533,7 @@ module Code_Generation = struct
     let exprs' = List.map Semantic_Analysis.semantics exprs in
     let asm_code = code_gen exprs' in
     (string_to_file file_out asm_code;
-     Printf.printf "!!! Compilation finished. Time to assemble!\n");;  
+     Printf.printf "!!! Compilation finished. Time to assemble!\n");;
 
   let compile_scheme_file file_in file_out =
     compile_scheme_string file_out (file_to_string file_in);;
@@ -548,4 +541,3 @@ module Code_Generation = struct
 end;; (* end of Code_Generation struct *)
 
 (* end-of-input *)
-
