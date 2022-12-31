@@ -20,7 +20,7 @@ module type CODE_GENERATION =
   end;;
 
 (* TODO: Restore sig before submission *)
-(*module Code_Generation : CODE_GENERATION= struct*)
+(* module Code_Generation : CODE_GENERATION= struct *)
 module Code_Generation = struct
 
   (* areas that raise this exception are NOT for the
@@ -54,7 +54,13 @@ module Code_Generation = struct
     | [] -> []
     | s -> run (s, n, (fun s -> s));;
 
-  let remove_duplicates = raise X_not_yet_implemented;;
+  let remove_duplicates : sexpr list -> sexpr list =
+    let rec run = function
+      | [] -> []
+      | a :: s ->
+         if List.mem a s then run s
+         else a :: (run s)
+    in run;;
 
   let collect_constants = raise X_not_yet_implemented;;
 
