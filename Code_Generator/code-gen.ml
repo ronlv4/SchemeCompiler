@@ -86,7 +86,6 @@ module Code_Generation = struct
       | ScmPair (car, cdr) -> (run car) @ (run cdr) @ [sexpr]
       | ScmVector (sexprs) -> (List.fold_left (fun acc sexpr -> acc @ (run sexpr)) [] sexprs) @ [sexpr]
     and runs sexprs =
-      let check = list_and_last [1;2;3] in
       List.fold_left (fun full sexpr -> full @ (run sexpr)) [] sexprs
     in fun exprs' ->
        [ScmVoid; ScmNil; ScmBoolean false; ScmBoolean true; ScmChar '\000'] @ (runs exprs');;
@@ -566,11 +565,6 @@ module Code_Generation = struct
 
   let compile_scheme_file file_in file_out =
     compile_scheme_string file_out (file_to_string file_in);;
-
-  let debug123 =
-    let file_in = "test.scm" in
-    false;;
-(*    Printf.printf "!!! Debug mode is on. Time to compile!\n";;*)
 
 end;; (* end of Code_Generation struct *)
 
