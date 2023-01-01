@@ -411,7 +411,7 @@ module Code_Generation = struct
     let rec run params env = function
       | ScmConst' sexpr ->
         let addr = search_constant_address sexpr consts in
-        Printf.sprintf "\tmov rax, %s" (string_of_int addr)
+        Printf.sprintf "\tmov rax, %d" addr
       | ScmVarGet' (Var' (v, Free)) ->
          let label = search_free_var_table v free_vars in
          Printf.sprintf
@@ -419,15 +419,13 @@ module Code_Generation = struct
            label
       | ScmVarGet' (Var' (v, Param minor)) ->
          Printf.sprintf
-           "\tmov rax, qword [rbp + 8 ∗ (4 + %s)]\n"
-           (string_of_int minor)
+           "\tmov rax, qword [rbp + 8 ∗ (4 + %d)]\n"
+           minor
       | ScmVarGet' (Var' (v, Bound (major, minor))) ->
-         Printf.sprintf
            "\tmov rax, qword [rbp + 8 ∗ 2]\n"
-           "\tmov rax, qword [rbp + 8 ∗ (%s)]\n"
-           (string_of_int major)
-           "\tmov rax, qword [rbp + 8 ∗ (%s)]\n"
-           (string_of_int minor)
+         ^ (Printf.sprintf
+           "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" major)
+           ^ (Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" minor)
       | ScmIf' (test, dit, dif) -> raise X_not_yet_implemented
       | ScmSeq' exprs' ->
          String.concat "\n"
