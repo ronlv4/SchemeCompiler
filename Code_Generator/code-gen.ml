@@ -411,7 +411,7 @@ module Code_Generation = struct
     let rec run params env = function
       | ScmConst' sexpr ->
         let addr = search_constant_address sexpr consts in
-        Printf.sprintf "\tmov rax, %s" addr
+        Printf.sprintf "\tmov rax, %s" (string_of_int addr)
       | ScmVarGet' (Var' (v, Free)) ->
          let label = search_free_var_table v free_vars in
          Printf.sprintf
