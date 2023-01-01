@@ -99,12 +99,14 @@ module Code_Generation = struct
     | ConstPtr of int;;
 
   let search_constant_address sexpr table=
-    let rec run = function
-      | [] -> raise X_not_yet_supported
-      | (sexpr', ptr, _) :: s ->
-         if sexpr = sexpr' then ptr
-         else run s
-    in run table;;
+    let rec run v = function
+        | [] -> raise (X_this_should_not_happen
+                        (Printf.sprintf
+                           "The variable %s was not found in the constant-address table"
+                           v))
+        | (v', ptr, _) :: _ when v = v' -> ptr
+        | _ :: table -> run v table
+      in run;;
 
   let const_repr sexpr loc table = match sexpr with
     | ScmVoid -> ([RTTI "T_void"], 1)
@@ -452,20 +454,36 @@ module Code_Generation = struct
             | None -> run params env (ScmConst' (ScmBoolean false)))
          in asm_code
       | ScmVarSet' (Var' (v, Free), expr') ->
-         raise X_not_yet_implemented
+         let value_code = run params env expr' in
+         let label = search_free_var_table v free_vars in
+         value_code
+         ^ (Printf.sprintf "\tmov qword [%s], rax\n" label)
+         ^ "\tmov rax, sob_void\n"
       | ScmVarSet' (Var' (v, Param minor), expr') ->
-         raise X_not_yet_implemented
+        (run params env expr')
+         ^ (Printf.sprintf "\tmov qword [rbp + 8 ∗ (4 + %d)], rax\n" minor)
+         ^ "\tmov rax, sob_void"
       | ScmVarSet' (Var' (v, Bound (major, minor)), expr') ->
-         raise X_not_yet_implemented
+        (run params env expr')
+        ^ "\tmov rbx, qword [rbp + 8 ∗ 2]\n"
+        ^ (Printf.sprintf "\tmov rbx, qword [rbx + 8 ∗ %d]\n" major)
+        ^ (Printf.sprintf "\tmov qword [rbx + 8 ∗ %d], rax\n" minor)
+        ^ "\tmov rax, sob_void\n"
       | ScmVarDef' (Var' (v, Free), expr') ->
          let label = search_free_var_table v free_vars in
          (run params env expr')
          ^ (Printf.sprintf "\tmov qword [%s], rax\n" label)
          ^ "\tmov rax, sob_void\n"
       | ScmVarDef' (Var' (v, Param minor), expr') ->
-         raise X_not_yet_supported
+        (run params env expr')
+        ^ (Printf.sprintf "\tmov qword [rbp + 8 ∗ (4 + %d)], rax\n" minor)
+        ^ "\tmov rax, sob_void"
       | ScmVarDef' (Var' (v, Bound (major, minor)), expr') ->
-         raise X_not_yet_supported
+        (run params env expr')
+        ^ "\tmov rbx, qword [rbp + 8 ∗ 2]\n"
+        ^ (Printf.sprintf "\tmov rbx, qword [rbx + 8 ∗ %d]\n" major)
+        ^ (Printf.sprintf "\tmov qword [rbx + 8 ∗ %d], rax\n" minor)
+        ^ "\tmov rax, sob_void\n"
       | ScmBox' (Var' (v, Param minor)) -> raise X_not_yet_implemented
       | ScmBox' _ -> raise X_not_yet_implemented
       | ScmBoxGet' var' ->
