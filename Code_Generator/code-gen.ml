@@ -98,12 +98,12 @@ module Code_Generation = struct
     | QuadFloat of float
     | ConstPtr of int;;
 
-  let search_constant_address sexpr table=
+  let search_constant_address =
     let rec run v = function
         | [] -> raise (X_this_should_not_happen
                         (Printf.sprintf
                            "The variable %s was not found in the constant-address table"
-                           v))
+                            Reader.string_of_sexpr v))
         | (v', ptr, _) :: _ when v = v' -> ptr
         | _ :: table -> run v table
       in run;;
