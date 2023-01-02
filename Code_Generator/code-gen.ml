@@ -494,12 +494,20 @@ module Code_Generation = struct
         ^ (Printf.sprintf "\tmov rbx, qword [rbx + 8 ∗ %d]\n" major)
         ^ (Printf.sprintf "\tmov qword [rbx + 8 ∗ %d], rax\n" minor)
         ^ "\tmov rax, sob_void\n"
-      | ScmBox' (Var' (v, Param minor)) -> raise X_not_yet_implemented
+      | ScmBox' (Var' (v, Param minor)) ->
+        Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (4 + %d)]\n" minor
+        ^ "\tmov rbx, qword [rax]\n"
+        ^ "\tmov rax, rbx\n"
       | ScmBox' _ -> raise X_not_yet_implemented
       | ScmBoxGet' var' ->
          (run params env (ScmVarGet' var'))
          ^ "\tmov rax, qword [rax]\n"
-      | ScmBoxSet' (var', expr') -> raise X_not_yet_implemented
+      | ScmBoxSet' (var', expr') ->
+        (run params env expr')
+        ^ "\tpush rax\n"
+        ^ (run params env (ScmVarGet' var'))
+        ^ "\tpop qword [rax]\n"
+        ^ "\tmov rax, sob_void\n"
       | ScmLambda' (params', Simple, body) ->
          let label_loop_env = make_lambda_simple_loop_env ()
          and label_loop_env_end = make_lambda_simple_loop_env_end ()
