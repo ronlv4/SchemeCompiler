@@ -498,7 +498,7 @@ module Code_Generation = struct
         Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (4 + %d)]\n" minor
         ^ "\tmov rbx, qword [rax]\n"
         ^ "\tmov rax, rbx\n"
-      | ScmBox' _ -> raise X_not_yet_implemented
+      | ScmBox' _ -> raise X_not_yet_implemented "code_gen::ScmBox'"
       | ScmBoxGet' var' ->
          (run params env (ScmVarGet' var'))
          ^ "\tmov rax, qword [rax]\n"

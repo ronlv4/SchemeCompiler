@@ -4,7 +4,7 @@
  * Prorammer: Mayer Goldberg, 2021
  *)
 
-exception X_not_yet_implemented;;
+exception X_not_yet_implemented of string;;
 
 (* general list-processing procedures *)
 
