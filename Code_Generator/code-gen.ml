@@ -428,7 +428,17 @@ module Code_Generation = struct
          ^ (Printf.sprintf
            "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" major)
            ^ (Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" minor)
-      | ScmIf' (test, dit, dif) -> raise X_not_yet_implemented
+      | ScmIf' (test, dit, dif) ->
+            let else_label = make_if_else () in
+            let end_label = make_if_end () in
+            (run params env test)
+            ^ "\tcmp rax, sob_boolean_false\n"
+            ^ (Printf.sprintf "\tje %s\n" else_label)
+            ^ (run params env dit)
+            ^ (Printf.sprintf "\tjmp %s\n" end_label)
+            ^ (Printf.sprintf "%s:\n" else_label)
+            ^ (run params env dif)
+            ^ (Printf.sprintf "%s:\n" end_label)
       | ScmSeq' exprs' ->
          String.concat "\n"
            (List.map (run params env) exprs')
