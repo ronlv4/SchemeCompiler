@@ -498,7 +498,7 @@ module Code_Generation = struct
         Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (4 + %d)]\n" minor
         ^ "\tmov rbx, qword [rax]\n"
         ^ "\tmov rax, rbx\n"
-      | ScmBox' _ -> raise X_not_yet_implemented "code_gen::ScmBox'"
+      | ScmBox' _ -> raise (X_not_yet_implemented "code_gen::code_gen::ScmBox'")
       | ScmBoxGet' var' ->
          (run params env (ScmVarGet' var'))
          ^ "\tmov rax, qword [rax]\n"
@@ -568,9 +568,9 @@ module Code_Generation = struct
          ^ "\tleave\n"
          ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" (List.length params'))
          ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
-      | ScmLambda' (params', Opt opt, body) -> raise X_not_yet_implemented
-      | ScmApplic' (proc, args, Non_Tail_Call) -> raise X_not_yet_implemented
-      | ScmApplic' (proc, args, Tail_Call) -> raise X_not_yet_implemented
+      | ScmLambda' (params', Opt opt, body) -> raise (X_not_yet_implemented "code_gen::code_gen::ScmLambda'")
+      | ScmApplic' (proc, args, Non_Tail_Call) -> raise (X_not_yet_implemented "code_gen::code_gen::ScmApplic'")
+      | ScmApplic' (proc, args, Tail_Call) -> raise (X_not_yet_implemented "code_gen::code_gen::ScmApplic'")
     and runs params env exprs' =
       List.map
         (fun expr' ->

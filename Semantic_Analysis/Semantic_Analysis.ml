@@ -395,7 +395,7 @@ let rec sexpr_of_expr' = function
          (List.map sexpr_of_expr' args) in
      ScmPair (proc, args)
   (* for reversing macro-expansion... *)
-  | _ -> raise X_not_yet_implemented;;
+  | _ -> raise (X_not_yet_implemented "Semantic_Analysis::sexpr_of_expr'::_");;
 
 let string_of_expr' expr =
   Printf.sprintf "%a" sprint_sexpr (sexpr_of_expr' expr);;
