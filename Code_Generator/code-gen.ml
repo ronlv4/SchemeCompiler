@@ -55,11 +55,11 @@ module Code_Generation = struct
     | s -> run (s, n, (fun s -> s));;
 
   let remove_duplicates =
-    let rec run = function
-      | [] -> []
-      | a :: s ->
-         if List.mem a s then run s
-         else a :: (run s)
+    let rec run lst =
+      match list_and_last lst with
+        | None -> []
+        | Some (s, last) when List.mem last s -> run s
+        | Some (s, last) -> (run s) @ [last]
     in run;;
 
 (* expr' list -> sexpr list *)
