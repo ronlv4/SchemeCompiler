@@ -99,13 +99,13 @@ module Code_Generation = struct
     | ConstPtr of int;;
 
   let search_constant_address =
-    let rec run v = function
+    let rec run sexpr = function
         | [] -> raise (X_this_should_not_happen
-                        (Printf.sprintf
-                           "The variable %s was not found in the constant-address table"
-                            Reader.string_of_sexpr v))
-        | (v', ptr, _) :: _ when v = v' -> ptr
-        | _ :: table -> run v table
+                      (Printf.sprintf
+                         "The constant %s was not found in the constant-address table"
+                         (string_of_sexpr sexpr)))
+        | (sexpr', ptr, _) :: _ when sexpr = sexpr' -> ptr
+        | _ :: table -> run sexpr table
       in run;;
 
   let const_repr sexpr loc table = match sexpr with
