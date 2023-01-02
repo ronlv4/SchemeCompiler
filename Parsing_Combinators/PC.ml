@@ -4,6 +4,8 @@
  * Prorammer: Mayer Goldberg, 2021
  *)
 
+exception X_not_yet_implemented;;
+
 (* general list-processing procedures *)
 
 let list_of_string string =
@@ -39,8 +41,6 @@ module PC = struct
   type 'a parser = string -> int -> 'a parsing_result;;
 
   (* the parsing combinators defined here *)
-
-  exception X_not_yet_implemented;;
 
   exception X_no_match;;
 
