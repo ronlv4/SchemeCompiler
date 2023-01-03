@@ -1,0 +1,32 @@
+#use "topfind";;
+
+#use "/home/ronlv4/repos/compilation_assignment/Parsing_Combinators/PC.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Reader/Reader.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/Tag_Parser.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Semantic_Analysis/Semantic_Analysis.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/code-gen.ml";;
+
+open PC;;
+open Reader;;
+open Tag_Parser;;
+open Semantic_Analysis;;
+open Code_Generation;;
+
+let sexpr_of_string str = (Reader.nt_sexpr str 0).found;;
+let sexprstar str = (star Reader.nt_sexpr str 0).found;;
+
+let showparse str = Printf.printf "\n\n%a\n\n"
+print_expr (Tag_Parser.tag_parse
+(Reader.nt_sexpr str 0).found);;
+
+let parse str = Tag_Parser.tag_parse (Reader.nt_sexpr str 0).found;;
+let parsestar str = List.map Tag_Parser.tag_parse (star Reader.nt_sexpr str 0).found;;
+
+let showsem str = Printf.printf "\n\n%a\n\n"
+print_expr' (Semantic_Analysis.semantics (Tag_Parser.tag_parse (Reader.nt_sexpr str 0).found));;
+
+let sem str = Semantic_Analysis.semantics (Tag_Parser.tag_parse (Reader.nt_sexpr str 0).found);;
+let semstar str = List.map Semantic_Analysis.semantics (List.map Tag_Parser.tag_parse (star Reader.nt_sexpr str 0).found);;
+
+let gen str = compile_scheme_string "test_output_file.asm" str;;
+
