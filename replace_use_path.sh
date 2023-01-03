@@ -11,7 +11,7 @@ else
   path=$ron_path
 fi
 
-for file in $(find ${path} -name "*.ml" -type f)
+for file in $(find ${current_path} -name "*.ml" -type f)
 do
-  sed -i "s|${current_path}|${path}|g" $file
+  sed -i "s|${path}|${current_path}|g" $file
 done
