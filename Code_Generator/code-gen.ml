@@ -71,7 +71,7 @@ module Code_Generation = struct
       | ScmSeq' (exprs) | ScmOr' (exprs) -> runs exprs
       | ScmVarSet' (_, expr') | ScmVarDef' (_, expr') | ScmBoxSet' (_, expr') -> run expr'
       | ScmLambda' (_, _, body) -> run body
-      | ScmApplic' (rator, rands, _) -> (run rator) @ (List.flatten (List.map run rands))
+      | ScmApplic' (rator, rands, _) -> (run rator) @ (runs rands)
     and runs sexprs =
       List.fold_left (fun full sexpr -> full @ (run sexpr)) [] sexprs
     in function
@@ -84,9 +84,9 @@ module Code_Generation = struct
       | ScmVoid -> []
       | ScmNil -> []
       | ScmBoolean _ | ScmChar _ | ScmString _ | ScmNumber _ -> [sexpr]
-      | ScmSymbol sym -> [ScmString sym]
+      | ScmSymbol sym -> [ScmString sym] @ [sexpr]
       | ScmPair (car, cdr) -> (run car) @ (run cdr) @ [sexpr]
-      | ScmVector (sexprs) -> (List.fold_left (fun acc sexpr -> acc @ (run sexpr)) [] sexprs) @ [sexpr]
+      | ScmVector (sexprs) -> (runs sexprs) @ [sexpr]
     and runs sexprs =
       List.fold_left (fun full sexpr -> full @ (run sexpr)) [] sexprs
     in fun exprs' ->
