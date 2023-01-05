@@ -657,16 +657,15 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" (List.length params'))
             ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
       | ScmApplic' (proc, args, Non_Tail_Call) ->
-        let label_loop = (make_make_label ".L_loop") () in
-          List.fold_right (fun arg_eval last -> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
-          ^ Printf.sprintf "\tpush %d\n" (List.length args)
-          ^ (run params env proc)
-          ^ "\tassert_closure(rax)\n"
-          ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
-          ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
-          ^ "\tadd rsp, 8 * 1 ; pop env\n"
-          ^ "\tpop rbx ; pop arg count\n"
-          ^ "\tlea rsp, [rsp + 8 * rbp]\n"
+        List.fold_right (fun arg_eval last -> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
+        ^ Printf.sprintf "\tpush %d\n" (List.length args)
+        ^ (run params env proc)
+        ^ "\tassert_closure(rax)\n"
+        ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
+        ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
+        ^ "\tadd rsp, 8 * 1 ; pop env\n"
+        ^ "\tpop rbx ; pop arg count\n"
+        ^ "\tlea rsp, [rsp + 8 * rbp]\n"
       | ScmApplic' (proc, args, Tail_Call) ->
         let label_loop = (make_make_label ".L_loop") () in
           List.fold_right (fun arg_eval last-> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
