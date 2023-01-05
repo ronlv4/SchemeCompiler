@@ -642,7 +642,7 @@ module Code_Generation = struct
             ^ "\tdec rcx\n"
             ^ "\tcmp rcx, 0\n"
             ^ (Printf.sprintf "\tjle %s\n" label_stack_ok)
-            (Printf.sprintf "%s:\n" label_shrink_loop)
+            ^ (Printf.sprintf "%s:\n" label_shrink_loop)
             ^ "\tmov rdx, rsp + (rcx + 2) * 8\n"
             ^ "\tmov rdi, [rsp + (rbx + 2) * 8]\n"
             ^ "\tmov [rdx], rdi\n"
