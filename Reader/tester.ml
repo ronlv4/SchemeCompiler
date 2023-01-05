@@ -1,4 +1,4 @@
-#use "/home/ronlv4/repos/compilation_assignment/Reader/reader_tests.ml";;
+#use "/home/spl211/compilation_assignment_1/Reader/reader_tests.ml";;
 
 exception X_test_failed of string;;
 
