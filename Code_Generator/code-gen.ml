@@ -657,36 +657,38 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" (List.length params'))
             ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
       | ScmApplic' (proc, args, Non_Tail_Call) ->
-        List.fold_right (fun arg_eval last -> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
-        ^ Printf.sprintf "\tpush %d\n" (List.length args)
-        ^ (run params env proc)
-        ^ "\tassert_closure(rax)\n"
-        ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
-        ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
-        ^ "\tadd rsp, 8 * 1 ; pop env\n"
-        ^ "\tpop rbx ; pop arg count\n"
-        ^ "\tlea rsp, [rsp + 8 * rbp]\n"
+        let label_loop = (make_make_label ".L_loop") () in
+          List.fold_right (fun arg_eval last -> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
+          ^ Printf.sprintf "\tpush %d\n" (List.length args)
+          ^ (run params env proc)
+          ^ "\tassert_closure(rax)\n"
+          ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
+          ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
+          ^ "\tadd rsp, 8 * 1 ; pop env\n"
+          ^ "\tpop rbx ; pop arg count\n"
+          ^ "\tlea rsp, [rsp + 8 * rbp]\n"
       | ScmApplic' (proc, args, Tail_Call) ->
-        List.fold_right (fun arg_eval last-> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
-        ^ Printf.sprintf "\tpush %d\n" (List.length args)
-        ^ (run params env proc)
-        ^ "\tassert_closure(rax)\n"
-        ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
-        ^ "\tpush qword [rbp + 8 * 1]\n"
-        ^ "\tpush qword [rbp]\n"
-        ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
-        ^ "\tadd rcx, 3 ; add args_num, env and ret addr\n"
-        ^ "\txor rbx, rbx\n"
-        ^ (Printf.sprintf "%s:\n" label_loop)
-        ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
-        ^ "\tmov qword [rbp - 8 * rbx], rdx\n"
-        ^ "\tdec rcx\n"
-        ^ "\tinc rbx\n"
-        ^ "\tcmp rcx, 0\n"
-        ^ "\tjge %s\n" label_loop
-        ^ "\tmov rsp, qword [rbp - 8 * rbx]\n"
-        ^ "\tpop qword [rbp]\n"
-        ^ "\tjmp SOB_CLOSURE_ENV(rax)\n"
+        let label_loop = (make_make_label ".L_loop") () in
+          List.fold_right (fun arg_eval last-> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
+          ^ Printf.sprintf "\tpush %d\n" (List.length args)
+          ^ (run params env proc)
+          ^ "\tassert_closure(rax)\n"
+          ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
+          ^ "\tpush qword [rbp + 8 * 1]\n"
+          ^ "\tpush qword [rbp]\n"
+          ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
+          ^ "\tadd rcx, 3 ; add args_num, env and ret addr\n"
+          ^ "\txor rbx, rbx\n"
+          ^ (Printf.sprintf "%s:\n" label_loop)
+          ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
+          ^ "\tmov qword [rbp - 8 * rbx], rdx\n"
+          ^ "\tdec rcx\n"
+          ^ "\tinc rbx\n"
+          ^ "\tcmp rcx, 0\n"
+          ^ "\tjge %s\n" label_loop
+          ^ "\tmov rsp, qword [rbp - 8 * rbx]\n"
+          ^ "\tpop qword [rbp]\n"
+          ^ "\tjmp SOB_CLOSURE_ENV(rax)\n"
     and runs params env exprs' =
       List.map
         (fun expr' ->
