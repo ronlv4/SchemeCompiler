@@ -685,7 +685,7 @@ module Code_Generation = struct
           ^ "\tdec rcx\n"
           ^ "\tinc rbx\n"
           ^ "\tcmp rcx, 0\n"
-          ^ "\tjge %s\n" label_loop
+          ^ (Printf.sprintf "\tjge %s\n" label_loop)
           ^ "\tmov rsp, qword [rbp - 8 * rbx]\n"
           ^ "\tpop qword [rbp]\n"
           ^ "\tjmp SOB_CLOSURE_ENV(rax)\n"
