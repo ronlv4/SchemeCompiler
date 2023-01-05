@@ -372,42 +372,26 @@ module Code_Generation = struct
   let make_if_else = make_make_label ".L_if_else";;
   let make_if_end = make_make_label ".L_if_end";;
   let make_or_end = make_make_label ".L_or_end";;
-  let make_lambda_simple_loop_env =
-    make_make_label ".L_lambda_simple_env_loop";;
-  let make_lambda_simple_loop_env_end =
-    make_make_label ".L_lambda_simple_env_end";;
-  let make_lambda_simple_loop_params =
-    make_make_label ".L_lambda_simple_params_loop";;
-  let make_lambda_simple_loop_params_end =
-    make_make_label ".L_lambda_simple_params_end";;
+  let make_lambda_simple_loop_env = make_make_label ".L_lambda_simple_env_loop";;
+  let make_lambda_simple_loop_env_end = make_make_label ".L_lambda_simple_env_end";;
+  let make_lambda_simple_loop_params = make_make_label ".L_lambda_simple_params_loop";;
+  let make_lambda_simple_loop_params_end = make_make_label ".L_lambda_simple_params_end";;
   let make_lambda_simple_code = make_make_label ".L_lambda_simple_code";;
   let make_lambda_simple_end = make_make_label ".L_lambda_simple_end";;
-  let make_lambda_simple_arity_ok =
-    make_make_label ".L_lambda_simple_arity_check_ok";;
-  let make_lambda_opt_loop_env =
-    make_make_label ".L_lambda_opt_env_loop";;
-  let make_lambda_opt_loop_env_end =
-    make_make_label ".L_lambda_opt_env_end";;
-  let make_lambda_opt_loop_params =
-    make_make_label ".L_lambda_opt_params_loop";;
-  let make_lambda_opt_loop_params_end =
-    make_make_label ".L_lambda_opt_params_end";;
+  let make_lambda_simple_arity_ok = make_make_label ".L_lambda_simple_arity_check_ok";;
+  let make_lambda_opt_loop_env = make_make_label ".L_lambda_opt_env_loop";;
+  let make_lambda_opt_loop_env_end = make_make_label ".L_lambda_opt_env_end";;
+  let make_lambda_opt_loop_params = make_make_label ".L_lambda_opt_params_loop";;
+  let make_lambda_opt_loop_params_end = make_make_label ".L_lambda_opt_params_end";;
   let make_lambda_opt_code = make_make_label ".L_lambda_opt_code";;
   let make_lambda_opt_end = make_make_label ".L_lambda_opt_end";;
-  let make_lambda_opt_arity_exact =
-    make_make_label ".L_lambda_opt_arity_check_exact";;
-  let make_lambda_opt_arity_more =
-    make_make_label ".L_lambda_opt_arity_check_more";;
-  let make_lambda_opt_stack_ok =
-    make_make_label ".L_lambda_opt_stack_adjusted";;
-  let make_lambda_opt_loop =
-    make_make_label ".L_lambda_opt_stack_shrink_loop";;
-  let make_lambda_opt_loop_exit =
-    make_make_label ".L_lambda_opt_stack_shrink_loop_exit";;
-  let make_tc_applic_recycle_frame_loop =
-    make_make_label ".L_tc_recycle_frame_loop";;
-  let make_tc_applic_recycle_frame_done =
-    make_make_label ".L_tc_recycle_frame_done";;
+  let make_lambda_opt_arity_exact = make_make_label ".L_lambda_opt_arity_check_exact";;
+  let make_lambda_opt_arity_more = make_make_label ".L_lambda_opt_arity_check_more";;
+  let make_lambda_opt_stack_ok = make_make_label ".L_lambda_opt_stack_adjusted";;
+  let make_lambda_opt_loop = make_make_label ".L_lambda_opt_stack_shrink_loop";;
+  let make_lambda_opt_loop_exit = make_make_label ".L_lambda_opt_stack_shrink_loop_exit";;
+  let make_tc_applic_recycle_frame_loop = make_make_label ".L_tc_recycle_frame_loop";;
+  let make_tc_applic_recycle_frame_done = make_make_label ".L_tc_recycle_frame_done";;
 
   let code_gen exprs' =
     let consts = make_constants_table exprs' in
@@ -576,8 +560,14 @@ module Code_Generation = struct
             and label_loop_params = make_lambda_opt_loop_params ()
             and label_loop_params_end = make_lambda_opt_loop_params_end ()
             and label_code = make_lambda_opt_code ()
-            and label_arity_ok = make_lambda_opt_arity_ok ()
+            and label_arity_exact = make_lambda_opt_arity_exact ()
+            and label_arity_more = make_lambda_opt_arity_more ()
+            and label_stack_ok = make_lambda_opt_stack_ok ()
+            and label_shrink_loop = make_lambda_opt_loop ()
+            and label_shrink_loop_exit = make_lambda_opt_loop_exit ()
             and label_end = make_lambda_opt_end ()
+            and label_stack_fix = make_make_label "stack_fix"
+            and label_build_opt = make_make_label "build_opt"
             in
             "\tmov rdi, (1 + 8 + 8)\t; sob closure\n"
             ^ "\tcall malloc\n"
@@ -618,25 +608,85 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tmov SOB_CLOSURE_CODE(rax), %s\n" label_code)
             ^ (Printf.sprintf "\tjmp %s\n" label_end)
             ^ (Printf.sprintf "%s:\t; lambda-opt body\n" label_code)
-            ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n"
-                 (List.length params'))
-            ^ (Printf.sprintf "\tje %s\n" label_arity_ok)
+            ^ "\txor rcx, rcx\n"
             ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n" ((List.length params') - 1))
-            ^ (Printf.sprintf "\tje %s\n" label_arity_enlarge)
-            ^ (Printf.sprintf "\tjge %s\n" label_arity_shrink)
-            ^
-
+            ^ (Printf.sprintf "\tje %s\n" label_arity_exact)
+            ^ (Printf.sprintf "\tja %s\n" label_arity_more)
             ^ "\tpush qword [rsp + 8 * 2]\n"
             ^ (Printf.sprintf "\tpush %d\n" (List.length params'))
             ^ "\tjmp L_error_incorrect_arity_opt\n"
-            ^ (Printf.sprintf "%s:\n" label_arity_ok)
+            ^ (Printf.sprintf "%s:\n" label_arity_exact)
+            ^ "\tmov [rsp + 8 * rcx - 8], [rsp + 8 * rcx]\n"
+            ^ "\tinc rcx\n"
+            ^ (Printf.sprintf "\tcmp rcx, 1 + 1 + %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tjne %s\n" label_arity_exact)
+            ^ "\tmov [rsp + 8 * rcx - 8], sob_nil\n"
+            ^ "\tsub rsp, 8\n"
+            ^ (Printf.sprintf "\tjmp %s\n" label_stack_ok)
+            ^ (Printf.sprintf "%s:\n" label_arity_more)
+            ^ "\tmov rbx, [rsp + 8 * 2]\n"
+            ^ "\tmov rdi, rbx\n"
+            ^ "\tsub rdi, %d\n" ((List.length params') - 1)
+            ^ "\tcall malloc\n"
+            ^ "\tcmp rdi, 0\n"
+            ^ "\tjle, %s\n" label_stack_fix
+            ^ "%s:\n" label_build_opt
+            ^ "\tmov rdx, [rsp + (rbx + 2) * 8]\n"
+            ^ "\tmov [rax + rdi * 8], rdx\n"
+            ^ "\tdec rdi\n"
+            ^ "\tdec rbx\n"
+            ^ "\tcmp rdi, 0\n"
+            ^ "\tja %s\n" label_build_opt
+            ^ "%s:\n" label_stack_fix
+            ^ "\tmov rcx, [rsp + 2 * 8]\n"
+            ^ "\tdec rcx\n"
+            ^ "\tcmp rcx, 0\n"
+            ^ "\tjle %s\n" label_stack_ok
+            (Printf.sprintf "%s:\n" label_shrink_loop)
+            ^ "\tmov rdx, rsp + (rcx + 2) * 8\n"
+            ^ "\tmov rdi, [rsp + (rbx + 2) * 8]\n"
+            ^ "\tmov [rdx], rdi\n"
+            ^ "\tdec rbx\n"
+            ^ "\tdec rcx\n"
+            ^ "\tcmp rcx, 0\n"
+            ^ "\tjge %s\n" label_shrink_loop
+            ^ (Printf.sprintf "%s:\n" label_stack_ok)
             ^ "\tenter 0, 0\n"
             ^ (run (List.length params') (env + 1) body)
             ^ "\tleave\n"
             ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" (List.length params'))
             ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
-      | ScmApplic' (proc, args, Non_Tail_Call) -> raise (X_not_yet_implemented "code_gen::code_gen::ScmApplic'")
-      | ScmApplic' (proc, args, Tail_Call) -> raise (X_not_yet_implemented "code_gen::code_gen::ScmApplic'")
+      | ScmApplic' (proc, args, Non_Tail_Call) ->
+        List.fold_right (fun arg_eval last-> last -> (run params' env arg_eval) ^ "\tpush rax\n")  args ""
+        ^ Printf.sprintf "\tpush %d\n" (List.length args)
+        ^ (run params' env proc)
+        ^ "\tassert_closure(rax)\n"
+        ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
+        ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
+        ^ "\tadd rsp, 8 * 1 ; pop env\n"
+        ^ "\tpop rbx ; pop arg count\n"
+        ^ "\tlea rsp, [rsp + 8 * rbp]\n"
+      | ScmApplic' (proc, args, Tail_Call) ->
+        List.fold_right (fun arg_eval last-> last -> (run params' env arg_eval) ^ "\tpush rax\n")  args ""
+        ^ Printf.sprintf "\tpush %d\n" (List.length args)
+        ^ (run params' env proc)
+        ^ "\tassert_closure(rax)\n"
+        ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
+        ^ "\tpush qword [rbp + 8 * 1]\n"
+        ^ "\tpush qword [rbp]\n"
+        ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
+        ^ "\tadd rcx, 3 ; add args_num, env and ret addr\n"
+        ^ "\txor rbx, rbx\n"
+        ^ Printf.sprintf "%s:\n" label_loop
+        ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
+        ^ "\tmov qword [rbp - 8 * rbx], rdx\n"
+        ^ "\tdec rcx\n"
+        ^ "\tinc rbx\n"
+        ^ "\tcmp rcx, 0\n"
+        ^ "\tjge %s\n" label_loop
+        ^ "\tmov rsp, qword [rbp - 8 * rbx]\n"
+        ^ "\tpop qword [rbp]\n"
+        ^ "\tjmp SOB_CLOSURE_ENV(rax)\n"
     and runs params env exprs' =
       List.map
         (fun expr' ->
