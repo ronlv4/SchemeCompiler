@@ -626,22 +626,22 @@ module Code_Generation = struct
             ^ (Printf.sprintf "%s:\n" label_arity_more)
             ^ "\tmov rbx, [rsp + 8 * 2]\n"
             ^ "\tmov rdi, rbx\n"
-            ^ "\tsub rdi, %d\n" ((List.length params') - 1)
+            ^ (Printf.sprintf "\tsub rdi, %d\n" ((List.length params') - 1))
             ^ "\tcall malloc\n"
             ^ "\tcmp rdi, 0\n"
             ^ "\tjle, %s\n" label_stack_fix
-            ^ "%s:\n" label_build_opt
+            ^ (Printf.sprintf "%s:\n" label_build_opt)
             ^ "\tmov rdx, [rsp + (rbx + 2) * 8]\n"
             ^ "\tmov [rax + rdi * 8], rdx\n"
             ^ "\tdec rdi\n"
             ^ "\tdec rbx\n"
             ^ "\tcmp rdi, 0\n"
-            ^ "\tja %s\n" label_build_opt
-            ^ "%s:\n" label_stack_fix
+            ^ (Printf.sprintf "\tja %s\n" label_build_opt)
+            ^ (Printf.sprintf "%s:\n" label_stack_fix)
             ^ "\tmov rcx, [rsp + 2 * 8]\n"
             ^ "\tdec rcx\n"
             ^ "\tcmp rcx, 0\n"
-            ^ "\tjle %s\n" label_stack_ok
+            ^ (Printf.sprintf "\tjle %s\n" label_stack_ok)
             (Printf.sprintf "%s:\n" label_shrink_loop)
             ^ "\tmov rdx, rsp + (rcx + 2) * 8\n"
             ^ "\tmov rdi, [rsp + (rbx + 2) * 8]\n"
