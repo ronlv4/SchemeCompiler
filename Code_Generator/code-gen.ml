@@ -657,9 +657,9 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" (List.length params'))
             ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
       | ScmApplic' (proc, args, Non_Tail_Call) ->
-        List.fold_right (fun arg_eval last -> last ^ (run params' env arg_eval) ^ "\tpush rax\n")  args ""
+        List.fold_right (fun arg_eval last -> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
         ^ Printf.sprintf "\tpush %d\n" (List.length args)
-        ^ (run params' env proc)
+        ^ (run params env proc)
         ^ "\tassert_closure(rax)\n"
         ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
         ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
@@ -667,9 +667,9 @@ module Code_Generation = struct
         ^ "\tpop rbx ; pop arg count\n"
         ^ "\tlea rsp, [rsp + 8 * rbp]\n"
       | ScmApplic' (proc, args, Tail_Call) ->
-        List.fold_right (fun arg_eval last-> last ^ (run params' env arg_eval) ^ "\tpush rax\n")  args ""
+        List.fold_right (fun arg_eval last-> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
         ^ Printf.sprintf "\tpush %d\n" (List.length args)
-        ^ (run params' env proc)
+        ^ (run params env proc)
         ^ "\tassert_closure(rax)\n"
         ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
         ^ "\tpush qword [rbp + 8 * 1]\n"
