@@ -629,7 +629,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tsub rdi, %d\n" ((List.length params') - 1))
             ^ "\tcall malloc\n"
             ^ "\tcmp rdi, 0\n"
-            ^ "\tjle, %s\n" label_stack_fix
+            ^ (Printf.sprintf "\tjle, %s\n" label_stack_fix)
             ^ (Printf.sprintf "%s:\n" label_build_opt)
             ^ "\tmov rdx, [rsp + (rbx + 2) * 8]\n"
             ^ "\tmov [rax + rdi * 8], rdx\n"
@@ -649,7 +649,7 @@ module Code_Generation = struct
             ^ "\tdec rbx\n"
             ^ "\tdec rcx\n"
             ^ "\tcmp rcx, 0\n"
-            ^ "\tjge %s\n" label_shrink_loop
+            ^ (Printf.sprintf "\tjge %s\n" label_shrink_loop)
             ^ (Printf.sprintf "%s:\n" label_stack_ok)
             ^ "\tenter 0, 0\n"
             ^ (run (List.length params') (env + 1) body)
