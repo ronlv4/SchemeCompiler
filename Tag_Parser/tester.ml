@@ -1,5 +1,5 @@
-#use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/Tag_Parser.ml";;
-#use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/tp_tests.ml";;
+#use "/home/spl211/compilation_assignment_1/Tag_Parser/Tag_Parser.ml";;
+#use "/home/spl211/compilation_assignment_1/Tag_Parser/tp_tests.ml";;
 open Tag_Parser;;
 open Reader;;
 

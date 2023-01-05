@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ron_path="/home/ronlv4/repos/compilation_assignment"
-or_path="/home/compilation_assignment_1"
+or_path="/home/spl211/compilation_assignment_1"
 
 if [[ $1 == "ron" ]]; then
   current_path=$ron_path
