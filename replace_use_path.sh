@@ -7,7 +7,7 @@ if [[ $1 == "ron" ]]; then
   current_path=$ron_path
   path=$or_path
 else
-    current_path=$or_path
+  current_path=$or_path
   path=$ron_path
 fi
 
