@@ -451,7 +451,7 @@ module Code_Generation = struct
          ^ "\tmov rax, sob_void\n"
       | ScmVarSet' (Var' (v, Param minor), expr') ->
         (run params env expr')
-         ^ (Printf.sprintf "\tmov qword [rbp + 8 ∗ (4 + %d)], rax\n" minor)
+         ^ (Printf.sprintf "\tmov qword [rbp + (4 + %d) * 8], rax\n" minor)
          ^ "\tmov rax, sob_void"
       | ScmVarSet' (Var' (v, Bound (major, minor)), expr') ->
         (run params env expr')
@@ -607,7 +607,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tje %s\n" label_arity_exact)
             ^ (Printf.sprintf "\tja %s\n" label_arity_more)
             ^ "\tpush qword [rsp + 8 * 2]\n"
-            ^ (Printf.sprintf "\tpush %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tpush qword %d\n" (List.length params'))
             ^ "\tjmp L_error_incorrect_arity_opt\n"
             ^ (Printf.sprintf "%s:\n" label_arity_exact)
             ^ "\tmov [rsp + 8 * rcx - 8], [rsp + 8 * rcx]\n"
