@@ -671,7 +671,8 @@ module Code_Generation = struct
           ^ "\tassert_closure(rax)\n"
           ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
           ^ "\tpush qword [rbp + 8 * 1] ; old ret addr\n"
-          ^ "\tpush qword [rbp] ; old rbp\n"
+          ^ "\tmov r8, rbp\n"
+(*          ^ "\tpush qword [rbp] ; old rbp\n"*)
           ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
           ^ "\tadd rcx, 3 ; add args_num, env and ret addr\n"
           ^ "\tmov rbx, COUNT\n"
@@ -683,8 +684,9 @@ module Code_Generation = struct
           ^ "\tdec rbx\n"
           ^ "\tcmp rcx, 0\n"
           ^ (Printf.sprintf "\tjge %s\n" label_loop)
-          ^ "\tlea rsp, [rsp + 8 * rbx]\n"
-          ^ "\tpop qword [rbp] ; restore old rbp\n"
+          ^ "\tlea rsp, [rsp + 8 * (rbx + 2)]\n"
+          ^ "\tmov rbp, r8\n"
+(*          ^ "\tpop qword [rbp] ; restore old rbp\n"*)
           ^ "\tjmp SOB_CLOSURE_CODE(rax)\n"
           ^ "; ending Tail_Call applic\n"
     and runs params env exprs' =
