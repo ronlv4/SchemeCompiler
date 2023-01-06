@@ -684,7 +684,7 @@ module Code_Generation = struct
           ^ "\tcmp rcx, 0\n"
           ^ (Printf.sprintf "\tjge %s\n" label_loop)
           ^ "\tlea rsp, [rsp + 8 * (rbx + 1)]\n"
-          ^ "\tpop qword [rbp] ; restore old rbp\n"
+          ^ "\tpop qword rbp ; restore old rbp\n"
           ^ "\tjmp SOB_CLOSURE_CODE(rax)\n"
           ^ "; ending Tail_Call applic\n"
     and runs params env exprs' =
