@@ -404,11 +404,11 @@ module Code_Generation = struct
          let label = search_free_var_table v free_vars in
          Printf.sprintf "\tmov rax, qword [%s]\n" label
       | ScmVarGet' (Var' (v, Param minor)) ->
-         Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (4 + %d)]\n" minor
+         Printf.sprintf "\tmov rax, qword [rbp + (4 + %d) * 8]\n" minor
       | ScmVarGet' (Var' (v, Bound (major, minor))) ->
            "\tmov rax, qword [rbp + 8 ∗ 2]\n"
-         ^ (Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" major)
-         ^ (Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" minor)
+         ^ (Printf.sprintf "\tmov rax, qword [rbp + (%d) * 8]\n" major)
+         ^ (Printf.sprintf "\tmov rax, qword [rbp + (%d) * 8]\n" minor)
       | ScmIf' (test, dit, dif) ->
         let else_label = make_if_else () in
         let end_label = make_if_end () in
@@ -466,7 +466,7 @@ module Code_Generation = struct
          ^ "\tmov rax, sob_void\n"
       | ScmVarDef' (Var' (v, Param minor), expr') ->
         (run params env expr')
-        ^ (Printf.sprintf "\tmov qword [rbp + 8 ∗ (4 + %d)], rax\n" minor)
+        ^ (Printf.sprintf "\tmov qword [rbp + (4 + %d) * 8], rax\n" minor)
         ^ "\tmov rax, sob_void"
       | ScmVarDef' (Var' (v, Bound (major, minor)), expr') ->
         (run params env expr')
@@ -475,7 +475,7 @@ module Code_Generation = struct
         ^ (Printf.sprintf "\tmov qword [rbx + 8 ∗ %d], rax\n" minor)
         ^ "\tmov rax, sob_void\n"
       | ScmBox' (Var' (v, Param minor)) ->
-        Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (4 + %d)]\n" minor
+        Printf.sprintf "\tmov rax, qword [rbp + (4 + %d) * 8]\n" minor
         ^ "\tmov rbx, qword [rax]\n"
         ^ "\tmov rax, rbx\n"
       | ScmBox' _ -> raise (X_this_should_not_happen "Invalid boxing")
