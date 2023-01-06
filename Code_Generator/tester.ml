@@ -18,7 +18,7 @@ let cg_tester str expected filename =
     ()
   with
   | X_syntax(syntax_err) -> Printf.printf "\nTest String: %s, Result: X_syntax(%s)\n" str syntax_err
-  | X_not_yet_implemented -> Printf.printf "\nTest String: %s, Result: X_not_yet_implemented\n" str
+  | X_not_yet_implemented _ -> Printf.printf "\nTest String: %s, Result: X_not_yet_implemented\n" str
   | X_this_should_not_happen(happened) -> Printf.printf "\nTest String: %s, X_this_should_not_happen(%s)\n" str happened
 
 let rec my_map f = function
