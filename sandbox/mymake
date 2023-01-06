@@ -1,7 +1,0 @@
-#!/bin/bash
-
-nasm -g -f elf64 test.asm
-
-gcc -g -m64 -no-pie test.o
-
-rm -f test.o

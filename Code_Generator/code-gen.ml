@@ -1,3 +1,5 @@
+#use "/home/ronlv4/repos/compilation_assignment/Semantic_Analysis/Semantic_Analysis.ml";;
+
 let file_to_string input_file =
   let in_channel = open_in input_file in
   let rec run () =
