@@ -399,32 +399,27 @@ module Code_Generation = struct
     let rec run params env = function
       | ScmConst' sexpr ->
         let addr = search_constant_address sexpr consts in
-        Printf.sprintf "\tmov rax, %s + %d" label_start_of_constants_table addr
+        Printf.sprintf "\tmov rax, %s + %d\n" label_start_of_constants_table addr
       | ScmVarGet' (Var' (v, Free)) ->
          let label = search_free_var_table v free_vars in
-         Printf.sprintf
-           "\tmov rax, qword [%s]\n"
-           label
+         Printf.sprintf "\tmov rax, qword [%s]\n" label
       | ScmVarGet' (Var' (v, Param minor)) ->
-         Printf.sprintf
-           "\tmov rax, qword [rbp + 8 ∗ (4 + %d)]\n"
-           minor
+         Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (4 + %d)]\n" minor
       | ScmVarGet' (Var' (v, Bound (major, minor))) ->
            "\tmov rax, qword [rbp + 8 ∗ 2]\n"
-         ^ (Printf.sprintf
-           "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" major)
-           ^ (Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" minor)
+         ^ (Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" major)
+         ^ (Printf.sprintf "\tmov rax, qword [rbp + 8 ∗ (%d)]\n" minor)
       | ScmIf' (test, dit, dif) ->
-            let else_label = make_if_else () in
-            let end_label = make_if_end () in
-            (run params env test)
-            ^ "\tcmp rax, sob_boolean_false\n"
-            ^ (Printf.sprintf "\tje %s\n" else_label)
-            ^ (run params env dit)
-            ^ (Printf.sprintf "\tjmp %s\n" end_label)
-            ^ (Printf.sprintf "%s:\n" else_label)
-            ^ (run params env dif)
-            ^ (Printf.sprintf "%s:\n" end_label)
+        let else_label = make_if_else () in
+        let end_label = make_if_end () in
+        (run params env test)
+        ^ "\tcmp rax, sob_boolean_false\n"
+        ^ (Printf.sprintf "\tje %s\n" else_label)
+        ^ (run params env dit)
+        ^ (Printf.sprintf "\tjmp %s\n" end_label)
+        ^ (Printf.sprintf "%s:\n" else_label)
+        ^ (run params env dif)
+        ^ (Printf.sprintf "%s:\n" end_label)
       | ScmSeq' exprs' ->
          String.concat "\n"
            (List.map (run params env) exprs')
