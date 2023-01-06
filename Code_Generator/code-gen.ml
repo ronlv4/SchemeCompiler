@@ -445,9 +445,8 @@ module Code_Generation = struct
             | None -> run params env (ScmConst' (ScmBoolean false)))
          in asm_code
       | ScmVarSet' (Var' (v, Free), expr') ->
-         let value_code = run params env expr' in
          let label = search_free_var_table v free_vars in
-         value_code
+         (run params env expr')
          ^ (Printf.sprintf "\tmov qword [%s], rax\n" label)
          ^ "\tmov rax, sob_void\n"
       | ScmVarSet' (Var' (v, Param minor), expr') ->
@@ -675,9 +674,9 @@ module Code_Generation = struct
           ^ "\txor rbx, rbx\n"
           ^ (Printf.sprintf "%s:\n" label_loop)
           ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
-          ^ "\tmov qword [rbp - 8 * rbx], rdx\n"
+          ^ "\tmov qword [rbp + 8 * rbx], rdx\n"
           ^ "\tdec rcx\n"
-          ^ "\tinc rbx\n"
+          ^ "\tdec rbx\n"
           ^ "\tcmp rcx, 0\n"
           ^ (Printf.sprintf "\tjge %s\n" label_loop)
           ^ "\tmov rsp, qword [rbp - 8 * rbx]\n"
