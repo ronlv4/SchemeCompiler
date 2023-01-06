@@ -404,7 +404,7 @@ module Code_Generation = struct
          let label = search_free_var_table v free_vars in
          Printf.sprintf "\tmov rax, qword [%s]\n" label
       | ScmVarGet' (Var' (v, Param minor)) ->
-         Printf.sprintf "\tmov rax, qword [rbp + (4 + %d) * 8]\n" minor
+         Printf.sprintf "\tmov rax, PARAM(%d)\n" minor
       | ScmVarGet' (Var' (v, Bound (major, minor))) ->
            "\tmov rax, qword [rbp + 8 ∗ 2]\n"
          ^ (Printf.sprintf "\tmov rax, qword [rbp + (%d) * 8]\n" major)
@@ -508,8 +508,7 @@ module Code_Generation = struct
          ^ "\tmov rdi, ENV\n"
          ^ "\tmov rsi, 0\n"
          ^ "\tmov rdx, 1\n"
-         ^ (Printf.sprintf "%s:\t; ext_env[i + 1] <-- env[i]\n"
-              label_loop_env)
+         ^ (Printf.sprintf "%s:\t; ext_env[i + 1] <-- env[i]\n" label_loop_env)
          ^ (Printf.sprintf "\tcmp rsi, %d\n" (env + 1))
          ^ (Printf.sprintf "\tje %s\n" label_loop_env_end)
          ^ "\tmov rcx, qword [rdi + 8 * rsi]\n"
@@ -658,9 +657,10 @@ module Code_Generation = struct
         ^ "\tassert_closure(rax)\n"
         ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
         ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
-        ^ "\tadd rsp, 8 * 1 ; pop env\n"
-        ^ "\tpop rbx ; pop arg count\n"
-        ^ "\tlea rsp, [rsp + 8 * rbp] ; pop args\n"
+        (* we clean up the stack on the callee *)
+(*        ^ "\tadd rsp, 8 * 1 ; pop env\n"*)
+(*        ^ "\tpop rbx ; pop arg count\n"*)
+(*        ^ "\tlea rsp, [rsp + 8 * rbp] ; pop args\n"*)
         ^ "; ending Non_Tail_Call applic\n"
       | ScmApplic' (proc, args, Tail_Call) ->
         let label_loop = (make_make_label ".L_loop") () in
