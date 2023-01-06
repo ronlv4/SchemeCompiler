@@ -657,10 +657,6 @@ module Code_Generation = struct
         ^ "\tassert_closure(rax)\n"
         ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
         ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
-        (* we clean up the stack on the callee *)
-(*        ^ "\tadd rsp, 8 * 1 ; pop env\n"*)
-(*        ^ "\tpop rbx ; pop arg count\n"*)
-(*        ^ "\tlea rsp, [rsp + 8 * rbp] ; pop args\n"*)
         ^ "; ending Non_Tail_Call applic\n"
       | ScmApplic' (proc, args, Tail_Call) ->
         let label_loop = (make_make_label ".L_loop") () in
