@@ -681,7 +681,7 @@ module Code_Generation = struct
           ^ (Printf.sprintf "\tjge %s\n" label_loop)
           ^ "\tmov rsp, qword [rbp + 8 * rbx]\n"
           ^ "\tpop qword [rbp]\n"
-          ^ "\tjmp SOB_CLOSURE_ENV(rax)\n"
+          ^ "\tjmp SOB_CLOSURE_CODE(rax)\n"
     and runs params env exprs' =
       List.map
         (fun expr' ->
