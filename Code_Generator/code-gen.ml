@@ -677,7 +677,7 @@ module Code_Generation = struct
           ^ "\mov rbx, COUNT\n"
           ^ "\tlea rbx, [rbx + rcx + 4]\n"
           ^ (Printf.sprintf "%s:\n" label_loop)
-          ^ (Printf.sprintf "\tmov rdx, qword [rsp + rcx * 8]\n" (List.length args))
+          ^ "\tmov rdx, qword [rsp + rcx * 8]\n"
           ^ "\tmov qword [rsp + 8 * rbx], rdx\n"
           ^ "\tdec rcx\n"
           ^ "\tdec rbx\n"
