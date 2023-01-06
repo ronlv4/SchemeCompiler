@@ -408,7 +408,7 @@ module Code_Generation = struct
       | ScmVarGet' (Var' (v, Param minor)) ->
          Printf.sprintf "\tmov rax, PARAM(%d)\n" minor
       | ScmVarGet' (Var' (v, Bound (major, minor))) ->
-           "\tmov rax, qword [rbp + 8 ∗ 2]\n"
+           "\tmov rax, qword [rbp + 8 * 2]\n"
          ^ (Printf.sprintf "\tmov rax, qword [rbp + (%d) * 8]\n" major)
          ^ (Printf.sprintf "\tmov rax, qword [rbp + (%d) * 8]\n" minor)
       | ScmIf' (test, dit, dif) ->
