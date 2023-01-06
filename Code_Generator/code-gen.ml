@@ -659,7 +659,7 @@ module Code_Generation = struct
         ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
         ^ "\tadd rsp, 8 * 1 ; pop env\n"
         ^ "\tpop rbx ; pop arg count\n"
-        ^ "\tlea rsp, [rsp + 8 * rbp]\n"
+        ^ "\tlea rsp, [rsp + 8 * rbp] ; pop args\n"
       | ScmApplic' (proc, args, Tail_Call) ->
         let label_loop = (make_make_label ".L_loop") () in
           List.fold_right (fun arg_eval last-> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
@@ -667,8 +667,8 @@ module Code_Generation = struct
           ^ (run params env proc)
           ^ "\tassert_closure(rax)\n"
           ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
-          ^ "\tpush qword [rbp + 8 * 1]\n"
-          ^ "\tpush qword [rbp]\n"
+          ^ "\tpush qword [rbp + 8 * 1] ; old ret addr\n"
+          ^ "\tpush qword [rbp] ; old rbp\n"
           ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
           ^ "\tadd rcx, 3 ; add args_num, env and ret addr\n"
           ^ "\txor rbx, rbx\n"
@@ -680,7 +680,7 @@ module Code_Generation = struct
           ^ "\tcmp rcx, 0\n"
           ^ (Printf.sprintf "\tjge %s\n" label_loop)
           ^ "\tmov rsp, qword [rbp + 8 * rbx]\n"
-          ^ "\tpop qword [rbp]\n"
+          ^ "\tpop qword [rbp] ; restore old rbp\n"
           ^ "\tjmp SOB_CLOSURE_CODE(rax)\n"
     and runs params env exprs' =
       List.map
