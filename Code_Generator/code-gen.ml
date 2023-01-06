@@ -674,16 +674,17 @@ module Code_Generation = struct
           ^ "\tpush qword [rbp] ; old rbp\n"
           ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
           ^ "\tadd rcx, 3 ; add args_num, env and ret addr\n"
-          ^ "\txor rbx, rbx\n"
+          ^ "\mov rbx, COUNT\n"
+          ^ "\tlea rbx, [rbx + rcx + 4]\n"
           ^ (Printf.sprintf "%s:\n" label_loop)
-          ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
-          ^ "\tmov qword [rbp + 8 * rbx], rdx\n"
+          ^ (Printf.sprintf "\tmov rdx, qword [rsp + rcx * 8]\n" (List.length args))
+          ^ "\tmov qword [rsp + 8 * rbx], rdx\n"
           ^ "\tdec rcx\n"
           ^ "\tdec rbx\n"
           ^ "\tcmp rcx, 0\n"
-          ^ (Printf.sprintf "\tjge %s\n" label_loop)
-          ^ "\tmov rsp, qword [rbp + 8 * rbx]\n"
+          ^ (Printf.sprintf "\tjl %s\n" label_loop)
           ^ "\tpop qword [rbp] ; restore old rbp\n"
+          ^ "\tlea rsp, [rsp + 8 * rbx]\n"
           ^ "\tjmp SOB_CLOSURE_CODE(rax)\n"
           ^ "; ending Tail_Call applic\n"
     and runs params env exprs' =
