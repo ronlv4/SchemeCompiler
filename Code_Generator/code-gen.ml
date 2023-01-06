@@ -674,7 +674,7 @@ module Code_Generation = struct
           ^ "\tpush qword [rbp] ; old rbp\n"
           ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
           ^ "\tadd rcx, 3 ; add args_num, env and ret addr\n"
-          ^ "\mov rbx, COUNT\n"
+          ^ "\tmov rbx, COUNT\n"
           ^ "\tlea rbx, [rbx + rcx + 4]\n"
           ^ (Printf.sprintf "%s:\n" label_loop)
           ^ "\tmov rdx, qword [rsp + rcx * 8]\n"
