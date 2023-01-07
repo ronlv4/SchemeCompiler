@@ -620,25 +620,27 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tcmp rcx, 1 + 1 + %d\n" (List.length params'))
             ^ (Printf.sprintf "\tjbe %s\n" label_arity_exact)
             ^ "\tsub rsp, 8\n"
-(*            ^ "\tmov rdi, 1\n"*)
-(*            ^ "\tcall malloc\n"*)
-(*            ^ "\tmov qword [rax], sob_nil\n"*)
             ^ "\tmov qword [rsp + 8 * rcx], sob_nil\n"
             ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" ((List.length params') + 1))
             ^ (Printf.sprintf "\tjmp %s\n" label_stack_ok)
             ^ (Printf.sprintf "%s:\n" label_arity_more)
             ^ "\tmov rdi, r8\n"
             ^ (Printf.sprintf "\tsub rdi, %d\n" (List.length params'))
+            ^ "\tlea rdi, [rdi + (rdi + 1) * 8]\n"
             ^ "\tcall malloc\n"
-            ^ "\tdec rdi ; end of list index\n"
-            ^ "\tlea rcx, [r8 + 1 + 1] ; add env and args_num\n"
+            ^ "\tmov rbx, rax\n"
+            ^ (Printf.sprintf "\tlea rdi, [r8 - %d]\n ; counter" (List.length params'))
+            ^ (Printf.sprintf "\tlea rcx, [rsp + (1 + 1 + 1 + %d) * 8] ; first optional arg\n" (List.length params'))
             ^ (Printf.sprintf "%s:\n" label_build_opt_list)
-            ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
-            ^ "\tmov qword [rax + 8 * rdi], rdx\n"
-            ^ "\tdec rcx\n"
+            ^ "\tmov rdx, qword [rcx]\n"
+            ^ "\tmov byte [rbx], T_PAIR\n"
+            ^ "\tmov SOB_PAIR_CAR(rbx), rdx\n"
+            ^ "\tadd rcx, 8\n"
+            ^ "\tadd rbx, 1 + 8\n"
             ^ "\tdec rdi\n"
             ^ "\tcmp rdi, 0\n"
-            ^ (Printf.sprintf "\tjge %s\n" label_build_opt_list)
+            ^ (Printf.sprintf "\tjg %s\n" label_build_opt_list)
+            ^ "\tmov qword [rbx], sob_nil\n"
             ^ "\tmov qword [r9], rax\n"
             ^ (Printf.sprintf "\tcmp r8, %d\n" ((List.length params') + 1))
             ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_exit)
