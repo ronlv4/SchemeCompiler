@@ -625,7 +625,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tjmp %s\n" label_stack_ok)
             ^ (Printf.sprintf "%s:\n" label_arity_more)
             ^ "\txor rdi, rdi\n"
-            ^ "\tmalloc\n"
+            ^ "\tcall malloc\n"
             ^ "\tpush rax\n"
             ^ (Printf.sprintf "\tlea rbx, [r8 - %d] ; counter\n" (List.length params'))
             ^ (Printf.sprintf "\tlea rcx, [rsp + (1 + 1 + 1 + %d) * 8] ; first optional arg\n" (List.length params'))
