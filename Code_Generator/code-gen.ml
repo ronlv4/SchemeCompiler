@@ -635,7 +635,7 @@ module Code_Generation = struct
             ^ "\tcall malloc\n"
             ^ "\tmov byte [rax], T_pair\n"
             ^ "\tmov SOB_PAIR_CAR(rax), rdx\n"
-            ^ "\tmov rax, SOB_PAIR_CDR(rax)\n"
+            ^ "\tadd rax, 1 + 8 ; set rax in cdr position\n"
             ^ "\tadd rcx, 8\n"
             ^ "\tdec rbx\n"
             ^ "\tcmp rbx, 0\n"
