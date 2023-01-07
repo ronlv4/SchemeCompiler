@@ -623,7 +623,7 @@ module Code_Generation = struct
 (*            ^ "\tmov rdi, 1\n"*)
 (*            ^ "\tcall malloc\n"*)
 (*            ^ "\tmov qword [rax], sob_nil\n"*)
-            ^ "\tmov [rsp + 8 * rcx], sob_nil\n"
+            ^ "\tmov byte [rsp + 8 * rcx], sob_nil\n"
             ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" ((List.length params') + 1))
             ^ (Printf.sprintf "\tjmp %s\n" label_stack_ok)
             ^ (Printf.sprintf "%s:\n" label_arity_more)
