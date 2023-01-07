@@ -626,16 +626,18 @@ module Code_Generation = struct
             ^ (Printf.sprintf "%s:\n" label_arity_more)
             ^ "\txor rdi, rdi\n"
             ^ "\tcall malloc\n"
+            ^ "\tmov rsi, rax\n"
             ^ "\tpush rax\n"
             ^ (Printf.sprintf "\tlea rbx, [r8 - %d] ; counter\n" (List.length params'))
             ^ (Printf.sprintf "\tlea rcx, [rsp + (1 + 1 + 1 + %d) * 8] ; first optional arg\n" (List.length params'))
             ^ (Printf.sprintf "%s:\n" label_build_opt_list)
-            ^ "\tmov rdx, qword [rcx]\n"
             ^ "\tmov rdi, 1 + 8 + 8 ; PAIR\n"
             ^ "\tcall malloc\n"
+            ^ "\tmov [rsi], rax\n"
             ^ "\tmov byte [rax], T_pair\n"
+            ^ "\tmov rdx, qword [rcx]\n"
             ^ "\tmov SOB_PAIR_CAR(rax), rdx\n"
-            ^ "\tadd rax, 1 + 8 ; set rax in cdr position\n"
+            ^ "\tlea rsi, [rax + 1 + 8]\n"
             ^ "\tadd rcx, 8\n"
             ^ "\tdec rbx\n"
             ^ "\tcmp rbx, 0\n"
