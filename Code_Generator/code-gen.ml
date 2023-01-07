@@ -637,7 +637,7 @@ module Code_Generation = struct
             ^ "\tmov qword [rax + 8 * rdi], rdx\n"
             ^ "\tdec rcx\n"
             ^ "\tdec rdi\n"
-            ^ (Printf.sprintf "\tcmp rdi, 0\n" (List.length params'))
+            ^ "\tcmp rdi, 0\n"
             ^ (Printf.sprintf "\tjge %s\n" label_build_opt_list_end)
             ^ "\tmov qword [r9], rax\n"
             ^ (Printf.sprintf "\tcmp r8, %d\n" (List.length params'))
