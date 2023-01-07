@@ -657,7 +657,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tcmp rcx, 0\n")
             ^ (Printf.sprintf "\tjg %s\n" label_shrink_loop)
             ^ "\tlea rsp, [rax + 8]\n"
-            ^ (Printf.sprintf "\tmov [rsp + 8 * 2], %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" (List.length params'))
             ^ (Printf.sprintf "%s:\n" label_shrink_loop_exit)
 (*            ^ "\tmov rbx, [rsp + 8 * 2]\n"*)
 (*            ^ "\tmov rdi, rbx\n"*)
