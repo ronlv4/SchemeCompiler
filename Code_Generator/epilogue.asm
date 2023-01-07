@@ -571,6 +571,40 @@ bind_primitive:
 
 ;;; PLEASE IMPLEMENT THIS PROCEDURE
 L_code_ptr_bin_apply:
+	ENTER
+	cmp COUNT, 2
+	jge .L_arity_ok
+	push COUNT
+	push qword 2
+	jmp L_error_incorrect_arity_opt
+.L_arity_ok:
+	mov rax, PARAM(0)
+	cmp byte [rax], T_closure
+	jne L_error_non_closure
+	mov rbx, COUNT
+	dec rbx
+	mov rbx, PARAM(rbx)
+	push rbx
+	call L_code_ptr_is_null
+	cmp rax, sob_boolean_true
+	je .L_empty_apply
+.L_check_pair:
+	push rbx
+	call L_code_ptr_is_pair
+	cmp rax, sob_boolean_true
+	je .L_check_cdr
+	jmp L_error_improper_list
+.L_check_cdr:
+	mov rbx, SOB_PAIR_CDR(rbx)
+	push rbx
+	call L_code_ptr_is_null
+	cmp rax, sob_boolean_true
+	je .L_apply_core
+	jmp .L_check_pair
+
+.L_apply_core:
+
+
 
 L_code_ptr_is_null:
     ENTER
@@ -1619,6 +1653,7 @@ L_error_integer_range:
 	LEAVE
 	mov rax, -5
 	call exit
+
 L_error_arg_count_0:
     mov rdi, qword [stderr]
     mov rsi, fmt_arg_count_0
