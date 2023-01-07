@@ -563,7 +563,6 @@ module Code_Generation = struct
             and label_end = make_lambda_opt_end ()
             and label_stack_fix = (make_make_label ".L_stack_fix") ()
             and label_build_opt_list = (make_make_label ".L_build_opt_list") ()
-            and label_build_opt_list_end = (make_make_label ".L_build_opt_list_end") ()
             in
             "\tmov rdi, (1 + 8 + 8)\t; sob closure\n"
             ^ "\tcall malloc\n"
@@ -639,7 +638,7 @@ module Code_Generation = struct
             ^ "\tdec rcx\n"
             ^ "\tdec rdi\n"
             ^ "\tcmp rdi, 0\n"
-            ^ (Printf.sprintf "\tjge %s\n" label_build_opt_list_end)
+            ^ (Printf.sprintf "\tjge %s\n" label_build_opt_list)
             ^ "\tmov qword [r9], rax\n"
             ^ (Printf.sprintf "\tcmp r8, %d\n" (List.length params'))
             ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_exit)
