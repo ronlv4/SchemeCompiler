@@ -633,7 +633,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tlea rcx, [rsp + (1 + 1 + 1 + %d) * 8] ; first optional arg\n" (List.length params'))
             ^ (Printf.sprintf "%s:\n" label_build_opt_list)
             ^ "\tmov rdx, qword [rcx]\n"
-            ^ "\tmov byte [rbx], T_PAIR\n"
+            ^ "\tmov byte [rbx], T_pair\n"
             ^ "\tmov SOB_PAIR_CAR(rbx), rdx\n"
             ^ "\tadd rcx, 8\n"
             ^ "\tadd rbx, 1 + 8\n"
