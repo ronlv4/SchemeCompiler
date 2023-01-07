@@ -604,6 +604,9 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tjmp %s\n" label_end)
             ^ (Printf.sprintf "%s:\t; lambda-opt body\n" label_code)
             ^ "\txor rcx, rcx\n"
+            ^ "\tmov r8, qword [rsp + 8 * 2] ; args_count\n"
+            ^ "\tmov r9, rsp\n"
+            ^ "\tlea r9, [r9 + 8 * (r8 + 2)] ; 'top' of the stack pointer\n"
             ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n" ((List.length params') - 1))
             ^ (Printf.sprintf "\tje %s\n" label_arity_exact)
             ^ (Printf.sprintf "\tja %s\n" label_arity_more)
@@ -611,40 +614,74 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tpush qword %d\n" (List.length params'))
             ^ "\tjmp L_error_incorrect_arity_opt\n"
             ^ (Printf.sprintf "%s:\n" label_arity_exact)
-            ^ "\tmov [rsp + 8 * rcx - 8], [rsp + 8 * rcx]\n"
+            ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
+            ^ "\tmov qword [rsp + 8 * (rcx - 1)], rdx\n"
             ^ "\tinc rcx\n"
-            ^ (Printf.sprintf "\tcmp rcx, 1 + 1 + %d\n" (List.length params'))
-            ^ (Printf.sprintf "\tjne %s\n" label_arity_exact)
-            ^ "\tmov [rsp + 8 * rcx - 8], sob_nil\n"
+            ^ (Printf.sprintf "\tcmp rcx, 1 + %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tjbe %s\n" label_arity_exact)
+            ^ "\tmov rdi, 1\n"
+            ^ "\tcall malloc\n"
+            ^ "\tmov qword [rax], sob_nil\n"
+            ^ "\tmov [rsp + 8 * (rcx - 1)], rax\n"
             ^ "\tsub rsp, 8\n"
+            ^ (Printf.sprintf "\tmov [rsp + 8 * 2], %d\n" (List.length params'))
             ^ (Printf.sprintf "\tjmp %s\n" label_stack_ok)
             ^ (Printf.sprintf "%s:\n" label_arity_more)
-            ^ "\tmov rbx, [rsp + 8 * 2]\n"
-            ^ "\tmov rdi, rbx\n"
+            ^ "\tmov rdi, r8\n"
             ^ (Printf.sprintf "\tsub rdi, %d\n" ((List.length params') - 1))
             ^ "\tcall malloc\n"
-            ^ "\tcmp rdi, 0\n"
-            ^ (Printf.sprintf "\tjle, %s\n" label_stack_fix)
-            ^ (Printf.sprintf "%s:\n" label_build_opt)
-            ^ "\tmov rdx, [rsp + (rbx + 2) * 8]\n"
-            ^ "\tmov [rax + rdi * 8], rdx\n"
+            ^ "\tdec rdi ; end of list index\n"
+            ^ "\tlea rcx, [r8 + 1 + 1] ; add env and args_num\n"
+            ^ (Printf.sprintf "%s: %s\n" label_build_opt_list)
+            ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
+            ^ "\tmov qword [rax + 8 * rdi], rdx\n"
+            ^ "\tdec rcx\n"
             ^ "\tdec rdi\n"
-            ^ "\tdec rbx\n"
-            ^ "\tcmp rdi, 0\n"
-            ^ (Printf.sprintf "\tja %s\n" label_build_opt)
-            ^ (Printf.sprintf "%s:\n" label_stack_fix)
-            ^ "\tmov rcx, [rsp + 2 * 8]\n"
+            ^ (Printf.sprintf "\tcmp rdi, 0\n" (List.length params'))
+            ^ (Printf.sprintf "\tjge %s\n" label_build_opt_list_end)
+            ^ "\tmov qword [r9], rax\n"
+            ^ (Printf.sprintf "\tcmp r8, %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_end)
+            ^ (Printf.sprintf "\tmov rcx, 3 + %d ; loop counter\n" ((List.length params') - 1))
+            ^ "\tlea rax, [r9 - 8 * 1] ; destination pointer\n"
+            ^ (Printf.sprintf "\lea rbx, [rax - 8 * (r8 - %d)] ; source pointer\n" (List.length params'))
+            ^ (Printf.sprintf "%s: \n" label_shrink_loop)
+            ^ "\tmov rdx, qword [rbx]\n"
+            ^ "\tmov qword [rax], rdx\n"
+            ^ "\tsub rax, 8\n"
+            ^ "\tsub rbx, 8\n"
             ^ "\tdec rcx\n"
-            ^ "\tcmp rcx, 0\n"
-            ^ (Printf.sprintf "\tjle %s\n" label_stack_ok)
-            ^ (Printf.sprintf "%s:\n" label_shrink_loop)
-            ^ "\tmov rdx, rsp + (rcx + 2) * 8\n"
-            ^ "\tmov rdi, [rsp + (rbx + 2) * 8]\n"
-            ^ "\tmov [rdx], rdi\n"
-            ^ "\tdec rbx\n"
-            ^ "\tdec rcx\n"
-            ^ "\tcmp rcx, 0\n"
-            ^ (Printf.sprintf "\tjge %s\n" label_shrink_loop)
+            ^ (Printf.sprintf "\tcmp rcx, 0\n")
+            ^ (Printf.sprintf "\tjg %s\n" label_shrink_loop)
+            ^ "\tlea rsp, [rax + 8]\n"
+            ^ (Printf.sprintf "\tmov [rsp + 8 * 2], %d\n" (List.length params'))
+            ^ (Printf.sprintf "%s:\n" label_shrink_loop_end)
+(*            ^ "\tmov rbx, [rsp + 8 * 2]\n"*)
+(*            ^ "\tmov rdi, rbx\n"*)
+(*            ^ (Printf.sprintf "\tsub rdi, %d\n" ((List.length params') - 1))*)
+(*            ^ "\tcall malloc\n"*)
+(*            ^ "\tcmp rdi, 0\n"*)
+(*            ^ (Printf.sprintf "\tjle, %s\n" label_stack_fix)*)
+(*            ^ (Printf.sprintf "%s:\n" label_build_opt)*)
+(*            ^ "\tmov rdx, [rsp + (rbx + 2) * 8]\n"*)
+(*            ^ "\tmov [rax + rdi * 8], rdx\n"*)
+(*            ^ "\tdec rdi\n"*)
+(*            ^ "\tdec rbx\n"*)
+(*            ^ "\tcmp rdi, 0\n"*)
+(*            ^ (Printf.sprintf "\tja %s\n" label_build_opt)*)
+(*            ^ (Printf.sprintf "%s:\n" label_stack_fix)*)
+(*            ^ "\tmov rcx, [rsp + 2 * 8]\n"*)
+(*            ^ "\tdec rcx\n"*)
+(*            ^ "\tcmp rcx, 0\n"*)
+(*            ^ (Printf.sprintf "\tjle %s\n" label_stack_ok)*)
+(*            ^ (Printf.sprintf "%s:\n" label_shrink_loop)*)
+(*            ^ "\tmov rdx, rsp + (rcx + 2) * 8\n"*)
+(*            ^ "\tmov rdi, [rsp + (rbx + 2) * 8]\n"*)
+(*            ^ "\tmov [rdx], rdi\n"*)
+(*            ^ "\tdec rbx\n"*)
+(*            ^ "\tdec rcx\n"*)
+(*            ^ "\tcmp rcx, 0\n"*)
+(*            ^ (Printf.sprintf "\tjge %s\n" label_shrink_loop)*)
             ^ (Printf.sprintf "%s:\n" label_stack_ok)
             ^ "\tenter 0, 0\n"
             ^ (run (List.length params') (env + 1) body)
@@ -668,8 +705,8 @@ module Code_Generation = struct
           ^ (run params env proc)
           ^ "\tassert_closure(rax)\n"
           ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
-          ^ "\tpush qword [rbp + 8 * 1] ; old ret addr\n"
-          ^ "\tpush qword [rbp] ; old rbp\n"
+          ^ "\tpush RET_ADDR ; old ret addr\n"
+          ^ "\tpush OLD_RBP ; old rbp\n"
           ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
           ^ "\tadd rcx, 4 ; add args_num, env, ret addr and old rbp\n"
           ^ "\tmov rbx, COUNT\n"
