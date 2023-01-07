@@ -632,7 +632,7 @@ module Code_Generation = struct
             ^ "\tcall malloc\n"
             ^ "\tdec rdi ; end of list index\n"
             ^ "\tlea rcx, [r8 + 1 + 1] ; add env and args_num\n"
-            ^ (Printf.sprintf "%s: %s\n" label_build_opt_list)
+            ^ (Printf.sprintf "%s:\n" label_build_opt_list)
             ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
             ^ "\tmov qword [rax + 8 * rdi], rdx\n"
             ^ "\tdec rcx\n"
