@@ -642,7 +642,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tjge %s\n" label_build_opt_list_end)
             ^ "\tmov qword [r9], rax\n"
             ^ (Printf.sprintf "\tcmp r8, %d\n" (List.length params'))
-            ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_end)
+            ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_exit)
             ^ (Printf.sprintf "\tmov rcx, 3 + %d ; loop counter\n" ((List.length params') - 1))
             ^ "\tlea rax, [r9 - 8 * 1] ; destination pointer\n"
             ^ (Printf.sprintf "\lea rbx, [rax - 8 * (r8 - %d)] ; source pointer\n" (List.length params'))
@@ -656,7 +656,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tjg %s\n" label_shrink_loop)
             ^ "\tlea rsp, [rax + 8]\n"
             ^ (Printf.sprintf "\tmov [rsp + 8 * 2], %d\n" (List.length params'))
-            ^ (Printf.sprintf "%s:\n" label_shrink_loop_end)
+            ^ (Printf.sprintf "%s:\n" label_shrink_loop_exit)
 (*            ^ "\tmov rbx, [rsp + 8 * 2]\n"*)
 (*            ^ "\tmov rdi, rbx\n"*)
 (*            ^ (Printf.sprintf "\tsub rdi, %d\n" ((List.length params') - 1))*)
