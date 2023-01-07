@@ -645,7 +645,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_exit)
             ^ (Printf.sprintf "\tmov rcx, 3 + %d ; loop counter\n" ((List.length params') - 1))
             ^ "\tlea rax, [r9 - 8 * 1] ; destination pointer\n"
-            ^ (Printf.sprintf "\tlea rbx, [rax - 8 * (r8 - %d)] ; source pointer\n" (List.length params'))
+            ^ (Printf.sprintf "\tlea rbx, [rax + 8 * (%d - r8)] ; source pointer\n" (List.length params'))
             ^ (Printf.sprintf "%s: \n" label_shrink_loop)
             ^ "\tmov rdx, qword [rbx]\n"
             ^ "\tmov qword [rax], rdx\n"
