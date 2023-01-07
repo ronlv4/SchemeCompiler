@@ -562,7 +562,7 @@ module Code_Generation = struct
             and label_shrink_loop_exit = make_lambda_opt_loop_exit ()
             and label_end = make_lambda_opt_end ()
             and label_stack_fix = (make_make_label ".L_stack_fix") ()
-            and label_build_opt = (make_make_label ".L_build_opt") ()
+            and label_build_opt_list = (make_make_label ".L_build_opt") ()
             in
             "\tmov rdi, (1 + 8 + 8)\t; sob closure\n"
             ^ "\tcall malloc\n"
