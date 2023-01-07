@@ -22,7 +22,7 @@
 %define SOB_CLOSURE_ENV(reg)		qword [reg + 1]
 %define SOB_CLOSURE_CODE(reg)		qword [reg + 1 + 8]
 
-%define OLD_RDP 			qword [rbp]
+%define OLD_RBP 			qword [rbp]
 %define RET_ADDR 			qword [rbp + 8 * 1]
 %define ENV 				qword [rbp + 8 * 2]
 %define COUNT 				qword [rbp + 8 * 3]
