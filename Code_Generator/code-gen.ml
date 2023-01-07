@@ -564,7 +564,6 @@ module Code_Generation = struct
             and label_stack_fix = (make_make_label ".L_stack_fix") ()
             and label_build_opt_list = (make_make_label ".L_build_opt_list") ()
             in
-            let _ = Printf.printf "params: %s" (List.length params') in
             "\tmov rdi, (1 + 8 + 8)\t; sob closure\n"
             ^ "\tcall malloc\n"
             ^ "\tpush rax\n"
