@@ -629,7 +629,7 @@ module Code_Generation = struct
             ^ "\tlea rdi, [rdi + (rdi + 1) * 8]\n"
             ^ "\tcall malloc\n"
             ^ "\tmov rbx, rax\n"
-            ^ (Printf.sprintf "\tlea rdi, [r8 - %d]\n ; counter" (List.length params'))
+            ^ (Printf.sprintf "\tlea rdi, [r8 - %d] ; counter\n" (List.length params'))
             ^ (Printf.sprintf "\tlea rcx, [rsp + (1 + 1 + 1 + %d) * 8] ; first optional arg\n" (List.length params'))
             ^ (Printf.sprintf "%s:\n" label_build_opt_list)
             ^ "\tmov rdx, qword [rcx]\n"
