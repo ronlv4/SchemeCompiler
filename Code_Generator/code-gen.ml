@@ -564,6 +564,7 @@ module Code_Generation = struct
             and label_stack_fix = (make_make_label ".L_stack_fix") ()
             and label_build_opt_list = (make_make_label ".L_build_opt_list") ()
             in
+            let _ = Printf.printf "params: %s" (List.length params') in
             "\tmov rdi, (1 + 8 + 8)\t; sob closure\n"
             ^ "\tcall malloc\n"
             ^ "\tpush rax\n"
@@ -607,7 +608,7 @@ module Code_Generation = struct
             ^ "\tmov r8, qword [rsp + 8 * 2] ; args_count\n"
             ^ "\tmov r9, rsp\n"
             ^ "\tlea r9, [r9 + 8 * (r8 + 2)] ; 'top' of the stack pointer\n"
-            ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n" ((List.length params') - 1))
+            ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n" (List.length params'))
             ^ (Printf.sprintf "\tje %s\n" label_arity_exact)
             ^ (Printf.sprintf "\tja %s\n" label_arity_more)
             ^ "\tpush qword [rsp + 8 * 2]\n"
@@ -617,18 +618,18 @@ module Code_Generation = struct
             ^ "\tmov rdx, qword [rsp + 8 * rcx]\n"
             ^ "\tmov qword [rsp + 8 * (rcx - 1)], rdx\n"
             ^ "\tinc rcx\n"
-            ^ (Printf.sprintf "\tcmp rcx, 1 + %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tcmp rcx, 1 + 1 + %d\n" (List.length params'))
             ^ (Printf.sprintf "\tjbe %s\n" label_arity_exact)
             ^ "\tmov rdi, 1\n"
             ^ "\tcall malloc\n"
             ^ "\tmov qword [rax], sob_nil\n"
             ^ "\tmov [rsp + 8 * (rcx - 1)], rax\n"
             ^ "\tsub rsp, 8\n"
-            ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" ((List.length params') + 1))
             ^ (Printf.sprintf "\tjmp %s\n" label_stack_ok)
             ^ (Printf.sprintf "%s:\n" label_arity_more)
             ^ "\tmov rdi, r8\n"
-            ^ (Printf.sprintf "\tsub rdi, %d\n" ((List.length params') - 1))
+            ^ (Printf.sprintf "\tsub rdi, %d\n" (List.length params'))
             ^ "\tcall malloc\n"
             ^ "\tdec rdi ; end of list index\n"
             ^ "\tlea rcx, [r8 + 1 + 1] ; add env and args_num\n"
@@ -640,13 +641,13 @@ module Code_Generation = struct
             ^ "\tcmp rdi, 0\n"
             ^ (Printf.sprintf "\tjge %s\n" label_build_opt_list)
             ^ "\tmov qword [r9], rax\n"
-            ^ (Printf.sprintf "\tcmp r8, %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tcmp r8, %d\n" ((List.length params') + 1))
             ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_exit)
-            ^ (Printf.sprintf "\tmov rcx, 3 + %d ; loop counter\n" ((List.length params') - 1))
+            ^ (Printf.sprintf "\tmov rcx, 3 + %d ; loop counter\n" (List.length params'))
             ^ "\tlea rax, [r9 - 8 * 1] ; destination pointer\n"
             ^ "\tmov rdx, r8\n"
             ^ "\tneg rdx\n"
-            ^ (Printf.sprintf "\tlea rbx, [rax + 8 * (rdx + %d)] ; source pointer\n" (List.length params'))
+            ^ (Printf.sprintf "\tlea rbx, [rax + 8 * (rdx + %d)] ; source pointer\n" ((List.length params') + 1))
             ^ (Printf.sprintf "%s: \n" label_shrink_loop)
             ^ "\tmov rdx, qword [rbx]\n"
             ^ "\tmov qword [rax], rdx\n"
@@ -656,7 +657,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tcmp rcx, 0\n")
             ^ (Printf.sprintf "\tjg %s\n" label_shrink_loop)
             ^ "\tlea rsp, [rax + 8]\n"
-            ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" ((List.length params') + 1))
             ^ (Printf.sprintf "%s:\n" label_shrink_loop_exit)
 (*            ^ "\tmov rbx, [rsp + 8 * 2]\n"*)
 (*            ^ "\tmov rdi, rbx\n"*)
