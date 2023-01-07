@@ -14,5 +14,5 @@ fi
 for file in $(find ${current_path} -name "*.ml" -type f)
 do
   sed -i "s|${path}|${current_path}|g" $file
-  sed -i "s|${path}|${current_path}|g" "${current_path}.ocamlinit"
 done
+sed -i "s|${path}|${current_path}|g" "${current_path}/.ocamlinit"
