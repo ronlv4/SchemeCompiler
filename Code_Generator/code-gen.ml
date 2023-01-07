@@ -624,23 +624,24 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" ((List.length params') + 1))
             ^ (Printf.sprintf "\tjmp %s\n" label_stack_ok)
             ^ (Printf.sprintf "%s:\n" label_arity_more)
-            ^ "\tmov rdi, r8\n"
-            ^ (Printf.sprintf "\tsub rdi, %d\n" (List.length params'))
-            ^ "\tlea rdi, [rdi + (rdi + 1) * 8]\n"
-            ^ "\tcall malloc\n"
-            ^ "\tmov rbx, rax\n"
-            ^ (Printf.sprintf "\tlea rdi, [r8 - %d] ; counter\n" (List.length params'))
+            ^ "\txor rdi, rdi\n"
+            ^ "\tmalloc\n"
+            ^ "\tpush rax\n"
+            ^ (Printf.sprintf "\tlea rbx, [r8 - %d] ; counter\n" (List.length params'))
             ^ (Printf.sprintf "\tlea rcx, [rsp + (1 + 1 + 1 + %d) * 8] ; first optional arg\n" (List.length params'))
             ^ (Printf.sprintf "%s:\n" label_build_opt_list)
             ^ "\tmov rdx, qword [rcx]\n"
-            ^ "\tmov byte [rbx], T_pair\n"
-            ^ "\tmov SOB_PAIR_CAR(rbx), rdx\n"
+            ^ "\tmov rdi, 1 + 8 + 8 ; PAIR\n"
+            ^ "\tcall malloc\n"
+            ^ "\tmov byte [rax], T_pair\n"
+            ^ "\tmov SOB_PAIR_CAR(rax), rdx\n"
+            ^ "\tmov SOB_PAIR_CDR(rax), rax\n"
             ^ "\tadd rcx, 8\n"
-            ^ "\tadd rbx, 1 + 8\n"
-            ^ "\tdec rdi\n"
-            ^ "\tcmp rdi, 0\n"
+            ^ "\tdec rbx\n"
+            ^ "\tcmp rbx, 0\n"
             ^ (Printf.sprintf "\tjg %s\n" label_build_opt_list)
-            ^ "\tmov qword [rbx], sob_nil\n"
+            ^ "\tmov qword [rax], sob_nil\n"
+            ^ "\tpop rax\n"
             ^ "\tmov qword [r9], rax\n"
             ^ (Printf.sprintf "\tcmp r8, %d\n" ((List.length params') + 1))
             ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_exit)
