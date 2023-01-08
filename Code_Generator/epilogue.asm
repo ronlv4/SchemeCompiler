@@ -601,7 +601,7 @@ L_code_ptr_bin_apply:
 	cmp rax, sob_boolean_true
 	je .L_apply_core
 	jmp .L_check_pair
-
+.L_empty_apply:
 .L_apply_core:
 
 
