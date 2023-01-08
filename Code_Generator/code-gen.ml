@@ -392,6 +392,7 @@ module Code_Generation = struct
   let make_lambda_opt_stack_ok = make_make_label ".L_lambda_opt_stack_adjusted";;
   let make_lambda_opt_loop = make_make_label ".L_lambda_opt_stack_shrink_loop";;
   let make_lambda_opt_loop_exit = make_make_label ".L_lambda_opt_stack_shrink_loop_exit";;
+  let make_build_opt_list = make_make_label ".L_build_opt_list";;
   let make_tc_applic_recycle_frame_loop = make_make_label ".L_tc_recycle_frame_loop";;
   let make_tc_applic_recycle_frame_done = make_make_label ".L_tc_recycle_frame_done";;
 
@@ -561,8 +562,7 @@ module Code_Generation = struct
             and label_shrink_loop = make_lambda_opt_loop ()
             and label_shrink_loop_exit = make_lambda_opt_loop_exit ()
             and label_end = make_lambda_opt_end ()
-            and label_stack_fix = (make_make_label ".L_stack_fix") ()
-            and label_build_opt_list = (make_make_label ".L_build_opt_list") ()
+            and label_build_opt_list = make_build_opt_list ()
             in
             "\tmov rdi, (1 + 8 + 8)\t; sob closure\n"
             ^ "\tcall malloc\n"
