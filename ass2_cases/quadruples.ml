@@ -1,3 +1,5 @@
+#use "/home/ronlv4/repos/compilation_assignment/Semantic_Analysis/Semantic_Analysis.ml";;
+
 let quadruples = [
   ("a", ScmSymbol "a", ScmVarGet (Var "a"), ScmVarGet' (Var' ("a", Free)))
 
