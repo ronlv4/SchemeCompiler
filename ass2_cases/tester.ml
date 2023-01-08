@@ -8,4 +8,4 @@ let rec run_test = function
     if (result_expr = expr) then run_test tl else (Printf.sprintf "failed on test with %s" code);;
 
 
-run_test [("a", ScmSymbol "a", ScmVarGet (Var "a"), ScmVarGet' (Var' ("a", Free)))]
+run_test [("a", ScmSymbol "a", ScmVarGet (Var "a"), ScmVarGet' (Var' ("a", Free)))];;
