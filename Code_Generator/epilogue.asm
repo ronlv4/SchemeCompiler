@@ -581,9 +581,9 @@ L_code_ptr_bin_apply:
 	mov rax, PARAM(0)
 	cmp byte [rax], T_closure
 	jne L_error_non_closure
-	mov rbx, COUNT
-	dec rbx
-	mov rbx, PARAM(rbx)
+;	mov rbx, COUNT
+;	dec rbx
+	mov rbx, PARAM(1)
 	push rbx
 	call L_code_ptr_is_null
 	cmp rax, sob_boolean_true
@@ -601,8 +601,20 @@ L_code_ptr_bin_apply:
 	cmp rax, sob_boolean_true
 	je .L_apply_core
 	jmp .L_check_pair
+
 .L_empty_apply:
+	; handle sob_nil
+
 .L_apply_core:
+	mov rbx, PARAM(1)
+	push SOB_PAIR_CAR(rbx)
+.L_Loop:
+	mov rbx, SOB_PAIR_CDR(rbx)
+	push SOB_PAIR_CAR(rbx)
+	push qword 2
+	push ENV
+	call PARAM(0)
+	push rax
 
 
 
