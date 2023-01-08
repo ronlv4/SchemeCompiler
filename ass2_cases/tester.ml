@@ -1,4 +1,5 @@
 #use "/home/ronlv4/repos/compilation_assignment/ass2_cases/quadruples.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Reader/Reader.ml";;
 #use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/Tag_Parser.ml";;
 
 let run_test = function
