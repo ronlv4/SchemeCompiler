@@ -1,5 +1,4 @@
 #use "/home/ronlv4/repos/compilation_assignment/ass2_cases/quadruples.ml";;
-#use "/home/ronlv4/repos/compilation_assignment/Tag_Parser/Tag_Parser.ml";;
 
 let rec run_test = function
   | [] -> "finished testing successfully"
@@ -8,4 +7,4 @@ let rec run_test = function
     if (result_expr = expr) then run_test tl else (Printf.sprintf "failed on test with %s" code);;
 
 
-run_test [("a", ScmSymbol "a", ScmVarGet (Var "a"), ScmVarGet' (Var' ("a", Free)))];;
+run_test quadruples
