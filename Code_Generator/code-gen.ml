@@ -410,8 +410,8 @@ module Code_Generation = struct
          Printf.sprintf "\tmov rax, PARAM(%d)\n" minor
       | ScmVarGet' (Var' (v, Bound (major, minor))) ->
            "\tmov rax, qword [rbp + 8 * 2]\n"
-         ^ (Printf.sprintf "\tmov rax, qword [rax + (%d) * 8]\n" major)
-         ^ (Printf.sprintf "\tmov rax, qword [rax + (%d) * 8]\n" minor)
+         ^ (Printf.sprintf "\tmov rax, qword [rax + 8 * %d]\n" major)
+         ^ (Printf.sprintf "\tmov rax, qword [rax + 8 * %d]\n" minor)
       | ScmIf' (test, dit, dif) ->
         let else_label = make_if_else () in
         let end_label = make_if_end () in
@@ -665,7 +665,7 @@ module Code_Generation = struct
             ^ "\tenter 0, 0\n"
             ^ (run ((List.length params') + 1) (env + 1) body)
             ^ "\tleave\n"
-            ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" (List.length params'))
+            ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" ((List.length params') + 1))
             ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
       | ScmApplic' (proc, args, Non_Tail_Call) ->
         Printf.sprintf "; starting Non_Tail_Call applic\n"
