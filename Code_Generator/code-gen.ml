@@ -554,7 +554,7 @@ module Code_Generation = struct
             and label_loop_env_end = make_lambda_opt_loop_env_end ()
             and label_loop_params = make_lambda_opt_loop_params ()
             and label_loop_params_end = make_lambda_opt_loop_params_end ()
-            and label_code = make_lambda_opt_code ()
+            and label_opt_code = make_lambda_opt_code ()
             and label_arity_exact = make_lambda_opt_arity_exact ()
             and label_arity_more = make_lambda_opt_arity_more ()
             and label_stack_ok = make_lambda_opt_stack_ok ()
@@ -599,9 +599,9 @@ module Code_Generation = struct
             ^ "\tpop rax\n"
             ^ "\tmov byte [rax], T_closure\n"
             ^ "\tmov SOB_CLOSURE_ENV(rax), rbx\n"
-            ^ (Printf.sprintf "\tmov SOB_CLOSURE_CODE(rax), %s\n" label_code)
+            ^ (Printf.sprintf "\tmov SOB_CLOSURE_CODE(rax), %s\n" label_opt_code)
             ^ (Printf.sprintf "\tjmp %s\n" label_end)
-            ^ (Printf.sprintf "%s:\t; lambda-opt body\n" label_code)
+            ^ (Printf.sprintf "%s:\t; lambda-opt body\n" label_opt_code)
             ^ "\txor rcx, rcx\n"
             ^ "\tmov r8, qword [rsp + 8 * 2] ; args_count\n"
             ^ "\tmov r9, rsp\n"
@@ -678,7 +678,8 @@ module Code_Generation = struct
         ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
         ^ "; ending Non_Tail_Call applic\n"
       | ScmApplic' (proc, args, Tail_Call) ->
-        let label_loop = (make_make_label ".L_loop") () in
+        and label_tc_applic_recycle_frame_loop = make_tc_applic_recycle_frame_loop ()
+        and label_tc_applic_recycle_frame_done = make_tc_applic_recycle_frame_done () in
           Printf.sprintf "; starting Tail_Call applic\n"
           ^ List.fold_right (fun arg_eval last-> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
           ^ Printf.sprintf "\tpush %d\n" (List.length args)
@@ -691,13 +692,13 @@ module Code_Generation = struct
           ^ "\tadd rcx, 4 ; add args_num, env, ret addr and old rbp\n"
           ^ "\tmov rbx, COUNT\n"
           ^ "\tlea rbx, [rbx + rcx + 4]\n"
-          ^ (Printf.sprintf "%s:\n" label_loop)
+          ^ (Printf.sprintf "%s:\n" label_tc_applic_recycle_frame_loop)
           ^ "\tmov rdx, qword [rsp + rcx * 8]\n"
           ^ "\tmov qword [rsp + 8 * rbx], rdx\n"
           ^ "\tdec rcx\n"
           ^ "\tdec rbx\n"
           ^ "\tcmp rcx, 0\n"
-          ^ (Printf.sprintf "\tjge %s\n" label_loop)
+          ^ (Printf.sprintf "\tjge %s\n" label_tc_applic_recycle_frame_loop)
           ^ "\tlea rsp, [rsp + 8 * (rbx + 1)]\n"
           ^ "\tpop qword rbp ; restore old rbp\n"
           ^ "\tjmp SOB_CLOSURE_CODE(rax)\n"
