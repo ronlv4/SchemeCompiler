@@ -574,8 +574,7 @@ module Code_Generation = struct
             ^ "\tmov rdi, ENV\n"
             ^ "\tmov rsi, 0\n"
             ^ "\tmov rdx, 1\n"
-            ^ (Printf.sprintf "%s:\t; ext_env[i + 1] <-- env[i]\n"
-                label_loop_env)
+            ^ (Printf.sprintf "%s:\t; ext_env[i + 1] <-- env[i]\n" label_loop_env)
             ^ (Printf.sprintf "\tcmp rsi, %d\n" (env + 1))
             ^ (Printf.sprintf "\tje %s\n" label_loop_env_end)
             ^ "\tmov rcx, qword [rdi + 8 * rsi]\n"
@@ -664,7 +663,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "%s:\n" label_shrink_loop_exit)
             ^ (Printf.sprintf "%s:\n" label_stack_ok)
             ^ "\tenter 0, 0\n"
-            ^ (run (List.length params') (env + 1) body)
+            ^ (run ((List.length params') + 1) (env + 1) body)
             ^ "\tleave\n"
             ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" (List.length params'))
             ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
