@@ -454,13 +454,13 @@ module Code_Generation = struct
          ^ "\tmov rax, sob_void\n"
       | ScmVarSet' (Var' (v, Param minor), expr') ->
         (run params env expr')
-         ^ (Printf.sprintf "\tmov qword [rbp + (4 + %d) * 8], rax\n" minor)
+         ^ (Printf.sprintf "\tmov PARAM(%d), rax\n" minor)
          ^ "\tmov rax, sob_void"
       | ScmVarSet' (Var' (v, Bound (major, minor)), expr') ->
         (run params env expr')
-        ^ "\tmov rbx, qword [rbp + 8 ∗ 2]\n"
-        ^ (Printf.sprintf "\tmov rbx, qword [rbx + 8 ∗ %d]\n" major)
-        ^ (Printf.sprintf "\tmov qword [rbx + 8 ∗ %d], rax\n" minor)
+        ^ "\tmov rbx, ENV\n"
+        ^ (Printf.sprintf "\tmov rbx, qword [rbx + 8 * %d]\n" major)
+        ^ (Printf.sprintf "\tmov qword [rbx + 8 * %d], rax\n" minor)
         ^ "\tmov rax, sob_void\n"
       | ScmVarDef' (Var' (v, Free), expr') ->
          let label = search_free_var_table v free_vars in
@@ -469,16 +469,16 @@ module Code_Generation = struct
          ^ "\tmov rax, sob_void\n"
       | ScmVarDef' (Var' (v, Param minor), expr') ->
         (run params env expr')
-        ^ (Printf.sprintf "\tmov qword [rbp + (4 + %d) * 8], rax\n" minor)
+        ^ (Printf.sprintf "\tmov PARAM(%d), rax\n" minor)
         ^ "\tmov rax, sob_void"
       | ScmVarDef' (Var' (v, Bound (major, minor)), expr') ->
         (run params env expr')
-        ^ "\tmov rbx, qword [rbp + 8 ∗ 2]\n"
-        ^ (Printf.sprintf "\tmov rbx, qword [rbx + 8 ∗ %d]\n" major)
-        ^ (Printf.sprintf "\tmov qword [rbx + 8 ∗ %d], rax\n" minor)
+        ^ "\tmov rbx, ENV\n"
+        ^ (Printf.sprintf "\tmov rbx, qword [rbx + 8 * %d]\n" major)
+        ^ (Printf.sprintf "\tmov qword [rbx + 8 * %d], rax\n" minor)
         ^ "\tmov rax, sob_void\n"
       | ScmBox' (Var' (v, Param minor)) ->
-        Printf.sprintf "\tmov rax, qword [rbp + (4 + %d) * 8]\n" minor
+        Printf.sprintf "\tmov rax, PARAM(%d)\n" minor
         ^ "\tmov rbx, qword [rax]\n"
         ^ "\tmov rax, rbx\n"
       | ScmBox' _ -> raise (X_this_should_not_happen "Invalid boxing")
@@ -538,8 +538,7 @@ module Code_Generation = struct
          ^ (Printf.sprintf "\tmov SOB_CLOSURE_CODE(rax), %s\n" label_code)
          ^ (Printf.sprintf "\tjmp %s\n" label_end)
          ^ (Printf.sprintf "%s:\t; lambda-simple body\n" label_code)
-         ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n"
-              (List.length params'))
+         ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n" (List.length params'))
          ^ (Printf.sprintf "\tje %s\n" label_arity_ok)
          ^ "\tpush qword [rsp + 8 * 2]\n"
          ^ (Printf.sprintf "\tpush %d\n" (List.length params'))
@@ -590,7 +589,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "%s:\t; copy params\n" label_loop_params)
             ^ (Printf.sprintf "\tcmp rsi, %d\n" params)
             ^ (Printf.sprintf "\tje %s\n" label_loop_params_end)
-            ^ "\tmov rdx, qword [rbp + 8 * rsi + 8 * 4]\n"
+            ^ "\tmov rdx, PARAM(rsi)\n"
             ^ "\tmov qword [rbx + 8 * rsi], rdx\n"
             ^ "\tinc rsi\n"
             ^ (Printf.sprintf "\tjmp %s\n" label_loop_params)
