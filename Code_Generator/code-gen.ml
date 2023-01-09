@@ -410,8 +410,8 @@ module Code_Generation = struct
          Printf.sprintf "\tmov rax, PARAM(%d)\n" minor
       | ScmVarGet' (Var' (v, Bound (major, minor))) ->
            "\tmov rax, qword [rbp + 8 * 2]\n"
-         ^ (Printf.sprintf "\tmov rax, qword [rbp + (%d) * 8]\n" major)
-         ^ (Printf.sprintf "\tmov rax, qword [rbp + (%d) * 8]\n" minor)
+         ^ (Printf.sprintf "\tmov rax, qword [rax + (%d) * 8]\n" major)
+         ^ (Printf.sprintf "\tmov rax, qword [rax + (%d) * 8]\n" minor)
       | ScmIf' (test, dit, dif) ->
         let else_label = make_if_else () in
         let end_label = make_if_end () in
@@ -525,7 +525,7 @@ module Code_Generation = struct
          ^ (Printf.sprintf "%s:\t; copy params\n" label_loop_params)
          ^ (Printf.sprintf "\tcmp rsi, %d\n" params)
          ^ (Printf.sprintf "\tje %s\n" label_loop_params_end)
-         ^ "\tmov rdx, qword [rbp + 8 * rsi + 8 * 4]\n"
+         ^ "\tmov rdx, PARAM(rsi)\n"
          ^ "\tmov qword [rbx + 8 * rsi], rdx\n"
          ^ "\tinc rsi\n"
          ^ (Printf.sprintf "\tjmp %s\n" label_loop_params)
