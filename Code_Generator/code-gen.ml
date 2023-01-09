@@ -478,9 +478,10 @@ module Code_Generation = struct
         ^ (Printf.sprintf "\tmov qword [rbx + 8 * %d], rax\n" minor)
         ^ "\tmov rax, sob_void\n"
       | ScmBox' (Var' (v, Param minor)) ->
-        Printf.sprintf "\tmov rax, PARAM(%d)\n" minor
-        ^ "\tmov rbx, qword [rax]\n"
-        ^ "\tmov rax, rbx\n"
+        (Printf.sprintf "\tmov rbx, PARAM(%d)\n" minor)
+        ^ "\tmov rdi, 1\n"
+        ^ "\tmalloc\n"
+        ^ "\tmov [rax], rbx\n"
       | ScmBox' _ -> raise (X_this_should_not_happen "Invalid boxing")
       | ScmBoxGet' var' ->
          (run params env (ScmVarGet' var'))
