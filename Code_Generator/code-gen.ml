@@ -678,7 +678,7 @@ module Code_Generation = struct
         ^ "\tcall SOB_CLOSURE_CODE(rax)\n"
         ^ "; ending Non_Tail_Call applic\n"
       | ScmApplic' (proc, args, Tail_Call) ->
-        and label_tc_applic_recycle_frame_loop = make_tc_applic_recycle_frame_loop ()
+        let label_tc_applic_recycle_frame_loop = make_tc_applic_recycle_frame_loop ()
         and label_tc_applic_recycle_frame_done = make_tc_applic_recycle_frame_done () in
           Printf.sprintf "; starting Tail_Call applic\n"
           ^ List.fold_right (fun arg_eval last-> last ^ (run params env arg_eval) ^ "\tpush rax\n")  args ""
