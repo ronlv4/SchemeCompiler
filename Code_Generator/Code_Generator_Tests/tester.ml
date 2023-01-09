@@ -3,13 +3,13 @@
 
 type cg_test = {test: string; expected: string};;
 
-#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/cg_test_cases/const_tests.ml";;
-#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/cg_test_cases/elias_tests.ml";;
-#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/cg_test_cases/mayer_tests.ml";;
-#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/cg_test_cases/seq_tests.ml";;
-#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/cg_test_cases/if_tests.ml";;
-#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/cg_test_cases/or_tests.ml";;
-#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/cg_test_cases/tc_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/const_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/elias_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/mayer_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/seq_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/if_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/or_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/tc_tests.ml";;
 
 exception X_failed_test of string * string * string;; (* test, expected, actual *)
 
