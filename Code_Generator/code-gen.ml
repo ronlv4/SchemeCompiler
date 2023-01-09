@@ -455,7 +455,7 @@ module Code_Generation = struct
       | ScmVarSet' (Var' (v, Param minor), expr') ->
         (run params env expr')
          ^ (Printf.sprintf "\tmov PARAM(%d), rax\n" minor)
-         ^ "\tmov rax, sob_void"
+         ^ "\tmov rax, sob_void\n"
       | ScmVarSet' (Var' (v, Bound (major, minor)), expr') ->
         (run params env expr')
         ^ "\tmov rbx, ENV\n"
@@ -470,7 +470,7 @@ module Code_Generation = struct
       | ScmVarDef' (Var' (v, Param minor), expr') ->
         (run params env expr')
         ^ (Printf.sprintf "\tmov PARAM(%d), rax\n" minor)
-        ^ "\tmov rax, sob_void"
+        ^ "\tmov rax, sob_void\n"
       | ScmVarDef' (Var' (v, Bound (major, minor)), expr') ->
         (run params env expr')
         ^ "\tmov rbx, ENV\n"
