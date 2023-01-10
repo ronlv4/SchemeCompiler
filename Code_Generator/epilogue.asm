@@ -603,7 +603,6 @@ L_code_ptr_bin_apply:
 	mov rbx, PARAM(1)
 	xor rcx, rcx
 .L_push_all_args:
-	push rbx
 	push SOB_PAIR_CAR(rbx)
 	inc rcx
 	mov rbx, SOB_PAIR_CDR(rbx)
