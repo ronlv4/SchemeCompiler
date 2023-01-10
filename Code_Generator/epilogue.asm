@@ -585,32 +585,28 @@ L_code_ptr_bin_apply:
 ;	dec rbx
 	mov rbx, PARAM(1)
 	push rbx
-	call L_code_ptr_is_null
+	call_function 1, L_code_ptr_is_null
 	cmp rax, sob_boolean_true
 	je .L_apply_core
-;	je .L_empty_apply
 .L_check_pair:
 	push rbx
-	call L_code_ptr_is_pair
+	call_function 1, L_code_ptr_is_pair
 	cmp rax, sob_boolean_true
 	je .L_check_cdr
 	jmp L_error_improper_list
 .L_check_cdr:
 	mov rbx, SOB_PAIR_CDR(rbx)
 	push rbx
-	call L_code_ptr_is_null
+	call_function 1, L_code_ptr_is_null
 	cmp rax, sob_boolean_true
 	je .L_apply_core
 	jmp .L_check_pair
-;.L_empty_apply:
-	; handle sob_nil
-
 .L_apply_core:
 	mov rbx, PARAM(1)
 	xor rcx, rcx
 .L_push_all_args:
 	push rbx
-	call L_code_ptr_is_null
+	call_function 1, L_code_ptr_is_null
 	cmp rax, sob_boolean_true
 	je .L_finish
 	push SOB_PAIR_CAR(rbx)
@@ -619,9 +615,7 @@ L_code_ptr_bin_apply:
 	mov rbx, qword [rbx]
 	jmp .L_push_all_args
 .L_finish:
-	push rcx
-	push ENV
-	call PARAM(0)
+	call_function rcx, PARAM(0)
 
 ;.L_apply_core:
 ;	mov rbx, PARAM(1)

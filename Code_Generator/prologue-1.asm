@@ -49,6 +49,12 @@
         jne L_error_incorrect_type
 %endmacro
 
+%macro call_function 2
+	push qword %1
+	push ENV
+	call %2
+%endmacro
+
 %define assert_void(reg)		assert_type reg, T_void
 %define assert_nil(reg)			assert_type reg, T_nil
 %define assert_char(reg)		assert_type reg, T_char
