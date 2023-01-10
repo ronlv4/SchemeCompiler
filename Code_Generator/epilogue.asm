@@ -617,7 +617,7 @@ L_code_ptr_bin_apply:
 	inc rcx
 	mov rbx, SOB_PAIR_CDR(rbx)
 	mov rbx, qword [rbx]
-	jmp .push_all_args
+	jmp .L_push_all_args
 .L_finish:
 	push rcx
 	push ENV
