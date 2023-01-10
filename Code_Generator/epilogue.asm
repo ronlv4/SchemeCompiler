@@ -581,13 +581,11 @@ L_code_ptr_bin_apply:
 	mov rax, PARAM(0)
 	cmp byte [rax], T_closure
 	jne L_error_non_closure
-;	mov rbx, COUNT
-;	dec rbx
 	mov rbx, PARAM(1)
 	push rbx
 	call_function 1, L_code_ptr_is_null
 	cmp rax, sob_boolean_true
-	je .L_apply_core
+	je .L_apply_core_nil
 .L_check_pair:
 	push rbx
 	call_function 1, L_code_ptr_is_pair
@@ -606,14 +604,17 @@ L_code_ptr_bin_apply:
 	xor rcx, rcx
 .L_push_all_args:
 	push rbx
-	call_function 1, L_code_ptr_is_null
-	cmp rax, sob_boolean_true
-	je .L_finish
 	push SOB_PAIR_CAR(rbx)
 	inc rcx
 	mov rbx, SOB_PAIR_CDR(rbx)
+	push rbx
+	call_function 1, L_code_ptr_is_null
+	cmp rax, sob_boolean_true
+	je .L_finish
 	mov rbx, qword [rbx]
 	jmp .L_push_all_args
+.L_apply_core_nil:
+	xor rcx, rcx
 .L_finish:
 	call_function rcx, PARAM(0)
 
