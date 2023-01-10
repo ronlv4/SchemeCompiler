@@ -587,7 +587,8 @@ L_code_ptr_bin_apply:
 	push rbx
 	call L_code_ptr_is_null
 	cmp rax, sob_boolean_true
-	je .L_empty_apply
+	je .L_apply_core
+;	je .L_empty_apply
 .L_check_pair:
 	push rbx
 	call L_code_ptr_is_pair
@@ -601,22 +602,44 @@ L_code_ptr_bin_apply:
 	cmp rax, sob_boolean_true
 	je .L_apply_core
 	jmp .L_check_pair
-
-.L_empty_apply:
+;.L_empty_apply:
 	; handle sob_nil
 
 .L_apply_core:
 	mov rbx, PARAM(1)
+	xor rcx, rcx
+.L_push_all_args:
+	push rbx
+	call L_code_ptr_is_null
+	cmp rax, sob_boolean_true
+	je .L_finish
 	push SOB_PAIR_CAR(rbx)
-.L_Loop:
+	inc rcx
 	mov rbx, SOB_PAIR_CDR(rbx)
-	push SOB_PAIR_CAR(rbx)
-	push qword 2
+	mov rbx, qword [rbx]
+	jmp .push_all_args
+.L_finish:
+	push rcx
 	push ENV
 	call PARAM(0)
-	push rax
 
-
+;.L_apply_core:
+;	mov rbx, PARAM(1)
+;	xor rcx, rcx
+;.L_push_all_args:
+;	push SOB_PAIR_CAR(rbx)
+;	inc rcx
+;	mov rbx, SOB_PAIR_CDR(rbx)
+;	push rbx
+;	call L_code_ptr_is_null
+;	cmp rax, sob_boolean_true
+;	je .L_finish
+;	mov rbx, qword [rbx]
+;	jmp .push_all_args
+;.L_finish:
+;	push rcx
+;	push ENV
+;	call PARAM(0)
 
 L_code_ptr_is_null:
     ENTER
