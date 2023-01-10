@@ -616,7 +616,8 @@ L_code_ptr_bin_apply:
 .L_apply_core_nil:
 	xor rcx, rcx
 .L_finish:
-	call_function rcx, PARAM(0)
+	mov rdx, PARAM(0)
+	call_function rcx, SOB_CLOSURE_CODE(rdx)
 
 ;.L_apply_core:
 ;	mov rbx, PARAM(1)
