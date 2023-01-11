@@ -620,24 +620,6 @@ L_code_ptr_bin_apply:
 	LEAVE
     ret AND_KILL_FRAME(2)
 
-;.L_apply_core:
-;	mov rbx, PARAM(1)
-;	xor rcx, rcx
-;.L_push_all_args:
-;	push SOB_PAIR_CAR(rbx)
-;	inc rcx
-;	mov rbx, SOB_PAIR_CDR(rbx)
-;	push rbx
-;	call L_code_ptr_is_null
-;	cmp rax, sob_boolean_true
-;	je .L_finish
-;	mov rbx, qword [rbx]
-;	jmp .push_all_args
-;.L_finish:
-;	push rcx
-;	push ENV
-;	call PARAM(0)
-
 L_code_ptr_is_null:
     ENTER
     cmp COUNT, 1
