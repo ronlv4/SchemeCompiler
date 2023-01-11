@@ -617,6 +617,8 @@ L_code_ptr_bin_apply:
 .L_finish:
 	mov rdx, PARAM(0)
 	call_function rcx, SOB_CLOSURE_CODE(rdx)
+	LEAVE
+    ret AND_KILL_FRAME(2)
 
 ;.L_apply_core:
 ;	mov rbx, PARAM(1)
