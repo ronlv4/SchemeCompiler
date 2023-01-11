@@ -573,7 +573,7 @@ bind_primitive:
 L_code_ptr_bin_apply:
 	ENTER
 	cmp COUNT, 2
-	jge .L_arity_ok
+	je .L_arity_ok
 	push COUNT
 	push qword 2
 	jmp L_error_incorrect_arity_opt
@@ -610,7 +610,6 @@ L_code_ptr_bin_apply:
 	call_function 1, L_code_ptr_is_null
 	cmp rax, sob_boolean_true
 	je .L_finish
-	mov rbx, qword [rbx]
 	jmp .L_push_all_args
 .L_apply_core_nil:
 	xor rcx, rcx
