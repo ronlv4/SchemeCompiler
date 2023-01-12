@@ -38,7 +38,7 @@ let cg_tester test expected =
         raise (X_failed_test(test, expected, actual))
   with
   | X_syntax(syntax_err) -> raise (X_failed_test(test, expected, (Printf.sprintf "X_syntax(%s)" syntax_err)))
-  | X_not_yet_implemented -> raise (X_failed_test(test, expected, "X_not_yet_implemented"))
+  | X_not_yet_implemented (str) -> raise (X_failed_test(test, expected, str))
   | X_this_should_not_happen(happened) -> raise (X_failed_test(test, expected, (Printf.sprintf "X_this_should_not_happen(%s)" happened)));;
 
 let run_cg_tests (cg_tests : cg_test list) kind=
