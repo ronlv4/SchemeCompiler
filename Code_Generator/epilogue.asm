@@ -609,13 +609,29 @@ L_code_ptr_bin_apply:
 	push rbx
 	call_function 1, L_code_ptr_is_null
 	cmp rax, sob_boolean_true
-	je .L_finish
+	je .L_reverse_args_order
 	jmp .L_push_all_args
 .L_apply_core_nil:
 	xor rcx, rcx
+.L_reverse_stack_order:
+	mov rbx, rcx
+	lea rsi, [rsp + (rcx - 1) * 8]
+	mov rdi, rsp
+	shr rcx, 1
+.L_reverse_stack_order_loop:
+	cmp rcx, 0
+	je .L_finish
+	mov r8, qword [rsi]
+	mov r9, qword [rdi]
+	mov [rsi], r9
+	mov [rdi], r8
+	add rdi, 8
+	sub rsi, 8
+	dec rcx
+	jmp .L_reverse_stack_order_loop
 .L_finish:
 	mov rdx, PARAM(0)
-	call_function rcx, SOB_CLOSURE_CODE(rdx)
+	call_function rbx, SOB_CLOSURE_CODE(rdx)
 	LEAVE
     ret AND_KILL_FRAME(2)
 
