@@ -131,7 +131,7 @@ let elias_tests : cg_test list = [
   {test = "(apply number? '(5))"; expected = "#t"};
   {test = "(apply eq? 5 '(5))"; expected = "#t"};
   {test = "(apply list 8 '(5 7 4))"; expected = "(8 5 7 4)"};
-  {test = "(apply make-string 5 '(#\\a) )"; expected = "\"aaaaa\""};
+  {test = "(apply make-string 5 '(#\\a))"; expected = "\"aaaaa\""};
   {test = "(apply make-vector 3 '(#\\b))"; expected = "#(#\\b #\\b #\\b)"};
 (* 51 - 60 *)
   {test = "(apply (lambda (x y t) (+ x y t)) '(1 2 32/33) )"; expected = "131/33"};

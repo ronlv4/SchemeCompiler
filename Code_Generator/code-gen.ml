@@ -409,7 +409,7 @@ module Code_Generation = struct
       | ScmVarGet' (Var' (v, Param minor)) ->
          Printf.sprintf "\tmov rax, PARAM(%d)\n" minor
       | ScmVarGet' (Var' (v, Bound (major, minor))) ->
-           "\tmov rax, qword [rbp + 8 * 2]\n"
+           "\tmov rax, ENV\n"
          ^ (Printf.sprintf "\tmov rax, qword [rax + 8 * %d]\n" major)
          ^ (Printf.sprintf "\tmov rax, qword [rax + 8 * %d]\n" minor)
       | ScmIf' (test, dit, dif) ->
@@ -561,7 +561,6 @@ module Code_Generation = struct
             and label_arity_more = make_lambda_opt_arity_more ()
             and label_stack_ok = make_lambda_opt_stack_ok ()
             and label_shrink_loop = make_lambda_opt_loop ()
-            and label_shrink_loop_exit = make_lambda_opt_loop_exit ()
             and label_build_opt_list = make_build_opt_list ()
             in
             "\tmov rdi, (1 + 8 + 8)\t; sob closure\n"
@@ -644,7 +643,7 @@ module Code_Generation = struct
             ^ "\tpop rax\n"
             ^ "\tmov qword [r9], rax\n"
             ^ (Printf.sprintf "\tcmp r8, %d\n" ((List.length params') + 1))
-            ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_exit)
+            ^ (Printf.sprintf "\tje %s\n" label_stack_ok)
             ^ (Printf.sprintf "\tmov rcx, 3 + %d ; loop counter\n" (List.length params'))
             ^ "\tlea rax, [r9 - 8 * 1] ; destination pointer\n"
             ^ "\tmov rdx, r8\n"
@@ -661,7 +660,6 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tjg %s\n" label_shrink_loop)
             ^ "\tlea rsp, [rax + 8]\n"
             ^ (Printf.sprintf "\tmov qword [rsp + 8 * 2], %d\n" ((List.length params') + 1))
-            ^ (Printf.sprintf "%s:\n" label_shrink_loop_exit)
             ^ (Printf.sprintf "%s:\n" label_stack_ok)
             ^ "\tenter 0, 0\n"
             ^ (run ((List.length params') + 1) (env + 1) body)
