@@ -694,8 +694,8 @@ module Code_Generation = struct
           ^ "\txor rcx, rcx\n"
           ^ (Printf.sprintf "\tmov rcx, %d\n" ((List.length args) + 3))
           ^ (Printf.sprintf "%s:\n" label_tc_applic_recycle_frame_loop)
-          ^ "\tmov rdx, [rsi]\n"
-          ^ "\tmov [rdi], rdx\n"
+          ^ "\tmov rdx, qword [rsi]\n"
+          ^ "\tmov qword [rdi], rdx\n"
           ^ "\tsub rsi, 8\n"
           ^ "\tsub rdi, 8\n"
           ^ "\tdec rcx\n"
