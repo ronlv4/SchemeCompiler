@@ -647,9 +647,10 @@ module Code_Generation = struct
             ^ (Printf.sprintf "\tje %s\n" label_shrink_loop_exit)
             ^ (Printf.sprintf "\tmov rcx, 3 + %d ; loop counter\n" (List.length params'))
             ^ "\tlea rax, [r9 - 8 * 1] ; destination pointer\n"
-            ^ "\tmov rdx, r8\n"
-            ^ "\tneg rdx\n"
-            ^ (Printf.sprintf "\tlea rbx, [rax + 8 * (rdx + %d)] ; source pointer\n" ((List.length params') + 1))
+(*            ^ "\tmov rdx, r8\n"*)
+(*            ^ "\tneg rdx\n"*)
+(*            ^ (Printf.sprintf "\tlea rbx, [rax + 8 * (rdx + %d)] ; source pointer\n" ((List.length params') + 1))*)
+            ^ (Printf.sprintf "\tlea rbx, [rsp + 8 * (3 + %d)] ; source pointer\n" (List.length params'))
             ^ (Printf.sprintf "%s: \n" label_shrink_loop)
             ^ "\tmov rdx, qword [rbx]\n"
             ^ "\tmov qword [rax], rdx\n"
@@ -665,9 +666,7 @@ module Code_Generation = struct
             ^ "\tenter 0, 0\n"
             ^ (run ((List.length params') + 1) (env + 1) body)
             ^ "\tleave\n"
-            ^ "\tlea rbx, [rsp + 2 * 8]\n"
-            ^ "\tret qword [rbx]\n"
-(*            ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" ((List.length params') + 1))*)
+            ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" ((List.length params') + 1))
             ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
       | ScmApplic' (proc, args, Non_Tail_Call) ->
         Printf.sprintf "; starting Non_Tail_Call applic\n"
