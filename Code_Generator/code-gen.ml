@@ -702,19 +702,6 @@ module Code_Generation = struct
           ^ (Printf.sprintf "\tjge %s\n" label_tc_applic_recycle_frame_loop)
           ^ "lea rsp, [rdi + 8]\n"
           ^ "\tpop rbp\n"
-(*          ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))*)
-(*          ^ "\tadd rcx, 4 ; add args_num, env, ret addr and old rbp\n"*)
-(*          ^ "\tmov rbx, COUNT\n"*)
-(*          ^ "\tlea rbx, [rbx + rcx + 4]\n"*)
-(*          ^ (Printf.sprintf "%s:\n" label_tc_applic_recycle_frame_loop)*)
-(*          ^ "\tmov rdx, qword [rsp + rcx * 8]\n"*)
-(*          ^ "\tmov qword [rsp + 8 * rbx], rdx\n"*)
-(*          ^ "\tdec rcx\n"*)
-(*          ^ "\tdec rbx\n"*)
-(*          ^ "\tcmp rcx, 0\n"*)
-(*          ^ (Printf.sprintf "\tjge %s\n" label_tc_applic_recycle_frame_loop)*)
-(*          ^ "\tlea rsp, [rsp + 8 * (rbx + 1)]\n"*)
-(*          ^ "\tpop qword rbp ; restore old rbp\n"*)
           ^ "\tjmp SOB_CLOSURE_CODE(rax)\n"
           ^ "; ending Tail_Call applic\n"
     and runs params env exprs' =
