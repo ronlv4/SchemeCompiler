@@ -665,7 +665,8 @@ module Code_Generation = struct
             ^ "\tenter 0, 0\n"
             ^ (run ((List.length params') + 1) (env + 1) body)
             ^ "\tleave\n"
-            ^ "\tret qword [rsp + 8 * 2]\n"
+            ^ "\tmov rbx, [rsp + 2 * 8]\n"
+            ^ "\tret rbx\n"
 (*            ^ (Printf.sprintf "\tret 8 * (2 + %d)\n" ((List.length params') + 1))*)
             ^ (Printf.sprintf "%s:\t; new closure is in rax\n" label_end)
       | ScmApplic' (proc, args, Non_Tail_Call) ->
