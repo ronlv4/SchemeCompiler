@@ -691,7 +691,6 @@ module Code_Generation = struct
           ^ "\tlea rdi, [rbp + (rdi + 3) * 8]\n"
           ^ (Printf.sprintf "\tmov rsi, %d\n" (List.length args))
           ^ "\tlea rsi, [rsp + (rsi + 3) * 8]\n"
-          ^ "\txor rcx, rcx\n"
           ^ (Printf.sprintf "\tmov rcx, %d\n" ((List.length args) + 3))
           ^ (Printf.sprintf "%s:\n" label_tc_applic_recycle_frame_loop)
           ^ "\tmov rdx, qword [rsi]\n"
@@ -700,7 +699,7 @@ module Code_Generation = struct
           ^ "\tsub rdi, 8\n"
           ^ "\tdec rcx\n"
           ^ "\tcmp rcx, 0\n"
-          ^ (Printf.sprintf "\tjg %s\n" label_tc_applic_recycle_frame_loop)
+          ^ (Printf.sprintf "\tjge %s\n" label_tc_applic_recycle_frame_loop)
           ^ "lea rsp, [rdi + 8]\n"
           ^ "\tpop rbp\n"
 (*          ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))*)
