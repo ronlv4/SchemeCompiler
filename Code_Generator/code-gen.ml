@@ -556,12 +556,12 @@ module Code_Generation = struct
             and label_loop_params = make_lambda_opt_loop_params ()
             and label_loop_params_end = make_lambda_opt_loop_params_end ()
             and label_opt_code = make_lambda_opt_code ()
+            and label_end = make_lambda_opt_end ()
             and label_arity_exact = make_lambda_opt_arity_exact ()
             and label_arity_more = make_lambda_opt_arity_more ()
             and label_stack_ok = make_lambda_opt_stack_ok ()
             and label_shrink_loop = make_lambda_opt_loop ()
             and label_shrink_loop_exit = make_lambda_opt_loop_exit ()
-            and label_end = make_lambda_opt_end ()
             and label_build_opt_list = make_build_opt_list ()
             in
             "\tmov rdi, (1 + 8 + 8)\t; sob closure\n"
@@ -605,10 +605,10 @@ module Code_Generation = struct
             ^ "\txor rcx, rcx\n"
             ^ "\tmov r8, qword [rsp + 8 * 2] ; args_count\n"
             ^ "\tlea r9, [rsp + 8 * (r8 + 2)] ; 'top' of the stack pointer\n"
-            ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n" (List.length params'))
+            ^ (Printf.sprintf "\tcmp r8, %d\n" (List.length params'))
             ^ (Printf.sprintf "\tje %s\n" label_arity_exact)
             ^ (Printf.sprintf "\tja %s\n" label_arity_more)
-            ^ "\tpush qword [rsp + 8 * 2]\n"
+            ^ "\tpush r8\n"
             ^ (Printf.sprintf "\tpush qword %d\n" (List.length params'))
             ^ "\tjmp L_error_incorrect_arity_opt\n"
             ^ (Printf.sprintf "%s:\n" label_arity_exact)
