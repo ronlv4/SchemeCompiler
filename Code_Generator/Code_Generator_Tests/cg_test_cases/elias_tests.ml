@@ -61,11 +61,7 @@ let elias_tests : cg_test list = [
   (lambda (y) (x (x (x y))))))) (lambda (x) (lambda (y) (x (x (x (x (x
   y))))))))) #t) #f)"; expected = "#t"}; *)
   {test =
-     "(let ()
-      ((lambda s
-        (let ()
-          ((lambda s s) s s s)))
-      #t))"; expected = "((#t) (#t) (#t))"};
+     "(let () ((lambda s (let () ((lambda s s) s s s))) #t))"; expected = "((#t) (#t) (#t))"};
   {test =
      "(let ((list (lambda args args)))
       ((lambda (a . s)

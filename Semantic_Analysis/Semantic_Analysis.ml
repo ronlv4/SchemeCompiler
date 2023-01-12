@@ -296,10 +296,12 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
     | ScmApplic' (proc, args, app_kind) ->
        ScmApplic' (auto_box proc, List.map auto_box args, app_kind);;
 
+
+(*TODO: restore tail call annotations *)
   let semantics expr =
     auto_box
-      (annotate_tail_calls
-         (annotate_lexical_address expr));;
+(*      (annotate_tail_calls*)
+         (annotate_lexical_address expr);;
 
 end;; (* end of module Semantic_Analysis *)
 
