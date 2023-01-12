@@ -371,7 +371,6 @@ let rec sexpr_of_expr = function
     let proc = sexpr_of_expr proc in
     let args = Reader.scheme_sexpr_list_of_sexpr_list (List.map sexpr_of_expr args) in
     ScmPair (proc, args)
-  | _ -> raise (X_syntax "Unknown form");;
 
 let string_of_expr expr =
     Printf.sprintf "%a" sprint_sexpr (sexpr_of_expr expr);;
