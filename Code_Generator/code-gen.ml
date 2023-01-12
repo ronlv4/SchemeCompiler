@@ -687,19 +687,35 @@ module Code_Generation = struct
           ^ "\tpush SOB_CLOSURE_ENV(rax)\n"
           ^ "\tpush RET_ADDR ; old ret addr\n"
           ^ "\tpush OLD_RBP ; old rbp\n"
-          ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))
-          ^ "\tadd rcx, 4 ; add args_num, env, ret addr and old rbp\n"
-          ^ "\tmov rbx, COUNT\n"
-          ^ "\tlea rbx, [rbx + rcx + 4]\n"
+          ^ "\tmov rdi, COUNT\n"
+          ^ "\tlea rdi, [rbp + (rdi + 3) * 8]\n"
+          ^ (Printf.sprintf "\tmov rsi, %d" (List.length args))
+          ^ "\tlea rsi, [rsp + (rsi + 3) * 8]\n"
+          ^ "\txor rcx, rcx\n"
+          ^ (Printf.sprintf "\tmov rcx, %d\n" ((List.length args) + 3))
           ^ (Printf.sprintf "%s:\n" label_tc_applic_recycle_frame_loop)
-          ^ "\tmov rdx, qword [rsp + rcx * 8]\n"
-          ^ "\tmov qword [rsp + 8 * rbx], rdx\n"
+          ^ "\tmov rdx, [rsi]\n"
+          ^ "\tmov [rdi], rdx\n"
+          ^ "\tsub rsi, 8\n"
+          ^ "\tsub rdi, 8\n"
           ^ "\tdec rcx\n"
-          ^ "\tdec rbx\n"
           ^ "\tcmp rcx, 0\n"
-          ^ (Printf.sprintf "\tjge %s\n" label_tc_applic_recycle_frame_loop)
-          ^ "\tlea rsp, [rsp + 8 * (rbx + 1)]\n"
-          ^ "\tpop qword rbp ; restore old rbp\n"
+          ^ (Printf.sprintf "\tjg %s\n" label_tc_applic_recycle_frame_loop)
+          ^ "lea rsp, [rdi + 8]\n"
+          ^ "\tpop rbp\n"
+(*          ^ (Printf.sprintf "\tmov rcx, %d ;number of args\n" (List.length args))*)
+(*          ^ "\tadd rcx, 4 ; add args_num, env, ret addr and old rbp\n"*)
+(*          ^ "\tmov rbx, COUNT\n"*)
+(*          ^ "\tlea rbx, [rbx + rcx + 4]\n"*)
+(*          ^ (Printf.sprintf "%s:\n" label_tc_applic_recycle_frame_loop)*)
+(*          ^ "\tmov rdx, qword [rsp + rcx * 8]\n"*)
+(*          ^ "\tmov qword [rsp + 8 * rbx], rdx\n"*)
+(*          ^ "\tdec rcx\n"*)
+(*          ^ "\tdec rbx\n"*)
+(*          ^ "\tcmp rcx, 0\n"*)
+(*          ^ (Printf.sprintf "\tjge %s\n" label_tc_applic_recycle_frame_loop)*)
+(*          ^ "\tlea rsp, [rsp + 8 * (rbx + 1)]\n"*)
+(*          ^ "\tpop qword rbp ; restore old rbp\n"*)
           ^ "\tjmp SOB_CLOSURE_CODE(rax)\n"
           ^ "; ending Tail_Call applic\n"
     and runs params env exprs' =
