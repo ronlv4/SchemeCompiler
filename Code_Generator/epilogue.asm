@@ -613,12 +613,12 @@ L_code_ptr_bin_apply:
 	jmp .L_push_all_args
 .L_apply_core_nil:
 	xor rcx, rcx
-.L_reverse_stack_order:
+.L_reverse_args_order:
 	mov rbx, rcx
 	lea rsi, [rsp + (rcx - 1) * 8]
 	mov rdi, rsp
 	shr rcx, 1
-.L_reverse_stack_order_loop:
+.L_reverse_args_order_loop:
 	cmp rcx, 0
 	je .L_finish
 	mov r8, qword [rsi]
@@ -628,7 +628,7 @@ L_code_ptr_bin_apply:
 	add rdi, 8
 	sub rsi, 8
 	dec rcx
-	jmp .L_reverse_stack_order_loop
+	jmp .L_reverse_args_order_loop
 .L_finish:
 	mov rdx, PARAM(0)
 	call_function rbx, SOB_CLOSURE_CODE(rdx)
