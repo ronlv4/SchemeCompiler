@@ -6,6 +6,7 @@ let elias_failure_tests : cg_test list = [
 ]
 
 let elias_tests : cg_test list = [
+(* 1 - 10 *)
   {test = "#t"; expected = "#t"};
   {test = "1"; expected = "1"};
   {test = "(begin 1 #t)"; expected = "#t"};
@@ -16,6 +17,7 @@ let elias_tests : cg_test list = [
   {test = "(lambda a a)"; expected = "closure"};
   {test = "((lambda a a))"; expected = "()"};
   {test = "((lambda (a . b) b) 1)"; expected = "()"};
+(* 11 - 20 *)
   {test = "((lambda (a . b) b) 1 2)"; expected = "(2)"};
   {test = "((lambda (a . b) b) 10 20 30 40)"; expected = "(20 30 40)"};
   {test = "((lambda (a) (a)) (lambda () 1))"; expected = "1"};
@@ -60,8 +62,8 @@ let elias_tests : cg_test list = [
   (y) (x (x (x y))))) (lambda (x) (lambda (y) (x (x y)))))) (lambda (x)
   (lambda (y) (x (x (x y))))))) (lambda (x) (lambda (y) (x (x (x (x (x
   y))))))))) #t) #f)"; expected = "#t"}; *)
-  {test =
-     "(let () ((lambda s (let () ((lambda s s) s s s))) #t))"; expected = "((#t) (#t) (#t))"};
+  {test = "(let () ((lambda s (let () ((lambda s s) s s s))) #t))"; expected = "((#t) (#t) (#t))"};
+(* 21 - 30 *)
   {test =
      "(let ((list (lambda args args)))
       ((lambda (a . s)
@@ -87,6 +89,7 @@ let elias_tests : cg_test list = [
   {test = " (define list (lambda args args))
     ((lambda (a . s)
     (list a s)) 1 2 3 4 5 ))"; expected = "(1 (2 3 4 5))"};
+(* 31-40 *)
   {test =
      " (define list (lambda args args))
     ((lambda (a . s)
@@ -119,6 +122,7 @@ let elias_tests : cg_test list = [
   {test = "(apply + '(1))"; expected = "1"};
   {test = "(apply + 0 '(8 5 4 3))"; expected = "20"};
   {test = " (apply + '(1))"; expected = "1"};
+(* 41 - 50 *)
   {test = "(apply + 1 '(8 5 4 3))"; expected = "21"};
   {test = " (apply + 7 8 '(8 5 4 3))"; expected = "35"};
   {test = "(apply append '(3) '((5)))"; expected = "(3 5)"};
@@ -129,6 +133,7 @@ let elias_tests : cg_test list = [
   {test = "(apply list 8 '(5 7 4))"; expected = "(8 5 7 4)"};
   {test = "(apply make-string 5 '(#\\a) )"; expected = "\"aaaaa\""};
   {test = "(apply make-vector 3 '(#\\b))"; expected = "#(#\\b #\\b #\\b)"};
+(* 51 - 60 *)
   {test = "(apply (lambda (x y t) (+ x y t)) '(1 2 32/33) )"; expected = "131/33"};
   {test = "(apply (lambda (x y t) (< x y t)) '(1 2 32/33) )"; expected = "#f"};
   {test = "(apply (lambda (x y t) (> x y t)) '(1 2 32/33))"; expected = "#f"};
