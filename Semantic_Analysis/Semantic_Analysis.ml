@@ -299,8 +299,8 @@ module Semantic_Analysis : SEMANTIC_ANALYSIS = struct
 
   let semantics expr =
     auto_box
-      (annotate_tail_calls
-         (annotate_lexical_address expr));;
+(*      (annotate_tail_calls*)
+         (annotate_lexical_address expr);;
 
 end;; (* end of module Semantic_Analysis *)
 
