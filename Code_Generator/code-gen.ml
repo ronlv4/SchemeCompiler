@@ -604,8 +604,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "%s:\t; lambda-opt body\n" label_opt_code)
             ^ "\txor rcx, rcx\n"
             ^ "\tmov r8, qword [rsp + 8 * 2] ; args_count\n"
-            ^ "\tmov r9, rsp\n"
-            ^ "\tlea r9, [r9 + 8 * (r8 + 2)] ; 'top' of the stack pointer\n"
+            ^ "\tlea r9, [rsp + 8 * (r8 + 2)] ; 'top' of the stack pointer\n"
             ^ (Printf.sprintf "\tcmp qword [rsp + 8 * 2], %d\n" (List.length params'))
             ^ (Printf.sprintf "\tje %s\n" label_arity_exact)
             ^ (Printf.sprintf "\tja %s\n" label_arity_more)
@@ -632,7 +631,7 @@ module Code_Generation = struct
             ^ (Printf.sprintf "%s:\n" label_build_opt_list)
             ^ "\tmov rdi, 1 + 8 + 8 ; PAIR\n"
             ^ "\tcall malloc\n"
-            ^ "\tmov [rsi], rax\n"
+            ^ "\tmov qword [rsi], rax\n"
             ^ "\tmov byte [rax], T_pair\n"
             ^ "\tmov rdx, qword [rcx]\n"
             ^ "\tmov SOB_PAIR_CAR(rax), rdx\n"
