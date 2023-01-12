@@ -689,7 +689,7 @@ module Code_Generation = struct
           ^ "\tpush OLD_RBP ; old rbp\n"
           ^ "\tmov rdi, COUNT\n"
           ^ "\tlea rdi, [rbp + (rdi + 3) * 8]\n"
-          ^ (Printf.sprintf "\tmov rsi, %d" (List.length args))
+          ^ (Printf.sprintf "\tmov rsi, %d\n" (List.length args))
           ^ "\tlea rsi, [rsp + (rsi + 3) * 8]\n"
           ^ "\txor rcx, rcx\n"
           ^ (Printf.sprintf "\tmov rcx, %d\n" ((List.length args) + 3))
