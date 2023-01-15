@@ -28,7 +28,7 @@ let elias_tests : cg_test list = [
   {test = "(let ((lst (lambda args args))) (lst 1))"; expected = "(1)"}; (*you can add '(define list (lambda args args))' instead of using init file*)
   {test = "(((lambda (a . args) (lambda () args)) 2 3 4))"; expected = "(3 4)"};
 
-  (* ){test = "(((((lambda (a) (lambda (b) (((lambda (a) (lambda (b) ((a b) (lambda
+  {test = "(((((lambda (a) (lambda (b) (((lambda (a) (lambda (b) ((a b) (lambda
   (x) (lambda (y) y))))) ((lambda (n) ((n (lambda (x) (lambda (x)
   (lambda (y) y)))) (lambda (x) (lambda (y) x)))) (((lambda (a) (lambda
   (b) ((b (lambda (n) ((lambda (p) (p (lambda (a) (lambda (b) b)))) ((n
@@ -61,7 +61,7 @@ let elias_tests : cg_test list = [
   s) z)))))) b))))) (lambda (x) (lambda (y) y))))) ((lambda (x) (lambda
   (y) (x (x (x y))))) (lambda (x) (lambda (y) (x (x y)))))) (lambda (x)
   (lambda (y) (x (x (x y))))))) (lambda (x) (lambda (y) (x (x (x (x (x
-  y))))))))) #t) #f)"; expected = "#t"}; *)
+  y))))))))) #t) #f)"; expected = "#t"};
   {test = "(let () ((lambda s (let () ((lambda s s) s s s))) #t))"; expected = "((#t) (#t) (#t))"};
 (* 21 - 30 *)
   {test =
