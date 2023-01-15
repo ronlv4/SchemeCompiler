@@ -571,70 +571,99 @@ bind_primitive:
 
 ;;; PLEASE IMPLEMENT THIS PROCEDURE
 L_code_ptr_bin_apply:
-	ENTER
-	cmp COUNT, 2
-	je .L_arity_ok
-	push COUNT
-	push qword 2
-	jmp L_error_incorrect_arity_opt
-.L_arity_ok:
-	mov rax, PARAM(0)
-	cmp byte [rax], T_closure
-	jne L_error_non_closure
-	mov rbx, PARAM(1)
-	push rbx
-	call_function 1, L_code_ptr_is_null
-	cmp rax, sob_boolean_true
-	je .L_apply_core_nil
-.L_check_pair:
-	push rbx
-	call_function 1, L_code_ptr_is_pair
-	cmp rax, sob_boolean_true
-	je .L_check_cdr
-	jmp L_error_improper_list
-.L_check_cdr:
-	mov rbx, SOB_PAIR_CDR(rbx)
-	push rbx
-	call_function 1, L_code_ptr_is_null
-	cmp rax, sob_boolean_true
-	je .L_apply_core
-	jmp .L_check_pair
-.L_apply_core:
-	mov rbx, PARAM(1)
-	xor rcx, rcx
-.L_push_all_args:
-	push SOB_PAIR_CAR(rbx)
-	inc rcx
-	mov rbx, SOB_PAIR_CDR(rbx)
-	push rbx
-	call_function 1, L_code_ptr_is_null
-	cmp rax, sob_boolean_true
-	je .L_reverse_args_order
-	jmp .L_push_all_args
-.L_apply_core_nil:
-	xor rcx, rcx
-.L_reverse_args_order:
-	mov rbx, rcx
-	lea rsi, [rsp + (rcx - 1) * 8]
-	mov rdi, rsp
-	shr rcx, 1
-.L_reverse_args_order_loop:
-	cmp rcx, 0
-	je .L_finish
-	mov r8, qword [rsi]
-	mov r9, qword [rdi]
-	mov [rsi], r9
-	mov [rdi], r8
-	add rdi, 8
-	sub rsi, 8
-	dec rcx
-	jmp .L_reverse_args_order_loop
-.L_finish:
-	mov rdx, PARAM(0)
-	call_function rbx, SOB_CLOSURE_CODE(rdx)
-	LEAVE
-    ret AND_KILL_FRAME(2)
 
+        push rbp
+        mov rbp,rsp
+
+
+	mov rcx, COUNT          ;num of args to apply = 1 (proc) + n (n elements) + 1 (pointer to list of elements)
+        dec rcx                 ;dec proc param
+        mov rsi, qword [rbp + 4*8 + rcx*8] ; 4 - (old rbp) + (ret address) + (lex env) + (num of params to apply func)
+
+
+.L_push_apply_list_elements:
+        xor rdx, rdx                            ;will count the number of argument we push to the stack
+        mov r15, sob_nil
+
+.L_reverse_list_loop:                   ;reverse the list of args
+        cmp rsi, sob_nil
+        je .L_push_reverse_list_loop
+        mov rdi , 1+8+8                         ;num of bytes for SOB_PAIR
+        call malloc
+        mov byte [rax], T_pair
+        mov r11, SOB_PAIR_CAR(rsi)
+        mov SOB_PAIR_CAR(rax), r11
+        mov SOB_PAIR_CDR(rax), r15
+        mov r15, rax
+        mov rsi, SOB_PAIR_CDR(rsi)
+        inc rdx
+        jmp .L_reverse_list_loop
+
+.L_push_reverse_list_loop:              ;push the revers list of args to the stack
+        cmp r15, sob_nil
+        je .L_push_reverse_list_loop_end
+        mov rsi, SOB_PAIR_CAR(r15)
+        push rsi
+        mov r15, SOB_PAIR_CDR(r15)
+        jmp .L_push_reverse_list_loop
+
+.L_push_reverse_list_loop_end:
+        dec rcx
+        mov r10, rcx
+
+.L_push_apply_elements_loop:            ;push to stack all the regular elements
+        cmp r10, 0
+        jz .L_push_apply_elements_loop_end
+        push qword [rbp + 8 *(4+r10)]
+        dec r10
+        jmp  .L_push_apply_elements_loop
+
+.L_push_apply_elements_loop_end:
+        add rdx, rcx
+        push rdx                                ;push the over all number of args the proc suppose to get
+
+        mov r14, qword [rbp + 4*8]              ;mov r14 closure proc
+        mov rbx, SOB_CLOSURE_ENV(r14)
+        push rbx                                ;push closure env to the stack
+
+        push qword [rbp+ 1*8]                   ;push return address of apply
+
+        add rdx, 3                              ;add the frame to proc (n args, proc env, ret address, sob_nil)
+
+.L_copy_frame:
+        push rax
+	push r9
+	push r10
+	push rbx
+	mov r12, [rbp]
+	mov rcx, COUNT
+	add rcx, 4
+	mov r9, rdx
+	mov r10, 8
+
+.L_copy_frame_loop:
+        cmp r9, 0
+        jz .L_copy_frame_loop_end
+        dec rcx
+        mov rbx, rbp
+        sub rbx, r10
+        mov rbx, qword [rbx]                    ;qword [rbp - 8]
+        mov [rbp + rcx * 8], rbx
+        dec r9
+        add r10, 8
+        jmp .L_copy_frame_loop
+
+.L_copy_frame_loop_end:
+        pop rbx
+        pop r10
+        pop r9
+        pop rax
+        lea rsp, [rbp + rcx * 8]
+        mov rbp, r12
+
+.L_end:
+        mov rdx, SOB_CLOSURE_CODE(r14)
+        jmp rdx
 L_code_ptr_is_null:
     ENTER
     cmp COUNT, 1
