@@ -572,7 +572,6 @@ bind_primitive:
 ;;; PLEASE IMPLEMENT THIS PROCEDURE
 L_code_ptr_bin_apply:
 	enter 0, 0
-
 	cmp COUNT, 2
 	je .L_arity_ok
 	push COUNT
@@ -582,7 +581,6 @@ L_code_ptr_bin_apply:
 	mov rax, PARAM(0)
 	cmp byte [rax], T_closure
 	jne L_error_non_closure
-
 	mov rax, PARAM(0)
 	cmp byte [rax], T_closure
 	jne L_error_non_closure
@@ -605,13 +603,9 @@ L_code_ptr_bin_apply:
 	je .L_apply_core
 	jmp .L_check_pair
 .L_apply_core:
-
-
 	mov rcx, COUNT
 	dec rcx
-	mov rsi, qword [rbp + 4*8 + rcx*8]
-
-.L_push_apply_list_elements:
+	mov rsi, PARAM(rcx)
     xor rbx, rbx
     mov r8, sob_nil
 
@@ -619,7 +613,7 @@ L_code_ptr_bin_apply:
     cmp rsi, sob_nil
     je .L_push_list_args
     inc rbx
-    mov rdi , 1+8+8
+    mov rdi , 1 + 8 + 8
     call malloc
     mov byte [rax], T_pair
     mov rdx, SOB_PAIR_CAR(rsi)
@@ -640,33 +634,29 @@ L_code_ptr_bin_apply:
     dec rcx
     mov rsi, rcx
 
-.L_push_apply_elements_loop:
+.L_push_seq_args_loop:
     cmp rsi, 0
-    je .L_push_apply_elements_loop_end
+    je .L_push_seq_args_loop_end
     push PARAM(rsi)
     dec rsi
-    jmp  .L_push_apply_elements_loop
+    jmp .L_push_seq_args_loop
 
-.L_push_apply_elements_loop_end:
+.L_push_seq_args_loop_end:
     add rbx, rcx
 	push rbx
-	mov rdx, PARAM(0)
-	push SOB_CLOSURE_ENV(rdx)
-	push RET_ADDR
-
     add rbx, 3
-
-.L_copy_frame:
-	push rdx
-	mov r12, OLD_RBP
+	mov rax, PARAM(0)
+	push SOB_CLOSURE_ENV(rax)
+	push RET_ADDR
+	mov r8, OLD_RBP
 	mov rcx, COUNT
 	add rcx, 4
 	mov rdi, rbx
 	mov rsi, 8
 
-.L_copy_frame_loop:
+.L_recycle_frame_loop:
 	cmp rdi, 0
-	je .L_copy_frame_loop_end
+	je .L_recycle_frame_loop_end
 	dec rcx
 	mov rbx, rbp
 	sub rbx, rsi
@@ -674,15 +664,12 @@ L_code_ptr_bin_apply:
 	mov [rbp + rcx * 8], rdx
 	dec rdi
 	add rsi, 8
-	jmp .L_copy_frame_loop
+	jmp .L_recycle_frame_loop
 
-.L_copy_frame_loop_end:
-    pop rbx
+.L_recycle_frame_loop_end:
     lea rsp, [rbp + rcx * 8]
-    mov rbp, r12
-
-.L_end:
-    jmp SOB_CLOSURE_CODE(rbx)
+    mov rbp, r8
+    jmp SOB_CLOSURE_CODE(rax)
 
 
 
