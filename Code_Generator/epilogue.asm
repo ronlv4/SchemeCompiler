@@ -607,19 +607,19 @@ L_code_ptr_bin_apply:
 .L_apply_core:
 
 
-	mov rcx, COUNT          ;num of args to apply = 1 (proc) + n (n elements) + 1 (pointer to list of elements)
-	dec rcx                 ;dec proc param
-	mov rsi, qword [rbp + 4*8 + rcx*8] ; 4 - (old rbp) + (ret address) + (lex env) + (num of params to apply func)
+	mov rcx, COUNT
+	dec rcx
+	mov rsi, qword [rbp + 4*8 + rcx*8]
 
 .L_push_apply_list_elements:
-    xor rbx, rbx                            ;will count the number of argument we push to the stack
+    xor rbx, rbx
     mov r8, sob_nil
 
-.L_reverse_list_order_loop:                   ;reverse the list of args
+.L_reverse_list_order_loop:
     cmp rsi, sob_nil
     je .L_push_list_args
     inc rbx
-    mov rdi , 1+8+8                         ;num of bytes for SOB_PAIR
+    mov rdi , 1+8+8
     call malloc
     mov byte [rax], T_pair
     mov rdx, SOB_PAIR_CAR(rsi)
@@ -629,7 +629,7 @@ L_code_ptr_bin_apply:
     mov rsi, SOB_PAIR_CDR(rsi)
     jmp .L_reverse_list_order_loop
 
-.L_push_list_args:              ;push the revers list of args to the stack
+.L_push_list_args:
     cmp r8, sob_nil
     je .L_push_list_args_end
     push SOB_PAIR_CAR(r8)
@@ -640,7 +640,7 @@ L_code_ptr_bin_apply:
     dec rcx
     mov rsi, rcx
 
-.L_push_apply_elements_loop:            ;push to stack all the regular elements
+.L_push_apply_elements_loop:
     cmp rsi, 0
     je .L_push_apply_elements_loop_end
     push PARAM(rsi)
@@ -649,12 +649,12 @@ L_code_ptr_bin_apply:
 
 .L_push_apply_elements_loop_end:
     add rbx, rcx
-	push rbx                                ;push the over all number of args the proc suppose to get
+	push rbx
 	mov rdx, PARAM(0)
 	push SOB_CLOSURE_ENV(rdx)
-	push RET_ADDR                   ;push return address of apply
+	push RET_ADDR
 
-    add rbx, 3                              ;add the frame to proc (n args, proc env, ret address, sob_nil)
+    add rbx, 3
 
 .L_copy_frame:
     push rax
@@ -673,7 +673,7 @@ L_code_ptr_bin_apply:
 	dec rcx
 	mov rbx, rbp
 	sub rbx, rsi
-	mov rbx, qword [rbx]                    ;qword [rbp - 8]
+	mov rbx, qword [rbx]
 	mov [rbp + rcx * 8], rbx
 	dec r9
 	add rsi, 8
