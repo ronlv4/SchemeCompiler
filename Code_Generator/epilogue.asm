@@ -657,38 +657,32 @@ L_code_ptr_bin_apply:
     add rbx, 3
 
 .L_copy_frame:
-    push rax
-	push r9
-	push rsi
 	push rdx
 	mov r12, OLD_RBP
 	mov rcx, COUNT
 	add rcx, 4
-	mov r9, rbx
+	mov rdi, rbx
 	mov rsi, 8
 
 .L_copy_frame_loop:
-	cmp r9, 0
+	cmp rdi, 0
 	je .L_copy_frame_loop_end
 	dec rcx
 	mov rbx, rbp
 	sub rbx, rsi
-	mov rbx, qword [rbx]
-	mov [rbp + rcx * 8], rbx
-	dec r9
+	mov rdx, qword [rbx]
+	mov [rbp + rcx * 8], rdx
+	dec rdi
 	add rsi, 8
 	jmp .L_copy_frame_loop
 
 .L_copy_frame_loop_end:
     pop rbx
-    pop rsi
-    pop r9
-    pop rax
     lea rsp, [rbp + rcx * 8]
     mov rbp, r12
 
 .L_end:
-    jmp SOB_CLOSURE_CODE(rdx)
+    jmp SOB_CLOSURE_CODE(rbx)
 
 
 
