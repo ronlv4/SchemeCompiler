@@ -11,6 +11,8 @@ type cg_test = {test: string; expected: string};;
 #use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/or_tests.ml";;
 #use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/tc_tests.ml";;
 #use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/set_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/applic_no_opt_tests.ml";;
+#use "/home/ronlv4/repos/compilation_assignment/Code_Generator/Code_Generator_Tests/cg_test_cases/opt_tests.ml";;
 
 exception X_failed_test of string * string * string;; (* test, expected, actual *)
 
@@ -58,6 +60,8 @@ run_cg_tests seq_tests "sequence";; (* testing sequencess *)
 run_cg_tests if_tests "'if' and 'and'";; (* testing if and 'and' *)
 run_cg_tests or_tests "or";; (* testing or *)
 run_cg_tests set_tests "Define-Set-Get";; (* set! for free vars *)
+run_cg_tests antp_no_opt_tests "Applic non-tail-call non-opt";; (* testing applic on non-opt lambdas *)
+run_cg_tests opt_tests "lambda opt";; (* testing applic on opt lambdas *)
 run_cg_tests tc_tests "tail-call";;
 run_cg_tests elias_tests "Elias's";; (* all tests from Elias's tester *)
 run_cg_tests mayer_tests "Mayer's";; (* Mayer's torture tests. These are not debuggable but give a good feeling that the compiler works. *)
